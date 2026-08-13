@@ -1,0 +1,22 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 9301" opacity="0.6">
+<g id="Ellipse 2004" filter="url(#filter0_f_0_189)">
+<ellipse cx="7.99997" cy="8" rx="2" ry="2" fill="white"/>
+</g>
+<g id="Ellipse 2005" filter="url(#filter1_f_0_189)">
+<circle cx="8" cy="8" r="3" fill="#96B6FC"/>
+</g>
+</g>
+<defs>
+<filter id="filter0_f_0_189" x="4.99997" y="5" width="6" height="6" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="0.5" result="effect1_foregroundBlur_0_189"/>
+</filter>
+<filter id="filter1_f_0_189" x="0" y="0" width="16" height="16" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="2.5" result="effect1_foregroundBlur_0_189"/>
+</filter>
+</defs>
+</svg>

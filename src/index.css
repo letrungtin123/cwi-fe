@@ -1,0 +1,64 @@
+﻿@import "tailwindcss";
+
+:root {
+  --font-sf: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-inter: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --figma-red: #e9252b;
+  --figma-red-dark: #831518;
+  --figma-blue: #144eaf;
+  --figma-navy: #00132f;
+  --figma-cyan: #3bd6c6;
+  --figma-teal: #13e6d0;
+  font-family: var(--font-inter);
+  color: #000;
+  background: #f4f5f7;
+  font-synthesis: none;
+  letter-spacing: 0;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  font-family: var(--font-inter);
+}
+
+body,
+button,
+a,
+input,
+textarea,
+select {
+  font-family: var(--font-inter);
+}
+
+button,
+a {
+  font: inherit;
+}
+
+button {
+  border: 0;
+}
+
+img {
+  display: block;
+}
+
+p,
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+

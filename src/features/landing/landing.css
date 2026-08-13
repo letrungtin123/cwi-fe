@@ -1,0 +1,178 @@
+.design-page-shell {
+  min-height: 100vh;
+  overflow-x: auto;
+  background: #f4f5f7;
+}
+
+.figma-canvas {
+  position: relative;
+  width: 1440px;
+  height: 4742px;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #fff;
+  font-family: var(--font-inter);
+}
+
+.figma-inter {
+  font-family: var(--font-inter);
+}
+
+.figma-button-red {
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  color: #fff;
+  background: linear-gradient(180deg, #e9252b 32.98%, #831518 158.51%);
+  border: 0.911px solid #d73a3a;
+  box-shadow: 0 12px 38px rgba(233, 37, 43, 0.24);
+}
+
+
+.figma-header-login-button {
+  box-shadow: none;
+}.figma-button-red:focus-visible,
+.figma-button-outline:focus-visible {
+  outline: 3px solid rgba(20, 78, 175, 0.45);
+  outline-offset: 3px;
+}
+
+.figma-button-outline {
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #000;
+  background: #fff;
+  border: 1px solid #000;
+}
+
+.figma-hero-bg {
+  object-fit: cover;
+  object-position: center top;
+  pointer-events: none;
+}
+
+.figma-hero-gradient {
+  background: linear-gradient(
+    179.97deg,
+    rgba(0, 0, 0, 0) 4.38%,
+    #00132f 93.87%
+  );
+  backdrop-filter: blur(5px);
+}
+
+.figma-hero-body-copy {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  text-shadow: 0 0 0 rgba(255, 255, 255, 0.01);
+}
+.figma-text-gradient {
+  color: transparent;
+  background: linear-gradient(90deg, #e9252b 0%, #fff 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.figma-report-card {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #000;
+  border-radius: 20px;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(20px);
+}
+
+.figma-chart-grid {
+  background-image:
+    linear-gradient(to right, rgba(20, 78, 175, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(20, 78, 175, 0.12) 1px, transparent 1px);
+  background-size: 87.3px 87px;
+}
+.figma-chart-axis-x {
+  position: absolute;
+  left: 48px;
+  top: 409px;
+  width: 553px;
+  height: 1px;
+  background: #000;
+}
+
+.figma-chart-axis-x::before,
+.figma-chart-axis-x::after {
+  position: absolute;
+  right: -1px;
+  width: 9px;
+  height: 1px;
+  background: #000;
+  content: '';
+  transform-origin: right center;
+}
+
+.figma-chart-axis-x::before {
+  transform: rotate(45deg);
+}
+
+.figma-chart-axis-x::after {
+  transform: rotate(-45deg);
+}
+
+.figma-chart-axis-y {
+  position: absolute;
+  left: 48px;
+  top: 33px;
+  width: 1px;
+  height: 376px;
+  background: #000;
+}
+
+.figma-chart-axis-y::before,
+.figma-chart-axis-y::after {
+  position: absolute;
+  top: 0;
+  width: 9px;
+  height: 1px;
+  background: #000;
+  content: '';
+  transform-origin: left center;
+}
+
+.figma-chart-axis-y::before {
+  transform: rotate(135deg);
+}
+
+.figma-chart-axis-y::after {
+  transform: rotate(45deg);
+}
+.figma-advisor-card {
+  overflow: hidden;
+  width: 232.35px;
+  height: 325.46px;
+  background: #00347f;
+  border-top-left-radius: 48.58px;
+}
+
+.figma-section-label-frame {
+  color: #144eaf;
+  font-size: 16px;
+  font-weight: 510;
+  line-height: 19px;
+  white-space: nowrap;
+}
+
+.figma-section-label-text {
+  position: absolute;
+  top: 0;
+  display: block;
+  text-align: center;
+}
+
+

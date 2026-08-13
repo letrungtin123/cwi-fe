@@ -1,0 +1,1750 @@
+﻿<!DOCTYPE html>
+<html lang="vi"><head>
+    <script type="module">import { injectIntoGlobalHook } from "/@react-refresh";
+injectIntoGlobalHook(window);
+window.$RefreshReg$ = () => {};
+window.$RefreshSig$ = () => (type) => type;</script>
+
+    <script type="module" src="/@vite/client"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CEO Workforce Index landing page implemented from the Figma source of truth.">
+    <title>CEO Workforce Index</title>
+  <style type="text/css" data-vite-dev-id="D:/CWI/source4/src/index.css">/*! tailwindcss v4.3.3 | MIT License | https://tailwindcss.com */
+@layer properties;
+@layer theme, base, components, utilities;
+@layer theme {
+  :root, :host {
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+      "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+      "Segoe UI Symbol", "Noto Color Emoji";
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      "Courier New", monospace;
+    --color-black: #000;
+    --color-white: #fff;
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --default-font-family: var(--font-sans);
+    --default-mono-font-family: var(--font-mono);
+  }
+}
+@layer base {
+  *, ::after, ::before, ::backdrop, ::file-selector-button {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 solid;
+  }
+  html, :host {
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+    font-family: var(--default-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
+    font-feature-settings: var(--default-font-feature-settings, normal);
+    font-variation-settings: var(--default-font-variation-settings, normal);
+    -webkit-tap-highlight-color: transparent;
+  }
+  hr {
+    height: 0;
+    color: inherit;
+    border-top-width: 1px;
+  }
+  abbr:where([title]) {
+    -webkit-text-decoration: underline dotted;
+    text-decoration: underline dotted;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+  a {
+    color: inherit;
+    -webkit-text-decoration: inherit;
+    text-decoration: inherit;
+  }
+  b, strong {
+    font-weight: bolder;
+  }
+  code, kbd, samp, pre {
+    font-family: var(--default-mono-font-family, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
+    font-feature-settings: var(--default-mono-font-feature-settings, normal);
+    font-variation-settings: var(--default-mono-font-variation-settings, normal);
+    font-size: 1em;
+  }
+  small {
+    font-size: 80%;
+  }
+  sub, sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+  }
+  sub {
+    bottom: -0.25em;
+  }
+  sup {
+    top: -0.5em;
+  }
+  table {
+    text-indent: 0;
+    border-color: inherit;
+    border-collapse: collapse;
+  }
+  :-moz-focusring:where(:not(iframe)) {
+    outline: auto;
+  }
+  progress {
+    vertical-align: baseline;
+  }
+  summary {
+    display: list-item;
+  }
+  ol, ul, menu {
+    list-style: none;
+  }
+  img, svg, video, canvas, audio, iframe, embed, object {
+    display: block;
+    vertical-align: middle;
+  }
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+  button, input, select, optgroup, textarea, ::file-selector-button {
+    font: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    border-radius: 0;
+    background-color: transparent;
+    opacity: 1;
+  }
+  :where(select:is([multiple], [size])) optgroup {
+    font-weight: bolder;
+  }
+  :where(select:is([multiple], [size])) optgroup option {
+    padding-inline-start: 20px;
+  }
+  ::file-selector-button {
+    margin-inline-end: 4px;
+  }
+  ::placeholder {
+    opacity: 1;
+  }
+  @supports (not (-webkit-appearance: -apple-pay-button))  or (contain-intrinsic-size: 1px) {
+    ::placeholder {
+      color: currentcolor;
+      @supports (color: color-mix(in lab, red, red)) {
+        color: color-mix(in oklab, currentcolor 50%, transparent);
+      }
+    }
+  }
+  textarea {
+    resize: vertical;
+  }
+  ::-webkit-search-decoration {
+    -webkit-appearance: none;
+  }
+  ::-webkit-date-and-time-value {
+    min-height: 1lh;
+    text-align: inherit;
+  }
+  ::-webkit-datetime-edit {
+    display: inline-flex;
+  }
+  ::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+  }
+  ::-webkit-datetime-edit, ::-webkit-datetime-edit-year-field, ::-webkit-datetime-edit-month-field, ::-webkit-datetime-edit-day-field, ::-webkit-datetime-edit-hour-field, ::-webkit-datetime-edit-minute-field, ::-webkit-datetime-edit-second-field, ::-webkit-datetime-edit-millisecond-field, ::-webkit-datetime-edit-meridiem-field {
+    padding-block: 0;
+  }
+  ::-webkit-calendar-picker-indicator {
+    line-height: 1;
+  }
+  :-moz-ui-invalid {
+    box-shadow: none;
+  }
+  button, input:where([type="button"], [type="reset"], [type="submit"]), ::file-selector-button {
+    appearance: button;
+  }
+  ::-webkit-inner-spin-button, ::-webkit-outer-spin-button {
+    height: auto;
+  }
+  [hidden]:where(:not([hidden="until-found"])) {
+    display: none !important;
+  }
+}
+@layer utilities {
+  .visible {
+    visibility: visible;
+  }
+  .absolute {
+    position: absolute;
+  }
+  .relative {
+    position: relative;
+  }
+  .inset-0 {
+    inset: 0px;
+  }
+  .top-0 {
+    top: 0px;
+  }
+  .top-\[-32px\] {
+    top: -32px;
+  }
+  .top-\[5px\] {
+    top: 5px;
+  }
+  .top-\[6px\] {
+    top: 6px;
+  }
+  .top-\[7px\] {
+    top: 7px;
+  }
+  .top-\[11px\] {
+    top: 11px;
+  }
+  .top-\[15px\] {
+    top: 15px;
+  }
+  .top-\[17px\] {
+    top: 17px;
+  }
+  .top-\[22px\] {
+    top: 22px;
+  }
+  .top-\[24px\] {
+    top: 24px;
+  }
+  .top-\[30px\] {
+    top: 30px;
+  }
+  .top-\[33px\] {
+    top: 33px;
+  }
+  .top-\[35px\] {
+    top: 35px;
+  }
+  .top-\[38px\] {
+    top: 38px;
+  }
+  .top-\[41px\] {
+    top: 41px;
+  }
+  .top-\[43px\] {
+    top: 43px;
+  }
+  .top-\[45px\] {
+    top: 45px;
+  }
+  .top-\[51px\] {
+    top: 51px;
+  }
+  .top-\[55px\] {
+    top: 55px;
+  }
+  .top-\[75px\] {
+    top: 75px;
+  }
+  .top-\[80px\] {
+    top: 80px;
+  }
+  .top-\[90px\] {
+    top: 90px;
+  }
+  .top-\[106px\] {
+    top: 106px;
+  }
+  .top-\[107px\] {
+    top: 107px;
+  }
+  .top-\[115px\] {
+    top: 115px;
+  }
+  .top-\[120px\] {
+    top: 120px;
+  }
+  .top-\[165px\] {
+    top: 165px;
+  }
+  .top-\[175px\] {
+    top: 175px;
+  }
+  .top-\[194px\] {
+    top: 194px;
+  }
+  .top-\[205px\] {
+    top: 205px;
+  }
+  .top-\[217px\] {
+    top: 217px;
+  }
+  .top-\[220px\] {
+    top: 220px;
+  }
+  .top-\[254px\] {
+    top: 254px;
+  }
+  .top-\[264px\] {
+    top: 264px;
+  }
+  .top-\[291px\] {
+    top: 291px;
+  }
+  .top-\[310px\] {
+    top: 310px;
+  }
+  .top-\[334px\] {
+    top: 334px;
+  }
+  .top-\[338px\] {
+    top: 338px;
+  }
+  .top-\[353px\] {
+    top: 353px;
+  }
+  .top-\[383px\] {
+    top: 383px;
+  }
+  .top-\[449px\] {
+    top: 449px;
+  }
+  .top-\[450px\] {
+    top: 450px;
+  }
+  .top-\[452px\] {
+    top: 452px;
+  }
+  .top-\[464px\] {
+    top: 464px;
+  }
+  .top-\[494px\] {
+    top: 494px;
+  }
+  .top-\[529px\] {
+    top: 529px;
+  }
+  .top-\[539px\] {
+    top: 539px;
+  }
+  .top-\[603px\] {
+    top: 603px;
+  }
+  .top-\[753px\] {
+    top: 753px;
+  }
+  .top-\[763px\] {
+    top: 763px;
+  }
+  .top-\[793px\] {
+    top: 793px;
+  }
+  .top-\[874px\] {
+    top: 874px;
+  }
+  .top-\[1817px\] {
+    top: 1817px;
+  }
+  .top-\[2527px\] {
+    top: 2527px;
+  }
+  .top-\[3660px\] {
+    top: 3660px;
+  }
+  .top-\[4360px\] {
+    top: 4360px;
+  }
+  .right-\[15px\] {
+    right: 15px;
+  }
+  .bottom-\[14px\] {
+    bottom: 14px;
+  }
+  .left-0 {
+    left: 0px;
+  }
+  .left-\[-1px\] {
+    left: -1px;
+  }
+  .left-\[-24px\] {
+    left: -24px;
+  }
+  .left-\[-45px\] {
+    left: -45px;
+  }
+  .left-\[-67px\] {
+    left: -67px;
+  }
+  .left-\[-162px\] {
+    left: -162px;
+  }
+  .left-\[1px\] {
+    left: 1px;
+  }
+  .left-\[15px\] {
+    left: 15px;
+  }
+  .left-\[25px\] {
+    left: 25px;
+  }
+  .left-\[34px\] {
+    left: 34px;
+  }
+  .left-\[35px\] {
+    left: 35px;
+  }
+  .left-\[40px\] {
+    left: 40px;
+  }
+  .left-\[45px\] {
+    left: 45px;
+  }
+  .left-\[48px\] {
+    left: 48px;
+  }
+  .left-\[49px\] {
+    left: 49px;
+  }
+  .left-\[51px\] {
+    left: 51px;
+  }
+  .left-\[52px\] {
+    left: 52px;
+  }
+  .left-\[55px\] {
+    left: 55px;
+  }
+  .left-\[59px\] {
+    left: 59px;
+  }
+  .left-\[70px\] {
+    left: 70px;
+  }
+  .left-\[75px\] {
+    left: 75px;
+  }
+  .left-\[90px\] {
+    left: 90px;
+  }
+  .left-\[97px\] {
+    left: 97px;
+  }
+  .left-\[99px\] {
+    left: 99px;
+  }
+  .left-\[100px\] {
+    left: 100px;
+  }
+  .left-\[105px\] {
+    left: 105px;
+  }
+  .left-\[112px\] {
+    left: 112px;
+  }
+  .left-\[118px\] {
+    left: 118px;
+  }
+  .left-\[129px\] {
+    left: 129px;
+  }
+  .left-\[136px\] {
+    left: 136px;
+  }
+  .left-\[236px\] {
+    left: 236px;
+  }
+  .left-\[279px\] {
+    left: 279px;
+  }
+  .left-\[288px\] {
+    left: 288px;
+  }
+  .left-\[291px\] {
+    left: 291px;
+  }
+  .left-\[310px\] {
+    left: 310px;
+  }
+  .left-\[322px\] {
+    left: 322px;
+  }
+  .left-\[351px\] {
+    left: 351px;
+  }
+  .left-\[397px\] {
+    left: 397px;
+  }
+  .left-\[434px\] {
+    left: 434px;
+  }
+  .left-\[448px\] {
+    left: 448px;
+  }
+  .left-\[464px\] {
+    left: 464px;
+  }
+  .left-\[469px\] {
+    left: 469px;
+  }
+  .left-\[475px\] {
+    left: 475px;
+  }
+  .left-\[485px\] {
+    left: 485px;
+  }
+  .left-\[495px\] {
+    left: 495px;
+  }
+  .left-\[564px\] {
+    left: 564px;
+  }
+  .left-\[604px\] {
+    left: 604px;
+  }
+  .left-\[745px\] {
+    left: 745px;
+  }
+  .left-\[750px\] {
+    left: 750px;
+  }
+  .left-\[850px\] {
+    left: 850px;
+  }
+  .left-\[878px\] {
+    left: 878px;
+  }
+  .left-\[954px\] {
+    left: 954px;
+  }
+  .left-\[1102px\] {
+    left: 1102px;
+  }
+  .left-\[1115px\] {
+    left: 1115px;
+  }
+  .z-20 {
+    z-index: 20;
+  }
+  .mt-\[3px\] {
+    margin-top: 3px;
+  }
+  .mt-\[14px\] {
+    margin-top: 14px;
+  }
+  .mt-\[17px\] {
+    margin-top: 17px;
+  }
+  .mt-\[20px\] {
+    margin-top: 20px;
+  }
+  .mt-\[30px\] {
+    margin-top: 30px;
+  }
+  .mt-\[42px\] {
+    margin-top: 42px;
+  }
+  .mt-\[45px\] {
+    margin-top: 45px;
+  }
+  .mb-\[19px\] {
+    margin-bottom: 19px;
+  }
+  .mb-\[23px\] {
+    margin-bottom: 23px;
+  }
+  .block {
+    display: block;
+  }
+  .flex {
+    display: flex;
+  }
+  .grid {
+    display: grid;
+  }
+  .h-\[2px\] {
+    height: 2px;
+  }
+  .h-\[4px\] {
+    height: 4px;
+  }
+  .h-\[12px\] {
+    height: 12px;
+  }
+  .h-\[15px\] {
+    height: 15px;
+  }
+  .h-\[16px\] {
+    height: 16px;
+  }
+  .h-\[18px\] {
+    height: 18px;
+  }
+  .h-\[19px\] {
+    height: 19px;
+  }
+  .h-\[28px\] {
+    height: 28px;
+  }
+  .h-\[29px\] {
+    height: 29px;
+  }
+  .h-\[30px\] {
+    height: 30px;
+  }
+  .h-\[32px\] {
+    height: 32px;
+  }
+  .h-\[35px\] {
+    height: 35px;
+  }
+  .h-\[37px\] {
+    height: 37px;
+  }
+  .h-\[40px\] {
+    height: 40px;
+  }
+  .h-\[41px\] {
+    height: 41px;
+  }
+  .h-\[42px\] {
+    height: 42px;
+  }
+  .h-\[47px\] {
+    height: 47px;
+  }
+  .h-\[48px\] {
+    height: 48px;
+  }
+  .h-\[49px\] {
+    height: 49px;
+  }
+  .h-\[50px\] {
+    height: 50px;
+  }
+  .h-\[51px\] {
+    height: 51px;
+  }
+  .h-\[54px\] {
+    height: 54px;
+  }
+  .h-\[55px\] {
+    height: 55px;
+  }
+  .h-\[58px\] {
+    height: 58px;
+  }
+  .h-\[60px\] {
+    height: 60px;
+  }
+  .h-\[67px\] {
+    height: 67px;
+  }
+  .h-\[68px\] {
+    height: 68px;
+  }
+  .h-\[71px\] {
+    height: 71px;
+  }
+  .h-\[79px\] {
+    height: 79px;
+  }
+  .h-\[80px\] {
+    height: 80px;
+  }
+  .h-\[84px\] {
+    height: 84px;
+  }
+  .h-\[105px\] {
+    height: 105px;
+  }
+  .h-\[112px\] {
+    height: 112px;
+  }
+  .h-\[116px\] {
+    height: 116px;
+  }
+  .h-\[141px\] {
+    height: 141px;
+  }
+  .h-\[156px\] {
+    height: 156px;
+  }
+  .h-\[184px\] {
+    height: 184px;
+  }
+  .h-\[191px\] {
+    height: 191px;
+  }
+  .h-\[215px\] {
+    height: 215px;
+  }
+  .h-\[242px\] {
+    height: 242px;
+  }
+  .h-\[283px\] {
+    height: 283px;
+  }
+  .h-\[300px\] {
+    height: 300px;
+  }
+  .h-\[321px\] {
+    height: 321px;
+  }
+  .h-\[382px\] {
+    height: 382px;
+  }
+  .h-\[396px\] {
+    height: 396px;
+  }
+  .h-\[417px\] {
+    height: 417px;
+  }
+  .h-\[431px\] {
+    height: 431px;
+  }
+  .h-\[478px\] {
+    height: 478px;
+  }
+  .h-\[480px\] {
+    height: 480px;
+  }
+  .h-\[640px\] {
+    height: 640px;
+  }
+  .h-\[664px\] {
+    height: 664px;
+  }
+  .h-\[677px\] {
+    height: 677px;
+  }
+  .h-\[680px\] {
+    height: 680px;
+  }
+  .h-\[728px\] {
+    height: 728px;
+  }
+  .h-\[890px\] {
+    height: 890px;
+  }
+  .h-\[929px\] {
+    height: 929px;
+  }
+  .h-\[940px\] {
+    height: 940px;
+  }
+  .h-\[1063px\] {
+    height: 1063px;
+  }
+  .h-\[1358px\] {
+    height: 1358px;
+  }
+  .h-full {
+    height: 100%;
+  }
+  .w-\[1px\] {
+    width: 1px;
+  }
+  .w-\[4px\] {
+    width: 4px;
+  }
+  .w-\[10px\] {
+    width: 10px;
+  }
+  .w-\[16px\] {
+    width: 16px;
+  }
+  .w-\[17px\] {
+    width: 17px;
+  }
+  .w-\[18px\] {
+    width: 18px;
+  }
+  .w-\[23px\] {
+    width: 23px;
+  }
+  .w-\[35px\] {
+    width: 35px;
+  }
+  .w-\[46px\] {
+    width: 46px;
+  }
+  .w-\[49px\] {
+    width: 49px;
+  }
+  .w-\[56px\] {
+    width: 56px;
+  }
+  .w-\[60px\] {
+    width: 60px;
+  }
+  .w-\[71px\] {
+    width: 71px;
+  }
+  .w-\[83px\] {
+    width: 83px;
+  }
+  .w-\[91px\] {
+    width: 91px;
+  }
+  .w-\[97px\] {
+    width: 97px;
+  }
+  .w-\[100px\] {
+    width: 100px;
+  }
+  .w-\[105px\] {
+    width: 105px;
+  }
+  .w-\[106px\] {
+    width: 106px;
+  }
+  .w-\[108px\] {
+    width: 108px;
+  }
+  .w-\[118px\] {
+    width: 118px;
+  }
+  .w-\[120px\] {
+    width: 120px;
+  }
+  .w-\[130px\] {
+    width: 130px;
+  }
+  .w-\[134px\] {
+    width: 134px;
+  }
+  .w-\[140px\] {
+    width: 140px;
+  }
+  .w-\[144px\] {
+    width: 144px;
+  }
+  .w-\[145px\] {
+    width: 145px;
+  }
+  .w-\[150px\] {
+    width: 150px;
+  }
+  .w-\[161px\] {
+    width: 161px;
+  }
+  .w-\[169px\] {
+    width: 169px;
+  }
+  .w-\[177px\] {
+    width: 177px;
+  }
+  .w-\[180px\] {
+    width: 180px;
+  }
+  .w-\[181px\] {
+    width: 181px;
+  }
+  .w-\[187px\] {
+    width: 187px;
+  }
+  .w-\[201px\] {
+    width: 201px;
+  }
+  .w-\[203px\] {
+    width: 203px;
+  }
+  .w-\[207px\] {
+    width: 207px;
+  }
+  .w-\[209px\] {
+    width: 209px;
+  }
+  .w-\[213px\] {
+    width: 213px;
+  }
+  .w-\[231px\] {
+    width: 231px;
+  }
+  .w-\[235px\] {
+    width: 235px;
+  }
+  .w-\[301px\] {
+    width: 301px;
+  }
+  .w-\[313px\] {
+    width: 313px;
+  }
+  .w-\[330px\] {
+    width: 330px;
+  }
+  .w-\[333px\] {
+    width: 333px;
+  }
+  .w-\[339px\] {
+    width: 339px;
+  }
+  .w-\[380px\] {
+    width: 380px;
+  }
+  .w-\[382px\] {
+    width: 382px;
+  }
+  .w-\[405px\] {
+    width: 405px;
+  }
+  .w-\[413px\] {
+    width: 413px;
+  }
+  .w-\[415px\] {
+    width: 415px;
+  }
+  .w-\[443px\] {
+    width: 443px;
+  }
+  .w-\[448px\] {
+    width: 448px;
+  }
+  .w-\[451px\] {
+    width: 451px;
+  }
+  .w-\[499px\] {
+    width: 499px;
+  }
+  .w-\[500px\] {
+    width: 500px;
+  }
+  .w-\[512px\] {
+    width: 512px;
+  }
+  .w-\[515px\] {
+    width: 515px;
+  }
+  .w-\[520px\] {
+    width: 520px;
+  }
+  .w-\[543px\] {
+    width: 543px;
+  }
+  .w-\[545px\] {
+    width: 545px;
+  }
+  .w-\[546px\] {
+    width: 546px;
+  }
+  .w-\[559px\] {
+    width: 559px;
+  }
+  .w-\[560px\] {
+    width: 560px;
+  }
+  .w-\[572px\] {
+    width: 572px;
+  }
+  .w-\[575px\] {
+    width: 575px;
+  }
+  .w-\[578px\] {
+    width: 578px;
+  }
+  .w-\[598px\] {
+    width: 598px;
+  }
+  .w-\[605px\] {
+    width: 605px;
+  }
+  .w-\[626px\] {
+    width: 626px;
+  }
+  .w-\[646px\] {
+    width: 646px;
+  }
+  .w-\[658px\] {
+    width: 658px;
+  }
+  .w-\[686px\] {
+    width: 686px;
+  }
+  .w-\[691px\] {
+    width: 691px;
+  }
+  .w-\[795px\] {
+    width: 795px;
+  }
+  .w-\[895px\] {
+    width: 895px;
+  }
+  .w-\[968px\] {
+    width: 968px;
+  }
+  .w-\[1110px\] {
+    width: 1110px;
+  }
+  .w-\[1164px\] {
+    width: 1164px;
+  }
+  .w-\[1180px\] {
+    width: 1180px;
+  }
+  .w-\[1204px\] {
+    width: 1204px;
+  }
+  .w-\[1216px\] {
+    width: 1216px;
+  }
+  .w-\[1240px\] {
+    width: 1240px;
+  }
+  .w-\[1295px\] {
+    width: 1295px;
+  }
+  .w-\[1360px\] {
+    width: 1360px;
+  }
+  .w-\[1440px\] {
+    width: 1440px;
+  }
+  .w-\[1442px\] {
+    width: 1442px;
+  }
+  .w-\[1451px\] {
+    width: 1451px;
+  }
+  .w-\[1574px\] {
+    width: 1574px;
+  }
+  .w-full {
+    width: 100%;
+  }
+  .w-px {
+    width: 1px;
+  }
+  .-scale-y-100 {
+    --tw-scale-y: calc(100% * -1);
+    scale: var(--tw-scale-x) var(--tw-scale-y);
+  }
+  .rotate-180 {
+    rotate: 180deg;
+  }
+  .rotate-\[33deg\] {
+    rotate: 33deg;
+  }
+  .transform {
+    transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
+  }
+  .cursor-pointer {
+    cursor: pointer;
+  }
+  .grid-cols-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .flex-col {
+    flex-direction: column;
+  }
+  .flex-wrap {
+    flex-wrap: wrap;
+  }
+  .items-center {
+    align-items: center;
+  }
+  .items-start {
+    align-items: flex-start;
+  }
+  .justify-between {
+    justify-content: space-between;
+  }
+  .justify-center {
+    justify-content: center;
+  }
+  .gap-\[10px\] {
+    gap: 10px;
+  }
+  .gap-\[52px\] {
+    gap: 52px;
+  }
+  .gap-x-\[14px\] {
+    column-gap: 14px;
+  }
+  .gap-x-\[44px\] {
+    column-gap: 44px;
+  }
+  .gap-x-\[63px\] {
+    column-gap: 63px;
+  }
+  .gap-y-\[25px\] {
+    row-gap: 25px;
+  }
+  .gap-y-\[26px\] {
+    row-gap: 26px;
+  }
+  .gap-y-\[78px\] {
+    row-gap: 78px;
+  }
+  .overflow-hidden {
+    overflow: hidden;
+  }
+  .rounded-\[10px\] {
+    border-radius: 10px;
+  }
+  .rounded-\[18px\] {
+    border-radius: 18px;
+  }
+  .rounded-\[40px\] {
+    border-radius: 40px;
+  }
+  .rounded-\[50px\] {
+    border-radius: 50px;
+  }
+  .rounded-\[53px\] {
+    border-radius: 53px;
+  }
+  .rounded-full {
+    border-radius: calc(infinity * 1px);
+  }
+  .rounded-t-\[60px\] {
+    border-top-left-radius: 60px;
+    border-top-right-radius: 60px;
+  }
+  .border-\[10px\] {
+    border-style: var(--tw-border-style);
+    border-width: 10px;
+  }
+  .border-white {
+    border-color: var(--color-white);
+  }
+  .bg-\[\#00132f\]\/84 {
+    background-color: color-mix(in oklab, #00132f 84%, transparent);
+  }
+  .bg-\[\#d9d9d9\] {
+    background-color: #d9d9d9;
+  }
+  .bg-\[\#e9252b\] {
+    background-color: #e9252b;
+  }
+  .bg-white {
+    background-color: var(--color-white);
+  }
+  .bg-white\/40 {
+    background-color: color-mix(in srgb, #fff 40%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-white) 40%, transparent);
+    }
+  }
+  .bg-gradient-to-l {
+    --tw-gradient-position: to left in oklab;
+    background-image: linear-gradient(var(--tw-gradient-stops));
+  }
+  .bg-gradient-to-t {
+    --tw-gradient-position: to top in oklab;
+    background-image: linear-gradient(var(--tw-gradient-stops));
+  }
+  .from-\[\#144eaf\] {
+    --tw-gradient-from: #144eaf;
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+  .from-\[\#00347f\] {
+    --tw-gradient-from: #00347f;
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+  .via-\[\#00347f\]\/30 {
+    --tw-gradient-via: color-mix(in oklab, #00347f 30%, transparent);
+    --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-via-stops);
+  }
+  .to-transparent {
+    --tw-gradient-to: transparent;
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+  .object-contain {
+    object-fit: contain;
+  }
+  .object-cover {
+    object-fit: cover;
+  }
+  .px-\[10px\] {
+    padding-inline: 10px;
+  }
+  .text-center {
+    text-align: center;
+  }
+  .text-right {
+    text-align: right;
+  }
+  .text-\[10px\] {
+    font-size: 10px;
+  }
+  .text-\[12\.14px\] {
+    font-size: 12.14px;
+  }
+  .text-\[12\.95px\] {
+    font-size: 12.95px;
+  }
+  .text-\[14px\] {
+    font-size: 14px;
+  }
+  .text-\[16px\] {
+    font-size: 16px;
+  }
+  .text-\[20px\] {
+    font-size: 20px;
+  }
+  .text-\[30px\] {
+    font-size: 30px;
+  }
+  .text-\[35px\] {
+    font-size: 35px;
+  }
+  .text-\[85px\] {
+    font-size: 85px;
+  }
+  .leading-\[14px\] {
+    --tw-leading: 14px;
+    line-height: 14px;
+  }
+  .leading-\[15px\] {
+    --tw-leading: 15px;
+    line-height: 15px;
+  }
+  .leading-\[17px\] {
+    --tw-leading: 17px;
+    line-height: 17px;
+  }
+  .leading-\[19px\] {
+    --tw-leading: 19px;
+    line-height: 19px;
+  }
+  .leading-\[20px\] {
+    --tw-leading: 20px;
+    line-height: 20px;
+  }
+  .leading-\[24px\] {
+    --tw-leading: 24px;
+    line-height: 24px;
+  }
+  .leading-\[25px\] {
+    --tw-leading: 25px;
+    line-height: 25px;
+  }
+  .leading-\[26px\] {
+    --tw-leading: 26px;
+    line-height: 26px;
+  }
+  .leading-\[35px\] {
+    --tw-leading: 35px;
+    line-height: 35px;
+  }
+  .leading-\[40px\] {
+    --tw-leading: 40px;
+    line-height: 40px;
+  }
+  .leading-\[90px\] {
+    --tw-leading: 90px;
+    line-height: 90px;
+  }
+  .leading-none {
+    --tw-leading: 1;
+    line-height: 1;
+  }
+  .font-light {
+    --tw-font-weight: var(--font-weight-light);
+    font-weight: var(--font-weight-light);
+  }
+  .font-medium {
+    --tw-font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-medium);
+  }
+  .font-normal {
+    --tw-font-weight: var(--font-weight-normal);
+    font-weight: var(--font-weight-normal);
+  }
+  .font-semibold {
+    --tw-font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-semibold);
+  }
+  .text-\[\#3bd6c6\] {
+    color: #3bd6c6;
+  }
+  .text-\[\#13e6d0\] {
+    color: #13e6d0;
+  }
+  .text-\[\#144eaf\] {
+    color: #144eaf;
+  }
+  .text-\[\#e1242a\] {
+    color: #e1242a;
+  }
+  .text-\[\#e9252b\] {
+    color: #e9252b;
+  }
+  .text-black {
+    color: var(--color-black);
+  }
+  .text-white {
+    color: var(--color-white);
+  }
+  .uppercase {
+    text-transform: uppercase;
+  }
+  .italic {
+    font-style: italic;
+  }
+  .not-italic {
+    font-style: normal;
+  }
+  .no-underline {
+    text-decoration-line: none;
+  }
+  .underline {
+    text-decoration-line: underline;
+  }
+  .opacity-70 {
+    opacity: 70%;
+  }
+  .opacity-95 {
+    opacity: 95%;
+  }
+  .shadow-\[0_0_26px_rgba\(233\,37\,43\,0\.55\)\] {
+    --tw-shadow: 0 0 26px var(--tw-shadow-color, rgba(233,37,43,0.55));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .filter {
+    filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+  }
+  .select-none {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+:root {
+  --font-sf: "SF Pro Display", "SF Pro Text", -apple-system,
+    BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  --font-inter: "Inter", "Segoe UI", Arial, sans-serif;
+  --figma-red: #e9252b;
+  --figma-red-dark: #831518;
+  --figma-blue: #144eaf;
+  --figma-navy: #00132f;
+  --figma-cyan: #3bd6c6;
+  --figma-teal: #13e6d0;
+  font-family: var(--font-sf);
+  color: #000;
+  background: #f4f5f7;
+  font-synthesis: none;
+  letter-spacing: 0;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+}
+button, a {
+  font: inherit;
+}
+button {
+  border: 0;
+}
+img {
+  display: block;
+}
+p, h1, h2, h3 {
+  margin: 0;
+}
+@property --tw-scale-x {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
+@property --tw-scale-y {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
+@property --tw-scale-z {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
+@property --tw-rotate-x {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-rotate-y {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-rotate-z {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-skew-x {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-skew-y {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-border-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
+@property --tw-gradient-position {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-gradient-from {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #0000;
+}
+@property --tw-gradient-via {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #0000;
+}
+@property --tw-gradient-to {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #0000;
+}
+@property --tw-gradient-stops {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-gradient-via-stops {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-gradient-from-position {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+@property --tw-gradient-via-position {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 50%;
+}
+@property --tw-gradient-to-position {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-leading {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-font-weight {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-inset-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-inset-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-inset-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-ring-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-ring-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-inset-ring-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-inset-ring-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-ring-inset {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-ring-offset-width {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --tw-ring-offset-color {
+  syntax: "*";
+  inherits: false;
+  initial-value: #fff;
+}
+@property --tw-ring-offset-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-blur {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-brightness {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-contrast {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-grayscale {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-hue-rotate {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-invert {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-opacity {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-saturate {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-sepia {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-drop-shadow {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-drop-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-drop-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-drop-shadow-size {
+  syntax: "*";
+  inherits: false;
+}
+@layer properties {
+  @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
+    *, ::before, ::after, ::backdrop {
+      --tw-scale-x: 1;
+      --tw-scale-y: 1;
+      --tw-scale-z: 1;
+      --tw-rotate-x: initial;
+      --tw-rotate-y: initial;
+      --tw-rotate-z: initial;
+      --tw-skew-x: initial;
+      --tw-skew-y: initial;
+      --tw-border-style: solid;
+      --tw-gradient-position: initial;
+      --tw-gradient-from: #0000;
+      --tw-gradient-via: #0000;
+      --tw-gradient-to: #0000;
+      --tw-gradient-stops: initial;
+      --tw-gradient-via-stops: initial;
+      --tw-gradient-from-position: 0%;
+      --tw-gradient-via-position: 50%;
+      --tw-gradient-to-position: 100%;
+      --tw-leading: initial;
+      --tw-font-weight: initial;
+      --tw-shadow: 0 0 #0000;
+      --tw-shadow-color: initial;
+      --tw-shadow-alpha: 100%;
+      --tw-inset-shadow: 0 0 #0000;
+      --tw-inset-shadow-color: initial;
+      --tw-inset-shadow-alpha: 100%;
+      --tw-ring-color: initial;
+      --tw-ring-shadow: 0 0 #0000;
+      --tw-inset-ring-color: initial;
+      --tw-inset-ring-shadow: 0 0 #0000;
+      --tw-ring-inset: initial;
+      --tw-ring-offset-width: 0px;
+      --tw-ring-offset-color: #fff;
+      --tw-ring-offset-shadow: 0 0 #0000;
+      --tw-blur: initial;
+      --tw-brightness: initial;
+      --tw-contrast: initial;
+      --tw-grayscale: initial;
+      --tw-hue-rotate: initial;
+      --tw-invert: initial;
+      --tw-opacity: initial;
+      --tw-saturate: initial;
+      --tw-sepia: initial;
+      --tw-drop-shadow: initial;
+      --tw-drop-shadow-color: initial;
+      --tw-drop-shadow-alpha: 100%;
+      --tw-drop-shadow-size: initial;
+    }
+  }
+}
+</style><style type="text/css" data-vite-dev-id="D:/CWI/source4/src/features/landing/landing.css">.design-page-shell {
+  min-height: 100vh;
+  overflow-x: auto;
+  background: #f4f5f7;
+}
+
+.figma-canvas {
+  position: relative;
+  width: 1440px;
+  height: 4742px;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #fff;
+  font-family: var(--font-sf);
+}
+
+.figma-inter {
+  font-family: var(--font-inter);
+}
+
+.figma-button-red {
+
+  cursor: pointer;
+
+  user-select: none;
+
+  touch-action: manipulation;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  color: #fff;
+  background: linear-gradient(180deg, #e9252b 32.98%, #831518 158.51%);
+  border: 0.911px solid #d73a3a;
+  box-shadow: 0 12px 38px rgba(233, 37, 43, 0.24);
+}
+
+.figma-button-red:focus-visible,
+.figma-button-outline:focus-visible {
+  outline: 3px solid rgba(20, 78, 175, 0.45);
+  outline-offset: 3px;
+}
+
+.figma-button-outline {
+
+  cursor: pointer;
+
+  user-select: none;
+
+  touch-action: manipulation;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #000;
+  background: #fff;
+  border: 1px solid #000;
+}
+
+.figma-hero-gradient {
+  background: linear-gradient(
+    179.97deg,
+    rgba(0, 0, 0, 0) 4.38%,
+    #00132f 93.87%
+  );
+  backdrop-filter: blur(5px);
+}
+
+.figma-text-gradient {
+  color: transparent;
+  background: linear-gradient(90deg, #e9252b 0%, #fff 58.65%);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.figma-report-card {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #000;
+  border-radius: 20px;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(20px);
+}
+
+.figma-chart-grid {
+  background-image:
+    linear-gradient(to right, rgba(20, 78, 175, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(20, 78, 175, 0.12) 1px, transparent 1px);
+  background-size: 91px 91px;
+}
+
+.figma-advisor-card {
+  position: relative;
+  overflow: hidden;
+  width: 232.35px;
+  height: 325.46px;
+  background: #00347f;
+  border-top-left-radius: 48.58px;
+}
+
+.figma-section-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 23px;
+  color: #144eaf;
+  font-size: 16px;
+  font-weight: 510;
+  line-height: 19px;
+  white-space: nowrap;
+}
+
+.figma-section-label::before,
+.figma-section-label::after {
+  content: '';
+  display: block;
+  width: 202px;
+  height: 1px;
+  background: #144eaf;
+  opacity: 0.75;
+}
+
+
+
+</style></head>
+  <body>
+    <div id="root"><div class="design-page-shell"><main id="top" class="figma-canvas" data-figma-file="R23rMZykc70t6C3YFqXyf9" data-figma-node="96:45"><section class="absolute left-0 top-0 h-[940px] w-full overflow-hidden" aria-labelledby="hero-title"><img alt="" class="select-none absolute left-[-67px] top-0 h-[929px] w-[1574px] object-cover" draggable="false" loading="eager" aria-hidden="true" src="/src/assets/figma/image-75-bg.png"><div class="figma-hero-gradient absolute left-[-1px] top-0 h-[940px] w-[1442px]"></div><img alt="" class="select-none absolute left-0 top-[763px] h-[156px] w-[1440px] object-cover" draggable="false" loading="eager" aria-hidden="true" src="/src/assets/figma/rectangle-4329.png"><img alt="" class="select-none absolute h-[16px] w-[16px]" draggable="false" loading="eager" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='16'%20height='16'%20viewBox='0%200%2016%2016'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20id='Group%209301'%20opacity='0.6'%3e%3cg%20id='Ellipse%202004'%20filter='url(%23filter0_f_0_189)'%3e%3cellipse%20cx='7.99997'%20cy='8'%20rx='2'%20ry='2'%20fill='white'/%3e%3c/g%3e%3cg%20id='Ellipse%202005'%20filter='url(%23filter1_f_0_189)'%3e%3ccircle%20cx='8'%20cy='8'%20r='3'%20fill='%2396B6FC'/%3e%3c/g%3e%3c/g%3e%3cdefs%3e%3cfilter%20id='filter0_f_0_189'%20x='4.99997'%20y='5'%20width='6'%20height='6'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3e%3cfeGaussianBlur%20stdDeviation='0.5'%20result='effect1_foregroundBlur_0_189'/%3e%3c/filter%3e%3cfilter%20id='filter1_f_0_189'%20x='0'%20y='0'%20width='16'%20height='16'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3e%3cfeGaussianBlur%20stdDeviation='2.5'%20result='effect1_foregroundBlur_0_189'/%3e%3c/filter%3e%3c/defs%3e%3c/svg%3e" style="left: 266px; top: 260px;"><img alt="" class="select-none absolute h-[16px] w-[16px]" draggable="false" loading="eager" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='16'%20height='16'%20viewBox='0%200%2016%2016'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20id='Group%209301'%20opacity='0.6'%3e%3cg%20id='Ellipse%202004'%20filter='url(%23filter0_f_0_189)'%3e%3cellipse%20cx='7.99997'%20cy='8'%20rx='2'%20ry='2'%20fill='white'/%3e%3c/g%3e%3cg%20id='Ellipse%202005'%20filter='url(%23filter1_f_0_189)'%3e%3ccircle%20cx='8'%20cy='8'%20r='3'%20fill='%2396B6FC'/%3e%3c/g%3e%3c/g%3e%3cdefs%3e%3cfilter%20id='filter0_f_0_189'%20x='4.99997'%20y='5'%20width='6'%20height='6'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3e%3cfeGaussianBlur%20stdDeviation='0.5'%20result='effect1_foregroundBlur_0_189'/%3e%3c/filter%3e%3cfilter%20id='filter1_f_0_189'%20x='0'%20y='0'%20width='16'%20height='16'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3e%3cfeGaussianBlur%20stdDeviation='2.5'%20result='effect1_foregroundBlur_0_189'/%3e%3c/filter%3e%3c/defs%3e%3c/svg%3e" style="left: 138px; top: 466px;"><img alt="" class="select-none absolute h-[16px] w-[16px]" draggable="false" loading="eager" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='16'%20height='16'%20viewBox='0%200%2016%2016'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20id='Group%209301'%20opacity='0.6'%3e%3cg%20id='Ellipse%202004'%20filter='url(%23filter0_f_0_189)'%3e%3cellipse%20cx='7.99997'%20cy='8'%20rx='2'%20ry='2'%20fill='white'/%3e%3c/g%3e%3cg%20id='Ellipse%202005'%20filter='url(%23filter1_f_0_189)'%3e%3ccircle%20cx='8'%20cy='8'%20r='3'%20fill='%2396B6FC'/%3e%3c/g%3e%3c/g%3e%3cdefs%3e%3cfilter%20id='filter0_f_0_189'%20x='4.99997'%20y='5'%20width='6'%20height='6'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3e%3cfeGaussianBlur%20stdDeviation='0.5'%20result='effect1_foregroundBlur_0_189'/%3e%3c/filter%3e%3cfilter%20id='filter1_f_0_189'%20x='0'%20y='0'%20width='16'%20height='16'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3e%3cfeGaussianBlur%20stdDeviation='2.5'%20result='effect1_foregroundBlur_0_189'/%3e%3c/filter%3e%3c/defs%3e%3c/svg%3e" style="left: 346px; top: 565px;"><img alt="" class="select-none absolute h-[16px] w-[16px]" draggable="false" loading="eager" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='16'%20height='16'%20viewBox='0%200%2016%2016'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20id='Group%209303'%20opacity='0.6'%3e%3cg%20id='Ellipse%202004'%20filter='url(%23filter0_f_0_174)'%3e%3cellipse%20cx='7.99997'%20cy='8'%20rx='2'%20ry='2'%20fill='white'/%3e%3c/g%3e%3cg%20id='Ellipse%202005'%20filter='url(%23filter1_f_0_174)'%3e%3ccircle%20cx='8'%20cy='8'%20r='3'%20fill='%23EAB78B'/%3e%3c/g%3e%3c/g%3e%3cdefs%3e%3cfilter%20id='filter0_f_0_174'%20x='4.99997'%20y='5'%20width='6'%20height='6'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3e%3cfeGaussianBlur%20stdDeviation='0.5'%20result='effect1_foregroundBlur_0_174'/%3e%3c/filter%3e%3cfilter%20id='filter1_f_0_174'%20x='0'%20y='0'%20width='16'%20height='16'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3e%3cfeGaussianBlur%20stdDeviation='2.5'%20result='effect1_foregroundBlur_0_174'/%3e%3c/filter%3e%3c/defs%3e%3c/svg%3e" style="left: 1093px; top: 344px;"><img alt="" class="select-none absolute h-[16px] w-[16px]" draggable="false" loading="eager" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='16'%20height='16'%20viewBox='0%200%2016%2016'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20id='Group%209303'%20opacity='0.6'%3e%3cg%20id='Ellipse%202004'%20filter='url(%23filter0_f_0_174)'%3e%3cellipse%20cx='7.99997'%20cy='8'%20rx='2'%20ry='2'%20fill='white'/%3e%3c/g%3e%3cg%20id='Ellipse%202005'%20filter='url(%23filter1_f_0_174)'%3e%3ccircle%20cx='8'%20cy='8'%20r='3'%20fill='%23EAB78B'/%3e%3c/g%3e%3c/g%3e%3cdefs%3e%3cfilter%20id='filter0_f_0_174'%20x='4.99997'%20y='5'%20width='6'%20height='6'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3e%3cfeGaussianBlur%20stdDeviation='0.5'%20result='effect1_foregroundBlur_0_174'/%3e%3c/filter%3e%3cfilter%20id='filter1_f_0_174'%20x='0'%20y='0'%20width='16'%20height='16'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3e%3cfeGaussianBlur%20stdDeviation='2.5'%20result='effect1_foregroundBlur_0_174'/%3e%3c/filter%3e%3c/defs%3e%3c/svg%3e" style="left: 1180px; top: 545px;"><img alt="" class="select-none absolute h-[16px] w-[16px]" draggable="false" loading="eager" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='16'%20height='16'%20viewBox='0%200%2016%2016'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20id='Group%209303'%20opacity='0.6'%3e%3cg%20id='Ellipse%202004'%20filter='url(%23filter0_f_0_174)'%3e%3cellipse%20cx='7.99997'%20cy='8'%20rx='2'%20ry='2'%20fill='white'/%3e%3c/g%3e%3cg%20id='Ellipse%202005'%20filter='url(%23filter1_f_0_174)'%3e%3ccircle%20cx='8'%20cy='8'%20r='3'%20fill='%23EAB78B'/%3e%3c/g%3e%3c/g%3e%3cdefs%3e%3cfilter%20id='filter0_f_0_174'%20x='4.99997'%20y='5'%20width='6'%20height='6'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3e%3cfeGaussianBlur%20stdDeviation='0.5'%20result='effect1_foregroundBlur_0_174'/%3e%3c/filter%3e%3cfilter%20id='filter1_f_0_174'%20x='0'%20y='0'%20width='16'%20height='16'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3e%3cfeGaussianBlur%20stdDeviation='2.5'%20result='effect1_foregroundBlur_0_174'/%3e%3c/filter%3e%3c/defs%3e%3c/svg%3e" style="left: 1290px; top: 328px;"><header class="absolute left-[129px] top-[35px] z-20 h-[80px] w-[1180px] rounded-[50px] bg-white"><div class="absolute left-[55px] top-[15px] h-[49px] w-[1110px]"><img alt="CEO Workforce Index" class="select-none absolute left-0 top-0 h-[49px] w-[108px]" draggable="false" loading="eager" src="/src/assets/figma/cwi-logo.svg"><nav aria-label="Main navigation" class="figma-inter absolute left-[351px] top-[17px] flex h-[19px] items-center text-[16px] font-medium text-black"><a class="flex h-[19px] cursor-pointer items-center justify-center px-[10px] leading-none no-underline" href="#top">Trang chủ</a><a class="flex h-[19px] cursor-pointer items-center justify-center px-[10px] leading-none no-underline" href="#report">Tiêu điểm</a><a class="flex h-[19px] cursor-pointer items-center justify-center px-[10px] leading-none no-underline" href="#report-card">Báo cáo</a><a class="flex h-[19px] cursor-pointer items-center justify-center px-[10px] leading-none no-underline" href="#roundtable">Roundtable</a><a class="flex h-[19px] cursor-pointer items-center justify-center px-[10px] leading-none no-underline" href="#footer">Về CWI</a></nav><div class="absolute left-[878px] top-[11px] h-[30px] w-[60px]"><img alt="" class="select-none absolute left-[59px] top-0 h-[30px] w-[1px]" draggable="false" loading="eager" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='30'%20height='1'%20viewBox='0%200%2030%201'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cline%20id='Line%2038'%20y1='0.5'%20x2='30'%20y2='0.5'%20stroke='black'%20stroke-opacity='0.5'/%3e%3c/svg%3e"><img alt="" class="select-none absolute left-0 top-[7px] h-[18px] w-[18px]" draggable="false" loading="eager" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='19'%20height='19'%20viewBox='0%200%2019%2019'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Icon'%20d='M1.625%206.75C1.34886%206.75%201.125%206.97386%201.125%207.25C1.125%207.52614%201.34886%207.75%201.625%207.75V7.25V6.75ZM17.375%207.75C17.6511%207.75%2017.875%207.52614%2017.875%207.25C17.875%206.97386%2017.6511%206.75%2017.375%206.75V7.25V7.75ZM1.71948%2011.8124C1.44334%2011.8124%201.21948%2012.0363%201.21948%2012.3124C1.21948%2012.5886%201.44334%2012.8124%201.71948%2012.8124V12.3124V11.8124ZM17.4695%2012.8124C17.7456%2012.8124%2017.9695%2012.5886%2017.9695%2012.3124C17.9695%2012.0363%2017.7456%2011.8124%2017.4695%2011.8124V12.3124V12.8124ZM18.5%209.5H18C18%2014.1944%2014.1944%2018%209.5%2018V18.5V19C14.7467%2019%2019%2014.7467%2019%209.5H18.5ZM9.5%2018.5V18C4.80558%2018%201%2014.1944%201%209.5H0.5H0C0%2014.7467%204.25329%2019%209.5%2019V18.5ZM0.5%209.5H1C1%204.80558%204.80558%201%209.5%201V0.5V0C4.25329%200%200%204.25329%200%209.5H0.5ZM9.5%200.5V1C14.1944%201%2018%204.80558%2018%209.5H18.5H19C19%204.25329%2014.7467%200%209.5%200V0.5ZM9.5%2018.5V18C9.12178%2018%208.72204%2017.8269%208.31488%2017.4333C7.90531%2017.0373%207.51363%2016.4402%207.17385%2015.6636C6.49494%2014.1118%206.0625%2011.933%206.0625%209.5H5.5625H5.0625C5.0625%2012.0376%205.5115%2014.3588%206.25769%2016.0644C6.63046%2016.9164%207.08723%2017.6373%207.61982%2018.1522C8.1548%2018.6694%208.79091%2019%209.5%2019V18.5ZM5.5625%209.5H6.0625C6.0625%207.067%206.49494%204.88824%207.17385%203.33645C7.51363%202.55981%207.90531%201.9627%208.31488%201.56674C8.72204%201.1731%209.12178%201%209.5%201V0.5V0C8.79091%200%208.1548%200.330577%207.61982%200.84779C7.08723%201.36268%206.63046%202.08359%206.25769%202.93563C5.5115%204.64119%205.0625%206.96244%205.0625%209.5H5.5625ZM9.5%2018.5V19C10.2091%2019%2010.8452%2018.6694%2011.3802%2018.1522C11.9128%2017.6373%2012.3695%2016.9164%2012.7423%2016.0644C13.4885%2014.3588%2013.9375%2012.0376%2013.9375%209.5H13.4375H12.9375C12.9375%2011.933%2012.5051%2014.1118%2011.8262%2015.6636C11.4864%2016.4402%2011.0947%2017.0373%2010.6851%2017.4333C10.278%2017.8269%209.87822%2018%209.5%2018V18.5ZM13.4375%209.5H13.9375C13.9375%206.96244%2013.4885%204.64119%2012.7423%202.93563C12.3695%202.08359%2011.9128%201.36268%2011.3802%200.84779C10.8452%200.330577%2010.2091%200%209.5%200V0.5V1C9.87822%201%2010.278%201.1731%2010.6851%201.56674C11.0947%201.9627%2011.4864%202.55981%2011.8262%203.33645C12.5051%204.88824%2012.9375%207.067%2012.9375%209.5H13.4375ZM1.625%207.25V7.75H17.375V7.25V6.75H1.625V7.25ZM1.71948%2012.3124V12.8124H17.4695V12.3124V11.8124H1.71948V12.3124Z'%20fill='black'/%3e%3c/svg%3e"><span class="figma-inter absolute left-[25px] top-[6px] text-[16px] font-medium leading-[19px] text-black underline">EN</span></div><button class="figma-button-red figma-inter rounded-[53px] absolute left-[954px] top-[5px] h-[41px] w-[144px] text-[16px] font-medium" data-action="login" type="button">Đăng nhập</button></div></header><p class="absolute left-[495px] top-[220px] w-[451px] text-center text-[16px] font-medium uppercase leading-[19px] text-[#13e6d0]">Nền Tảng Tri Thức dành cho Lãnh Đạo Cấp Cao</p><h1 id="hero-title" class="absolute left-[236px] top-[254px] w-[968px] text-center text-[85px] font-medium leading-[90px] text-white"><span class="block">Hệ năng lực tốt hơn</span><span class="block"><em class="figma-text-gradient not-italic">Doanh nghiệp</em> mạnh hơn</span></h1><p class="absolute left-[448px] top-[449px] w-[543px] text-center text-[16px] font-light leading-[20px] text-white">Tham gia khảo sát của CEO Workforce Index để đối chuẩn năng lực đội ngũ của doanh nghiệp bạn với hàng trăm doanh nghiệp khác</p><button class="figma-button-red figma-inter rounded-[53px] absolute left-[564px] top-[539px] h-[60px] w-[313px] text-[20px] font-medium" data-action="survey" type="button"><span>Thực hiện khảo sát</span><img alt="" class="select-none h-[15px] w-[17px]" draggable="false" loading="eager" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='17'%20height='14.7279'%20viewBox='0%200%2017%2014.7279'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Arrow%201'%20d='M1%206.36396C0.447715%206.36396%200%206.81168%200%207.36396C0%207.91625%200.447715%208.36396%201%208.36396V7.36396V6.36396ZM16.7071%208.07107C17.0976%207.68054%2017.0976%207.04738%2016.7071%206.65685L10.3431%200.292893C9.95262%20-0.097631%209.31946%20-0.097631%208.92893%200.292893C8.53841%200.683418%208.53841%201.31658%208.92893%201.70711L14.5858%207.36396L8.92893%2013.0208C8.53841%2013.4113%208.53841%2014.0445%208.92893%2014.435C9.31946%2014.8256%209.95262%2014.8256%2010.3431%2014.435L16.7071%208.07107ZM1%207.36396V8.36396H16V7.36396V6.36396H1V7.36396Z'%20fill='white'/%3e%3c/svg%3e"></button></section><div class="absolute left-0 top-[793px] h-[1358px] w-[1440px] rounded-t-[60px] bg-white"></div><section id="report" class="absolute left-0 top-[874px] h-[890px] w-full" aria-labelledby="report-title"><h2 id="report-title" class="absolute left-[90px] top-0 text-[35px] font-medium leading-[40px] text-black">Tiêu điểm quý <em class="not-italic text-[#3bd6c6]">3/2026</em></h2><p class="absolute left-[90px] top-[45px] w-[500px] text-[20px] font-normal leading-[20px] text-black">Nâng cao năng lực lãnh đạo để mở rộng quy mô</p><p class="absolute left-[90px] top-[80px] w-[500px] text-[16px] font-light leading-[20px] text-black">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><div class="absolute left-[49px] top-[205px] h-[478px] w-[626px]"><div class="absolute left-[48px] top-[41px] h-[396px] w-[578px] overflow-hidden"><div class="figma-chart-grid absolute inset-0"></div><img alt="" class="select-none absolute inset-0 h-full w-full" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='578.5'%20height='396.5'%20viewBox='0%200%20578.5%20396.5'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Rectangle%204233'%20d='M0.5%200V396H578.5'%20stroke='black'/%3e%3c/svg%3e"><img alt="" class="select-none absolute left-0 top-[75px] h-[321px] w-[546px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='546.07'%20height='321.77'%20viewBox='0%200%20546.07%20321.77'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Vector%20153'%20d='M0.400177%20321.47C34.2335%20276.304%2086.4002%20208.97%20156.4%20183.97C235.564%20155.698%20273.299%20192.47%20317.9%20192.47C389.9%20192.47%20461.4%2030.9703%20545.9%200.470302'%20stroke='url(%23paint0_linear_0_173)'/%3e%3cdefs%3e%3clinearGradient%20id='paint0_linear_0_173'%20x1='273.15'%20y1='0.470302'%20x2='273.15'%20y2='321.47'%20gradientUnits='userSpaceOnUse'%3e%3cstop%20stop-color='%23144EAF'/%3e%3cstop%20offset='1'%20stop-color='%2380A8EA'/%3e%3c/linearGradient%3e%3c/defs%3e%3c/svg%3e"><img alt="" class="select-none absolute left-[1px] top-[75px] h-[321px] w-[545px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='546.499'%20height='321.712'%20viewBox='0%200%20546.499%20321.712'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Vector%20154'%20opacity='0.25'%20d='M156.999%20183.712C86.9993%20208.712%2034.8326%20276.045%200.999262%20321.212H545.999V0.712047C461.499%2031.212%20390.499%20192.212%20318.499%20192.212C273.898%20192.212%20236.163%20155.439%20156.999%20183.712Z'%20fill='url(%23paint0_linear_0_182)'%20stroke='black'%20stroke-opacity='0.5'/%3e%3cdefs%3e%3clinearGradient%20id='paint0_linear_0_182'%20x1='327.999'%20y1='143.712'%20x2='354.499'%20y2='290.212'%20gradientUnits='userSpaceOnUse'%3e%3cstop%20stop-color='%237BACFF'/%3e%3cstop%20offset='1'%20stop-color='%2380A8EA'%20stop-opacity='0'/%3e%3c/linearGradient%3e%3c/defs%3e%3c/svg%3e"><img alt="" class="select-none absolute h-[4px] w-[4px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='4'%20height='4'%20viewBox='0%200%204%204'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3ccircle%20id='Ellipse%202006'%20cx='2'%20cy='2'%20r='2'%20fill='%2300347F'/%3e%3c/svg%3e" style="left: -2px; top: 394px;"><img alt="" class="select-none absolute h-[4px] w-[4px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='4'%20height='4'%20viewBox='0%200%204%204'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3ccircle%20id='Ellipse%202006'%20cx='2'%20cy='2'%20r='2'%20fill='%2300347F'/%3e%3c/svg%3e" style="left: 89px; top: 294px;"><img alt="" class="select-none absolute h-[4px] w-[4px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='4'%20height='4'%20viewBox='0%200%204%204'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3ccircle%20id='Ellipse%202006'%20cx='2'%20cy='2'%20r='2'%20fill='%2300347F'/%3e%3c/svg%3e" style="left: 180px; top: 249px;"><img alt="" class="select-none absolute h-[4px] w-[4px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='4'%20height='4'%20viewBox='0%200%204%204'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3ccircle%20id='Ellipse%202006'%20cx='2'%20cy='2'%20r='2'%20fill='%2300347F'/%3e%3c/svg%3e" style="left: 271px; top: 256px;"><img alt="" class="select-none absolute h-[4px] w-[4px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='4'%20height='4'%20viewBox='0%200%204%204'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3ccircle%20id='Ellipse%202006'%20cx='2'%20cy='2'%20r='2'%20fill='%2300347F'/%3e%3c/svg%3e" style="left: 362px; top: 246px;"><img alt="" class="select-none absolute h-[4px] w-[4px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='4'%20height='4'%20viewBox='0%200%204%204'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3ccircle%20id='Ellipse%202006'%20cx='2'%20cy='2'%20r='2'%20fill='%2300347F'/%3e%3c/svg%3e" style="left: 544px; top: 73px;"></div><p class="absolute left-0 top-0 w-[180px] text-[16px] font-light leading-[26px] text-black">TỈ SỐ TĂNG TRƯỞNG</p><div class="absolute left-0 top-[55px] flex h-[300px] flex-col justify-between text-[14px] font-light leading-[26px] text-black"><span>100</span><span>75</span><span>50</span><span>25</span></div><div class="absolute left-[105px] top-[452px] flex w-[520px] justify-between text-[14px] font-light leading-[26px] text-black"><span>Q3/2025</span><span>Q4/2025</span><span>Q1/2026</span><span>Q2/2026</span><span>Q3/2026</span></div><div class="absolute left-[485px] top-[175px] flex h-[35px] w-[35px] items-center justify-center rounded-full bg-[#e9252b] text-[10px] font-medium text-white shadow-[0_0_26px_rgba(233,37,43,0.55)]">NÚT</div></div><article id="report-card" class="figma-report-card absolute left-[745px] top-0 h-[640px] w-[605px]"><div class="absolute left-[15px] top-[15px] h-[417px] w-[575px] overflow-hidden rounded-[10px]"><img alt="" class="select-none absolute left-0 top-0 h-[215px] w-[575px] rounded-[10px] object-cover" draggable="false" loading="lazy" aria-hidden="true" src="/src/assets/figma/rectangle-4327.png"><img alt="" class="select-none absolute left-0 top-0 h-[431px] w-[691px] object-cover" draggable="false" loading="lazy" aria-hidden="true" src="/src/assets/figma/image-109.png"><h3 class="absolute left-[35px] top-[30px] w-[413px] text-[30px] font-medium leading-[35px] text-white">Mở khóa báo cáo chẩn đoán năng lực lãnh đạo</h3><p class="absolute left-[35px] top-[106px] w-[333px] text-[16px] font-light leading-[19px] text-white">Khám phá vị thế năng lực của doanh nghiệp bạn so với 100+ tổ chức khác.</p><img alt="" class="select-none absolute left-[291px] top-[38px] h-[242px] w-[46px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='46'%20height='242'%20viewBox='0%200%2046%20242'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20id='Group%209303'%3e%3cg%20id='Ellipse%202004'%20filter='url(%23filter0_f_0_184)'%3e%3cellipse%20cx='7'%20cy='7'%20rx='1.33333'%20ry='1.33333'%20fill='white'/%3e%3c/g%3e%3cg%20id='Ellipse%202005'%20filter='url(%23filter1_f_0_184)'%3e%3ccircle%20cx='7'%20cy='7'%20r='2'%20fill='%23DDEDFF'/%3e%3c/g%3e%3cg%20id='Ellipse%202006'%20filter='url(%23filter2_f_0_184)'%3e%3ccircle%20cx='39'%20cy='235'%20r='2'%20fill='%23DDEDFF'/%3e%3c/g%3e%3c/g%3e%3cdefs%3e%3cfilter%20id='filter0_f_0_184'%20x='4.66667'%20y='4.66667'%20width='4.66667'%20height='4.66667'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3e%3cfeGaussianBlur%20stdDeviation='0.5'%20result='effect1_foregroundBlur_0_184'/%3e%3c/filter%3e%3cfilter%20id='filter1_f_0_184'%20x='0'%20y='0'%20width='14'%20height='14'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3e%3cfeGaussianBlur%20stdDeviation='2.5'%20result='effect1_foregroundBlur_0_184'/%3e%3c/filter%3e%3cfilter%20id='filter2_f_0_184'%20x='32'%20y='228'%20width='14'%20height='14'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3e%3cfeGaussianBlur%20stdDeviation='2.5'%20result='effect1_foregroundBlur_0_184'/%3e%3c/filter%3e%3c/defs%3e%3c/svg%3e"><img alt="" class="select-none absolute left-[469px] top-[106px] h-[16px] w-[16px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='16'%20height='16'%20viewBox='0%200%2016%2016'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20id='Group%209302'%3e%3cg%20id='Ellipse%202004'%20filter='url(%23filter0_f_0_113)'%3e%3cellipse%20cx='7.99997'%20cy='8'%20rx='2'%20ry='2'%20fill='white'/%3e%3c/g%3e%3cg%20id='Ellipse%202005'%20filter='url(%23filter1_f_0_113)'%3e%3ccircle%20cx='8'%20cy='8'%20r='3'%20fill='%23DDEDFF'/%3e%3c/g%3e%3c/g%3e%3cdefs%3e%3cfilter%20id='filter0_f_0_113'%20x='4.99997'%20y='5'%20width='6'%20height='6'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3e%3cfeGaussianBlur%20stdDeviation='0.5'%20result='effect1_foregroundBlur_0_113'/%3e%3c/filter%3e%3cfilter%20id='filter1_f_0_113'%20x='0'%20y='0'%20width='16'%20height='16'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='BackgroundImageFix'%20result='shape'/%3e%3cfeGaussianBlur%20stdDeviation='2.5'%20result='effect1_foregroundBlur_0_113'/%3e%3c/filter%3e%3c/defs%3e%3c/svg%3e"><img alt="" class="select-none absolute left-[34px] top-[353px] h-[29px] w-[23px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='22.5'%20height='28.5'%20viewBox='0%200%2022.5%2028.5'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20id='Frame%20619'%3e%3cpath%20id='Icon'%20d='M3.375%209.75V8.46429C3.375%204.19082%206.8875%200.75%2011.25%200.75C15.6125%200.75%2019.125%204.19082%2019.125%208.46429V9.75M3.375%209.75C1.93125%209.75%200.75%2010.9071%200.75%2012.3214V25.1786C0.75%2026.5929%201.93125%2027.75%203.375%2027.75H19.125C20.5687%2027.75%2021.75%2026.5929%2021.75%2025.1786V12.3214C21.75%2010.9071%2020.5687%209.75%2019.125%209.75M3.375%209.75H19.125'%20stroke='white'%20stroke-width='1.5'%20stroke-linecap='round'/%3e%3c/g%3e%3c/svg%3e"><div class="absolute left-[288px] top-[22px] h-[680px] w-[380px] rotate-[33deg] bg-gradient-to-l from-[#144eaf] to-transparent opacity-95"></div></div><p class="absolute left-[97px] top-[310px] w-[443px] text-[20px] font-medium leading-[24px] text-white">Báo cáo chẩn đoán năng lực lãnh đạo Q3/2026 đã sẵn sàng</p><button class="figma-button-red figma-inter rounded-[53px] absolute left-[45px] top-[464px] h-[50px] w-[515px] text-[16px] font-normal" data-action="unlock-report" type="button"><img alt="" class="select-none h-[18px] w-[18px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='19.5'%20height='19.5'%20viewBox='0%200%2019.5%2019.5'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Icon'%20d='M8.93855%202.37332H3.82071C2.1248%202.37332%200.75%203.74808%200.75%205.44393V15.6794C0.75%2017.3752%202.1248%2018.75%203.82071%2018.75H14.0564C15.7523%2018.75%2017.1271%2017.3752%2017.1271%2015.6794L17.1271%2010.5617M5.86784%2013.6322L9.59192%2012.8819C9.78962%2012.842%209.97114%2012.7447%2010.1137%2012.602L18.4504%204.26105C18.8501%203.86114%2018.8498%203.21291%2018.4498%202.81334L16.6838%201.04938C16.2839%200.64997%2015.636%200.650242%2015.2364%201.04999L6.89889%209.39185C6.7566%209.53421%206.65944%209.71537%206.61957%209.91265L5.86784%2013.6322Z'%20stroke='white'%20stroke-width='1.5'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3c/svg%3e"><span>Mở khóa báo cáo / Làm khảo sát</span></button><button class="figma-button-outline figma-inter absolute left-[45px] top-[529px] h-[50px] w-[515px] rounded-[40px] text-[16px]" data-action="download-teaser" type="button"><img alt="" class="select-none h-[16px] w-[16px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='17.5'%20height='15.6'%20viewBox='0%200%2017.5%2015.6'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Icon'%20d='M0.75%2010.3101L0.75%2013.1991C0.75%2013.637%200.960714%2014.0569%201.33579%2014.3665C1.71086%2014.6761%202.21957%2014.85%202.75%2014.85H14.75C15.2804%2014.85%2015.7891%2014.6761%2016.1642%2014.3665C16.5393%2014.0569%2016.75%2013.637%2016.75%2013.1991V10.3101M8.75112%200.75V10.1049M4.17969%206.53045L8.75112%2010.1049L13.3225%206.53045'%20stroke='black'%20stroke-width='1.5'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3c/svg%3e"><span>Tải báo cáo teaser miễn phí</span></button><div class="absolute left-[51px] top-[603px] flex items-center gap-[10px] text-[14px] leading-[17px] text-[#e1242a]"><img alt="" class="select-none h-[12px] w-[10px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='12.65'%20height='14.65'%20viewBox='0%200%2012.65%2014.65'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20id='Frame%20585'%3e%3cpath%20id='Icon'%20d='M4.66667%206.58745L6.04167%207.83378L8.79167%205.34111M1%202.84845L5.27016%200.913158C6.04436%200.562281%206.95564%200.56228%207.72984%200.913157L12%202.84845C12%202.84845%2012%206.48774%2012%208.40709C12%2010.3264%2010.0426%2011.6221%206.5%2013.65C2.95739%2011.6221%201%209.911%201%208.40709V2.84845Z'%20stroke='%23E1242A'%20stroke-width='1.3'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3c/g%3e%3c/svg%3e"><p><strong class="font-medium">BẢO MẬT DỮ LIỆU</strong>: Vui lòng xác thực tài khoản Client để mở khóa báo cáo</p></div></article><div class="absolute left-[75px] top-[753px] flex h-[116px] w-[1295px] items-start justify-between"><div class="relative flex w-[235px] flex-col items-center text-center"><img alt="" class="select-none mb-[23px] h-[42px] w-[56px] object-contain" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='36'%20height='45.5034'%20viewBox='0%200%2036%2045.5034'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20id='Icon'%3e%3cpath%20d='M18%2043.5C18%2043.5%2034.5%2028.8913%2034.5%2017.9348C34.5%208.8581%2027.1127%201.5%2018%201.5C8.8873%201.5%201.5%208.8581%201.5%2017.9348C1.5%2028.8913%2018%2043.5%2018%2043.5Z'%20stroke='%23144EAF'%20stroke-width='3'/%3e%3cpath%20d='M23.2715%2017.2503C23.2715%2020.1498%2020.9117%2022.5003%2018.0007%2022.5003C15.0897%2022.5003%2012.7298%2020.1498%2012.7298%2017.2503C12.7298%2014.3508%2015.0897%2012.0003%2018.0007%2012.0003C20.9117%2012.0003%2023.2715%2014.3508%2023.2715%2017.2503Z'%20stroke='%23144EAF'%20stroke-width='3'/%3e%3c/g%3e%3c/svg%3e"><strong class="text-[16px] font-medium leading-[24px] text-[#144eaf]">HƠN 30%</strong><span class="text-[16px] font-light leading-[24px] text-black">Lãnh đạo C-level tham gia</span></div><div class="relative flex w-[235px] flex-col items-center text-center"><div class="absolute left-[-45px] top-[6px] h-[116px] w-px bg-[#d9d9d9]"></div><img alt="" class="select-none mb-[23px] h-[42px] w-[56px] object-contain" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='59.0006'%20height='40.0002'%20viewBox='0%200%2059.0006%2040.0002'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Icon'%20d='M1.50024%2038.5C4.70462%2033.0468%2011.7276%2029.3146%2022.6843%2029.3146C33.6411%2029.3146%2040.664%2033.0468%2043.8684%2038.5M45.8955%2025.1795C51.6979%2028.1395%2054.5991%2031.0995%2057.5002%2037.0195M39.8609%202.55461C42.5911%204.05308%2044.4471%206.99545%2044.4471%2010.3801C44.4471%2013.667%2042.6968%2016.5367%2040.0953%2018.0721M31.3879%2010.38C31.3879%2015.2843%2027.4912%2019.26%2022.6843%2019.26C17.8775%2019.26%2013.9808%2015.2843%2013.9808%2010.38C13.9808%205.47571%2017.8775%201.5%2022.6843%201.5C27.4912%201.5%2031.3879%205.47571%2031.3879%2010.38Z'%20stroke='%23144EAF'%20stroke-width='3'%20stroke-linecap='round'/%3e%3c/svg%3e"><strong class="text-[16px] font-medium leading-[24px] text-[#144eaf]">25+ NGÀNH NGHỀ</strong><span class="text-[16px] font-light leading-[24px] text-black">CWI thu thập dữ liệu</span></div><div class="relative flex w-[235px] flex-col items-center text-center"><div class="absolute left-[-45px] top-[6px] h-[116px] w-px bg-[#d9d9d9]"></div><img alt="" class="select-none mb-[23px] h-[42px] w-[56px] object-contain" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='49'%20height='41'%20viewBox='0%200%2049%2041'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Icon'%20d='M15.875%2010.2692V4.42308C15.875%202.80871%2017.1622%201.5%2018.75%201.5H28.8125C30.4003%201.5%2031.6875%202.80871%2031.6875%204.42308V10.2692M7.25%2039.5H41.75C44.9256%2039.5%2047.5%2036.8826%2047.5%2033.6538V16.1154C47.5%2012.8866%2044.9256%2010.2692%2041.75%2010.2692H7.25C4.07436%2010.2692%201.5%2012.8866%201.5%2016.1154V33.6538C1.5%2036.8826%204.07436%2039.5%207.25%2039.5Z'%20stroke='%23144EAF'%20stroke-width='3'%20stroke-linecap='round'/%3e%3c/svg%3e"><strong class="text-[16px] font-medium leading-[24px] text-[#144eaf]">34 TỈNH / THÀNH PHỐ</strong><span class="text-[16px] font-light leading-[24px] text-black">Trên toàn quốc</span></div><div class="relative flex w-[235px] flex-col items-center text-center"><div class="absolute left-[-45px] top-[6px] h-[116px] w-px bg-[#d9d9d9]"></div><img alt="" class="select-none mb-[23px] h-[42px] w-[56px] object-contain" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='43'%20height='43'%20viewBox='0%200%2043%2043'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Icon'%20d='M28.5257%2027.923C29.3116%2028.185%2030.1611%2027.7603%2030.423%2026.9743C30.685%2026.1884%2030.2603%2025.3389%2029.4743%2025.077L29%2026.5L28.5257%2027.923ZM21.5%2024H20C20%2024.6456%2020.4131%2025.2189%2021.0257%2025.423L21.5%2024ZM23%2013.5464C23%2012.7179%2022.3284%2012.0464%2021.5%2012.0464C20.6716%2012.0464%2020%2012.7179%2020%2013.5464H21.5H23ZM29%2026.5L29.4743%2025.077L21.9743%2022.577L21.5%2024L21.0257%2025.423L28.5257%2027.923L29%2026.5ZM21.5%2024H23V13.5464H21.5H20V24H21.5ZM41.5%2021.5H40C40%2031.7173%2031.7173%2040%2021.5%2040V41.5V43C33.3741%2043%2043%2033.3741%2043%2021.5H41.5ZM21.5%2041.5V40C11.2827%2040%203%2031.7173%203%2021.5H1.5H0C0%2033.3741%209.62588%2043%2021.5%2043V41.5ZM1.5%2021.5H3C3%2011.2827%2011.2827%203%2021.5%203V1.5V0C9.62588%200%200%209.62588%200%2021.5H1.5ZM21.5%201.5V3C31.7173%203%2040%2011.2827%2040%2021.5H41.5H43C43%209.62588%2033.3741%200%2021.5%200V1.5Z'%20fill='%23144EAF'/%3e%3c/svg%3e"><strong class="text-[16px] font-medium leading-[24px] text-[#144eaf]">5 NĂM</strong><span class="text-[16px] font-light leading-[24px] text-black">Dữ liệu nghiên cứu phát triển</span></div></div></section><section id="roundtable" class="absolute left-[40px] top-[1817px] h-[640px] w-[1360px] overflow-hidden rounded-[18px]" aria-labelledby="roundtable-title"><img alt="" class="select-none absolute inset-0 h-[664px] w-[1360px] object-cover" draggable="false" loading="lazy" aria-hidden="true" src="/src/assets/figma/rectangle-4353.png"><div class="absolute inset-0 bg-[#00132f]/84"></div><img alt="Roundtable session" class="select-none absolute left-[604px] top-[80px] h-[480px] w-[686px] rounded-[10px] border-[10px] border-white object-cover" draggable="false" loading="lazy" src="/src/assets/figma/image-124.png"><div class="absolute left-[70px] top-[90px] w-[500px] text-white"><p class="text-[20px] font-light leading-[20px]">Bàn tròn <em class="not-italic text-[#e9252b]">CxO</em></p><h2 id="roundtable-title" class="mt-[30px] w-[448px] text-[35px] font-medium leading-[40px]">Kiến tạo góc nhìn - kiến tạo giá trị</h2><p class="mt-[20px] w-[448px] text-[16px] font-light leading-[20px]">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p><div class="mt-[42px] flex h-[112px] w-[415px] items-start justify-between"><div class="relative flex w-[177px] flex-col items-center text-center"><img alt="" class="select-none mb-[19px] h-[37px] w-[49px] object-contain" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='52.0006'%20height='35.0002'%20viewBox='0%200%2052.0006%2035.0002'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Icon'%20d='M1.50023%2033.5C4.30406%2028.7837%2010.4491%2025.5559%2020.0363%2025.5559C29.6235%2025.5559%2035.7686%2028.7837%2038.5724%2033.5M40.3461%2021.9796C45.4232%2024.5396%2047.9617%2027.0996%2050.5002%2032.2196M35.0658%202.41209C37.4547%203.70807%2039.0787%206.25282%2039.0787%209.18009C39.0787%2012.0228%2037.5472%2014.5047%2035.2709%2015.8326M27.6519%209.18C27.6519%2013.4215%2024.2423%2016.86%2020.0363%2016.86C15.8303%2016.86%2012.4207%2013.4215%2012.4207%209.18C12.4207%204.93845%2015.8303%201.5%2020.0363%201.5C24.2423%201.5%2027.6519%204.93845%2027.6519%209.18Z'%20stroke='url(%23paint0_linear_0_83)'%20stroke-width='3'%20stroke-linecap='round'/%3e%3cdefs%3e%3clinearGradient%20id='paint0_linear_0_83'%20x1='26.0002'%20y1='1.5'%20x2='26.0002'%20y2='33.5'%20gradientUnits='userSpaceOnUse'%3e%3cstop%20stop-color='%23144EAF'/%3e%3cstop%20offset='1'%20stop-color='%2380A8EA'/%3e%3c/linearGradient%3e%3c/defs%3e%3c/svg%3e"><span class="text-[16px] font-light leading-[24px]">QUY MÔ HỘI ĐỒNG</span><strong class="text-[16px] font-medium leading-[26px]">CEO &amp; C-LEVEL</strong></div><div class="relative flex w-[177px] flex-col items-center text-center"><div class="absolute left-[-24px] top-0 h-[105px] w-px bg-white/40"></div><img alt="" class="select-none mb-[19px] h-[37px] w-[49px] object-contain" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='31'%20height='40'%20viewBox='0%200%2031%2040'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Icon'%20d='M10.8333%2018.3989L14.3333%2021.9461L21.3333%2014.8516M1.5%207.75712L12.3695%202.24899C14.3402%201.25034%2016.6598%201.25034%2018.6305%202.24899L29.5%207.75712C29.5%207.75712%2029.5%2018.1151%2029.5%2023.5779C29.5%2029.0407%2024.5176%2032.7282%2015.5%2038.5C6.48244%2032.7282%201.5%2027.8582%201.5%2023.5779V7.75712Z'%20stroke='url(%23paint0_linear_0_85)'%20stroke-width='3'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3cdefs%3e%3clinearGradient%20id='paint0_linear_0_85'%20x1='15.5'%20y1='1.5'%20x2='15.5'%20y2='38.5'%20gradientUnits='userSpaceOnUse'%3e%3cstop%20stop-color='%23144EAF'/%3e%3cstop%20offset='1'%20stop-color='%2380A8EA'/%3e%3c/linearGradient%3e%3c/defs%3e%3c/svg%3e"><span class="text-[16px] font-light leading-[24px]">100% TUYỂN CHỌN</span><strong class="text-[16px] font-medium leading-[26px]">Dành cho lãnh đạo</strong></div></div><button class="figma-button-red figma-inter rounded-[53px] mt-[45px] h-[50px] w-[330px] text-[16px] font-medium" data-action="roundtable-apply" type="button">Đăng Ký Xét Duyệt Tham Gia</button></div></section><section class="absolute left-0 top-[2527px] h-[1063px] w-full" aria-labelledby="advisors-title"><img alt="" class="select-none absolute left-[-162px] top-[24px] h-[728px] w-[895px] rotate-180 object-contain opacity-70" draggable="false" loading="lazy" aria-hidden="true" src="/src/assets/figma/frame-606.svg"><img alt="" class="select-none absolute left-[1115px] top-[291px] h-[728px] w-[895px] rotate-180 object-contain opacity-70" draggable="false" loading="lazy" aria-hidden="true" src="/src/assets/figma/frame-605.svg"><h2 id="advisors-title" class="absolute left-[100px] top-0 w-[499px] text-[35px] font-medium leading-[40px] text-black">Thước đo sức khỏe <em class="not-italic text-[#3bd6c6]">hệ năng lực</em> cho Ban giám đốc</h2><p class="absolute left-[750px] top-0 w-[559px] text-[16px] font-light leading-[20px] text-black">Báo cáo CWI giúp Ban lãnh đạo đọc vị điểm mạnh, điểm nghẽn và mức sẵn sàng của đội ngũ trước các mục tiêu tăng trưởng. Dữ liệu đối chuẩn được tổng hợp để hỗ trợ ra quyết định rõ ràng hơn.</p><p class="absolute left-[750px] top-[165px] w-[213px] text-[16px] font-medium leading-[20px] text-black">CWI Workforce Index là gì?</p><p class="absolute left-[750px] top-[194px] w-[560px] text-[16px] font-light leading-[20px] text-black">Một hệ quy chiếu đo lường năng lực lãnh đạo và sức khỏe tổ chức theo ngành, quy mô và giai đoạn phát triển của doanh nghiệp.</p><div class="figma-section-label absolute left-[279px] top-[334px] w-[658px]">Hội đồng Cố vấn chuyên môn</div><div class="absolute left-[112px] top-[383px] grid w-[1216px] grid-cols-5 gap-x-[14px] gap-y-[78px]"><article class="figma-advisor-card"><img alt="PHẠM THỊ MỸ LỆ" class="select-none absolute left-0 top-0 h-full w-full object-cover" draggable="false" loading="lazy" src="/src/assets/figma/rectangle-4311.png"><div class="absolute inset-0 bg-gradient-to-t from-[#00347f] via-[#00347f]/30 to-transparent"></div><img alt="" class="select-none absolute left-[52px] top-[43px] h-[283px] w-[180px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='179.729'%20height='282.547'%20viewBox='0%200%20179.729%20282.547'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Rectangle%204372'%20d='M0%20282.547L179.729%200V282.547H0Z'%20fill='%23144EAF'/%3e%3c/svg%3e"><div class="absolute bottom-[14px] right-[15px] w-[145px] text-right text-white"><p class="text-[12.95px] font-semibold uppercase leading-[15px] text-[#3bd6c6]">PHẠM THỊ MỸ LỆ</p><p class="mt-[14px] text-[12.14px] font-light italic leading-[14px]">Chairwoman</p><p class="mt-[3px] text-[12.14px] font-normal leading-[14px]">Chuyển đổi số &amp; Đổi mới Sáng tạo</p></div></article><article class="figma-advisor-card"><img alt="TRƯƠNG CHÍ DŨNG" class="select-none absolute left-0 top-0 h-full w-full object-cover" draggable="false" loading="lazy" src="/src/assets/figma/headshot-138.png"><div class="absolute inset-0 bg-gradient-to-t from-[#00347f] via-[#00347f]/30 to-transparent"></div><img alt="" class="select-none absolute left-[52px] top-[43px] h-[283px] w-[180px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='179.729'%20height='282.547'%20viewBox='0%200%20179.729%20282.547'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Rectangle%204372'%20d='M0%20282.547L179.729%200V282.547H0Z'%20fill='%23144EAF'/%3e%3c/svg%3e"><div class="absolute bottom-[14px] right-[15px] w-[145px] text-right text-white"><p class="text-[12.95px] font-semibold uppercase leading-[15px] text-[#3bd6c6]">TRƯƠNG CHÍ DŨNG</p><p class="mt-[14px] text-[12.14px] font-light italic leading-[14px]">Chuyên gia</p><p class="mt-[3px] text-[12.14px] font-normal leading-[14px]">Truyền thông &amp; Thương hiệu</p></div></article><article class="figma-advisor-card"><img alt="TRƯƠNG BÌNH NGUYÊN" class="select-none absolute left-0 top-0 h-full w-full object-cover" draggable="false" loading="lazy" src="/src/assets/figma/headshot-139.png"><div class="absolute inset-0 bg-gradient-to-t from-[#00347f] via-[#00347f]/30 to-transparent"></div><img alt="" class="select-none absolute left-[52px] top-[43px] h-[283px] w-[180px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='179.729'%20height='282.547'%20viewBox='0%200%20179.729%20282.547'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Rectangle%204372'%20d='M0%20282.547L179.729%200V282.547H0Z'%20fill='%23144EAF'/%3e%3c/svg%3e"><div class="absolute bottom-[14px] right-[15px] w-[145px] text-right text-white"><p class="text-[12.95px] font-semibold uppercase leading-[15px] text-[#3bd6c6]">TRƯƠNG BÌNH NGUYÊN</p><p class="mt-[14px] text-[12.14px] font-light italic leading-[14px]">Chuyên gia</p><p class="mt-[3px] text-[12.14px] font-normal leading-[14px]">Chiến lược &amp; Quản trị Tổ chức</p></div></article><article class="figma-advisor-card"><img alt="TRẦN MẠNH TƯỞNG" class="select-none absolute left-0 top-0 h-full w-full object-cover" draggable="false" loading="lazy" src="/src/assets/figma/headshot-140.png"><div class="absolute inset-0 bg-gradient-to-t from-[#00347f] via-[#00347f]/30 to-transparent"></div><img alt="" class="select-none absolute left-[52px] top-[43px] h-[283px] w-[180px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='179.729'%20height='282.547'%20viewBox='0%200%20179.729%20282.547'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Rectangle%204372'%20d='M0%20282.547L179.729%200V282.547H0Z'%20fill='%23144EAF'/%3e%3c/svg%3e"><div class="absolute bottom-[14px] right-[15px] w-[145px] text-right text-white"><p class="text-[12.95px] font-semibold uppercase leading-[15px] text-[#3bd6c6]">TRẦN MẠNH TƯỞNG</p><p class="mt-[14px] text-[12.14px] font-light italic leading-[14px]">Chuyên gia</p><p class="mt-[3px] text-[12.14px] font-normal leading-[14px]">Quản trị Nhân sự Cao cấp</p></div></article><article class="figma-advisor-card"><img alt="LÊ THỊ THÚY VÂN" class="select-none absolute left-0 top-0 h-full w-full object-cover" draggable="false" loading="lazy" src="/src/assets/figma/headshot-141.png"><div class="absolute inset-0 bg-gradient-to-t from-[#00347f] via-[#00347f]/30 to-transparent"></div><img alt="" class="select-none absolute left-[52px] top-[43px] h-[283px] w-[180px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='179.729'%20height='282.547'%20viewBox='0%200%20179.729%20282.547'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Rectangle%204372'%20d='M0%20282.547L179.729%200V282.547H0Z'%20fill='%23144EAF'/%3e%3c/svg%3e"><div class="absolute bottom-[14px] right-[15px] w-[145px] text-right text-white"><p class="text-[12.95px] font-semibold uppercase leading-[15px] text-[#3bd6c6]">LÊ THỊ THÚY VÂN</p><p class="mt-[14px] text-[12.14px] font-light italic leading-[14px]">Chuyên gia</p><p class="mt-[3px] text-[12.14px] font-normal leading-[14px]">Kinh tế &amp; Hội nhập Quốc tế</p></div></article><article class="figma-advisor-card"><img alt="PHẠM XUÂN TÙNG" class="select-none absolute left-0 top-0 h-full w-full object-cover" draggable="false" loading="lazy" src="/src/assets/figma/headshot-142.png"><div class="absolute inset-0 bg-gradient-to-t from-[#00347f] via-[#00347f]/30 to-transparent"></div><img alt="" class="select-none absolute left-[52px] top-[43px] h-[283px] w-[180px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='179.729'%20height='282.547'%20viewBox='0%200%20179.729%20282.547'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Rectangle%204372'%20d='M0%20282.547L179.729%200V282.547H0Z'%20fill='%23144EAF'/%3e%3c/svg%3e"><div class="absolute bottom-[14px] right-[15px] w-[145px] text-right text-white"><p class="text-[12.95px] font-semibold uppercase leading-[15px] text-[#3bd6c6]">PHẠM XUÂN TÙNG</p><p class="mt-[14px] text-[12.14px] font-light italic leading-[14px]">Chuyên gia</p><p class="mt-[3px] text-[12.14px] font-normal leading-[14px]">Chuyển đổi số &amp; Đổi mới Sáng tạo</p></div></article><article class="figma-advisor-card"><img alt="TRẦN BẰNG VIỆT" class="select-none absolute left-0 top-0 h-full w-full object-cover" draggable="false" loading="lazy" src="/src/assets/figma/headshot-143.png"><div class="absolute inset-0 bg-gradient-to-t from-[#00347f] via-[#00347f]/30 to-transparent"></div><img alt="" class="select-none absolute left-[52px] top-[43px] h-[283px] w-[180px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='179.729'%20height='282.547'%20viewBox='0%200%20179.729%20282.547'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Rectangle%204372'%20d='M0%20282.547L179.729%200V282.547H0Z'%20fill='%23144EAF'/%3e%3c/svg%3e"><div class="absolute bottom-[14px] right-[15px] w-[145px] text-right text-white"><p class="text-[12.95px] font-semibold uppercase leading-[15px] text-[#3bd6c6]">TRẦN BẰNG VIỆT</p><p class="mt-[14px] text-[12.14px] font-light italic leading-[14px]">Chuyên gia</p><p class="mt-[3px] text-[12.14px] font-normal leading-[14px]">Truyền thông &amp; Thương hiệu</p></div></article><article class="figma-advisor-card"><img alt="TRƯƠNG BÌNH NGUYÊN" class="select-none absolute left-0 top-0 h-full w-full object-cover" draggable="false" loading="lazy" src="/src/assets/figma/headshot-144.png"><div class="absolute inset-0 bg-gradient-to-t from-[#00347f] via-[#00347f]/30 to-transparent"></div><img alt="" class="select-none absolute left-[52px] top-[43px] h-[283px] w-[180px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='179.729'%20height='282.547'%20viewBox='0%200%20179.729%20282.547'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Rectangle%204372'%20d='M0%20282.547L179.729%200V282.547H0Z'%20fill='%23144EAF'/%3e%3c/svg%3e"><div class="absolute bottom-[14px] right-[15px] w-[145px] text-right text-white"><p class="text-[12.95px] font-semibold uppercase leading-[15px] text-[#3bd6c6]">TRƯƠNG BÌNH NGUYÊN</p><p class="mt-[14px] text-[12.14px] font-light italic leading-[14px]">Chuyên gia</p><p class="mt-[3px] text-[12.14px] font-normal leading-[14px]">Chiến lược &amp; Quản trị Tổ chức</p></div></article><article class="figma-advisor-card"><img alt="TRẦN MẠNH TƯỞNG" class="select-none absolute left-0 top-0 h-full w-full object-cover" draggable="false" loading="lazy" src="/src/assets/figma/headshot-140.png"><div class="absolute inset-0 bg-gradient-to-t from-[#00347f] via-[#00347f]/30 to-transparent"></div><img alt="" class="select-none absolute left-[52px] top-[43px] h-[283px] w-[180px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='179.729'%20height='282.547'%20viewBox='0%200%20179.729%20282.547'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Rectangle%204372'%20d='M0%20282.547L179.729%200V282.547H0Z'%20fill='%23144EAF'/%3e%3c/svg%3e"><div class="absolute bottom-[14px] right-[15px] w-[145px] text-right text-white"><p class="text-[12.95px] font-semibold uppercase leading-[15px] text-[#3bd6c6]">TRẦN MẠNH TƯỞNG</p><p class="mt-[14px] text-[12.14px] font-light italic leading-[14px]">Chuyên gia</p><p class="mt-[3px] text-[12.14px] font-normal leading-[14px]">Quản trị Nhân sự Cao cấp</p></div></article><article class="figma-advisor-card"><img alt="LÊ THỊ THÚY VÂN" class="select-none absolute left-0 top-0 h-full w-full object-cover" draggable="false" loading="lazy" src="/src/assets/figma/headshot-141.png"><div class="absolute inset-0 bg-gradient-to-t from-[#00347f] via-[#00347f]/30 to-transparent"></div><img alt="" class="select-none absolute left-[52px] top-[43px] h-[283px] w-[180px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='179.729'%20height='282.547'%20viewBox='0%200%20179.729%20282.547'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20id='Rectangle%204372'%20d='M0%20282.547L179.729%200V282.547H0Z'%20fill='%23144EAF'/%3e%3c/svg%3e"><div class="absolute bottom-[14px] right-[15px] w-[145px] text-right text-white"><p class="text-[12.95px] font-semibold uppercase leading-[15px] text-[#3bd6c6]">LÊ THỊ THÚY VÂN</p><p class="mt-[14px] text-[12.14px] font-light italic leading-[14px]">Chuyên gia</p><p class="mt-[3px] text-[12.14px] font-normal leading-[14px]">Kinh tế &amp; Hội nhập Quốc tế</p></div></article></div></section><section class="absolute left-0 top-[3660px] h-[677px] w-full" aria-labelledby="partners-title"><h2 id="partners-title" class="figma-section-label absolute left-[397px] top-0 w-[646px]">Đơn vị Đồng tổ chức</h2><div class="absolute left-[310px] top-[33px] h-[60px] w-[795px]"><div class="flex items-center justify-center gap-[52px]"><img alt="Organizer logo 1" class="select-none object-contain h-[60px] w-[209px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-image-127.png"><img alt="Organizer logo 2" class="select-none object-contain h-[32px] w-[118px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-image-53-vectorized.svg"><img alt="Organizer logo 3" class="select-none object-contain h-[35px] w-[150px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-image-80.png"><img alt="Organizer logo 4" class="select-none object-contain h-[41px] w-[134px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-group-204.svg"></div></div><div class="absolute left-[310px] top-[107px] h-[60px] w-[795px]"><div class="flex items-center justify-center gap-[52px]"><img alt="Organizer logo 1" class="select-none object-contain h-[60px] w-[209px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-image-127.png"><img alt="Organizer logo 2" class="select-none object-contain h-[32px] w-[118px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-image-53-vectorized.svg"><img alt="Organizer logo 3" class="select-none object-contain h-[35px] w-[150px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-image-80.png"><img alt="Organizer logo 4" class="select-none object-contain h-[41px] w-[134px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-group-204.svg"></div></div><h3 class="figma-section-label absolute left-[464px] top-[217px] w-[512px]">Hiệp hội</h3><div class="absolute left-[136px] top-[264px] flex h-[141px] w-[1164px] flex-wrap items-center justify-center gap-x-[44px] gap-y-[26px]"><img alt="Association logo 1" class="select-none object-contain h-[55px] w-[161px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-image-82.png"><img alt="Association logo 2" class="select-none object-contain h-[37px] w-[97px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-image-90.png"><img alt="Association logo 3" class="select-none object-contain h-[35px] w-[105px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-image-126.png"><img alt="Association logo 4" class="select-none object-contain h-[28px] w-[83px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-image-92.png"><img alt="Association logo 5" class="select-none object-contain h-[55px] w-[145px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-image-86.png"><img alt="Association logo 6" class="select-none object-contain h-[48px] w-[106px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-image-94.png"><img alt="Association logo 7" class="select-none object-contain h-[32px] w-[140px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-image-54.png"><img alt="Association logo 8" class="select-none object-contain h-[32px] w-[144px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-image-59.png"><img alt="Association logo 9" class="select-none object-contain h-[51px] w-[203px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-image-58.png"><img alt="Association logo 10" class="select-none object-contain h-[47px] w-[231px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-image-57.png"><img alt="Association logo 11" class="select-none object-contain h-[67px] w-[181px]" draggable="false" loading="lazy" src="/src/assets/figma/logo-image-63.png"></div><h3 class="figma-section-label absolute left-[434px] top-[450px] w-[572px]">Công ty đối tác</h3><div class="absolute left-[118px] top-[494px] flex h-[184px] w-[1204px] flex-wrap items-center justify-center gap-x-[63px] gap-y-[25px]"><img alt="Borgs" class="select-none object-contain h-[30px] w-[100px]" draggable="false" loading="lazy" src="/src/assets/figma/borgs.png"><img alt="Peter Millar" class="select-none object-contain h-[30px] w-[187px]" draggable="false" loading="lazy" src="/src/assets/figma/peter-millar.png"><img alt="Partner logo 67" class="select-none object-contain h-[84px] w-[130px]" draggable="false" loading="lazy" src="/src/assets/figma/brand-image-67.png"><img alt="Partner logo 68" class="select-none object-contain h-[68px] w-[91px]" draggable="false" loading="lazy" src="/src/assets/figma/brand-image-68.png"><img alt="Partner logo 65" class="select-none object-contain h-[79px] w-[83px]" draggable="false" loading="lazy" src="/src/assets/figma/brand-image-65.png"><img alt="Alice Olivia" class="select-none object-contain h-[54px] w-[207px]" draggable="false" loading="lazy" src="/src/assets/figma/alice-olivia.png"><img alt="VidaXL" class="select-none object-contain h-[60px] w-[120px]" draggable="false" loading="lazy" src="/src/assets/figma/vidaxl.png"><img alt="Sally Skoufis" class="select-none object-contain h-[58px] w-[201px]" draggable="false" loading="lazy" src="/src/assets/figma/sallyskoufis.png"><img alt="Furniture Choice" class="select-none object-contain h-[71px] w-[71px]" draggable="false" loading="lazy" src="/src/assets/figma/furniture-choice.png"><img alt="Mercury" class="select-none object-contain h-[40px] w-[169px]" draggable="false" loading="lazy" src="/src/assets/figma/mercury.png"></div></section><footer id="footer" class="absolute left-[99px] top-[4360px] h-[382px] w-[1451px] text-black"><div class="absolute left-[1102px] top-[-32px] flex h-[382px] w-[405px] items-center justify-center"><img alt="" class="select-none h-[382px] w-[405px] -scale-y-100 object-cover" draggable="false" loading="lazy" aria-hidden="true" src="/src/assets/figma/image-131.png"></div><img alt="CEO Workforce Index" class="select-none absolute left-[34px] top-[120px] h-[191px] w-[301px] object-contain" draggable="false" loading="lazy" src="/src/assets/figma/footer-logo.svg"><div class="absolute left-[475px] top-[115px] w-[339px]"><h3 class="text-[20px] font-semibold uppercase leading-[25px]">CHÍNH SÁCH BẢO MẬT</h3><p class="mt-[20px] text-[14px] font-light leading-[20px]">Mọi dữ liệu doanh nghiệp nhập vào hệ thống AI đều được mã hóa đầu cuối theo tiêu chuẩn bảo mật quốc tế <strong class="font-medium text-[#144eaf]">ISO/IEC 27001.</strong></p><p class="mt-[20px] text-[14px] font-light leading-[20px]">Chúng tôi cam kết không chia sẻ dữ liệu cho bên thứ ba dưới bất kỳ hình thức nào.</p></div><div class="absolute left-[850px] top-[115px] w-[382px]"><h3 class="text-[20px] font-semibold uppercase leading-[25px]">THÔNG TIN LIÊN HỆ ĐẶC QUYỀN</h3><p class="mt-[17px] text-[14px] font-light leading-[26px]"><strong class="font-medium">Hotline VIP (24/7):</strong> 0909 123 456</p><p class="text-[14px] font-light leading-[26px]"><strong class="font-medium">Email Ban điều hành CWI:</strong> cwi@xyz.com</p><p class="text-[14px] font-light leading-[26px]"><strong class="font-medium">Trụ sở:</strong> 36 Mạc Đĩnh Chi, Phường Tân Định, TP. HCM</p></div><p class="absolute left-[322px] top-[338px] w-[598px] text-center text-[14px] font-light leading-[20px]">Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về các <strong class="font-medium">Đơn vị đồng tổ chức và Đối tác.</strong></p><img alt="" class="select-none absolute left-0 top-[51px] h-[2px] w-[1240px]" draggable="false" loading="lazy" aria-hidden="true" src="data:image/svg+xml,%3csvg%20preserveAspectRatio='none'%20overflow='visible'%20style='display:%20block;'%20width='1240'%20height='1'%20viewBox='0%200%201240%201'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cline%20id='Line%2022'%20y1='0.5'%20x2='1240'%20y2='0.5'%20stroke='url(%23paint0_linear_0_4)'/%3e%3cdefs%3e%3clinearGradient%20id='paint0_linear_0_4'%20x1='5.36837e-07'%20y1='2.00051'%20x2='1218.51'%20y2='2.00019'%20gradientUnits='userSpaceOnUse'%3e%3cstop%20stop-color='%2380A8EA'%20stop-opacity='0'/%3e%3cstop%20offset='0.5'%20stop-color='%23144EAF'/%3e%3cstop%20offset='1'%20stop-color='%2380A8EA'%20stop-opacity='0'/%3e%3c/linearGradient%3e%3c/defs%3e%3c/svg%3e"></footer></main></div></div>
+    <script type="module" src="/src/main.tsx"></script>
+  
+
+</body></html>
