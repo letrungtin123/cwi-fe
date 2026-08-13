@@ -74,7 +74,6 @@
   font-size: 16px;
   font-weight: 400;
   line-height: 20px;
-  text-shadow: 0 0 0 rgba(255, 255, 255, 0.01);
 }
 .figma-text-gradient {
   color: transparent;
@@ -163,7 +162,7 @@
 .figma-section-label-frame {
   color: #144eaf;
   font-size: 16px;
-  font-weight: 510;
+  font-weight: 500;
   line-height: 19px;
   white-space: nowrap;
 }

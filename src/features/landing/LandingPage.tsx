@@ -393,7 +393,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     image: { frame: { left: -31, top: 28, width: 228, height: 328 }, objectCover: true },
     title: { text: 'Chairwoman', left: 214.44, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 300, italic: true },
     field: { text: 'Chuyển đổi số & Đổi mới Sáng tạo', left: 214.44, top: 251.78, width: 102.01, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 400 },
-    name: { text: 'PHẠM THỊ MỸ LỆ', left: 214.14, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 12.953, fontWeight: 510, uppercase: true, nowrap: true },
+    name: { text: 'PHẠM THỊ MỸ LỆ', left: 214.14, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 12.953, fontWeight: 500, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[1],
@@ -402,7 +402,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     image: { frame: { left: 0, top: 29.95, width: 232.35, height: 295.5 }, image: { left: '-35.21%', top: '-12.05%', width: '156.95%', height: '123.43%' } },
     title: { text: 'Chuyên gia', left: 217.87, top: 234.78, translateXFull: true, alignRight: true, color: '#fff', fontSize: 11.334, fontWeight: 300, italic: true, nowrap: true },
     field: { text: 'Truyền thông & Thương hiệu', left: 217.78, top: 252.59, width: 117.39, translateXFull: true, alignRight: true, color: '#fff', fontSize: 11.334, fontWeight: 400 },
-    name: { text: 'TRƯƠNG CHÍ DŨNG', left: 93.1, top: 291.45, color: '#3bd6c6', fontSize: 12.953, fontWeight: 590, uppercase: true, nowrap: true },
+    name: { text: 'TRƯƠNG CHÍ DŨNG', left: 93.1, top: 291.45, color: '#3bd6c6', fontSize: 12.953, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[2],
@@ -411,7 +411,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65, roundedTopLeft: true }, image: { left: '-26.82%', top: 0, width: '139.72%', height: '100%' } },
     title: { text: 'Chuyên gia', left: 220.21, top: 233.16, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 300, italic: true },
     field: { text: 'Chiến lược & Quản trị Tổ chức', left: 220.21, top: 251.78, width: 97.96, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 400 },
-    name: { text: 'TRƯƠNG BÌNH NGUYÊN', left: 78.53, top: 291.45, color: '#3bd6c6', fontSize: 12.953, fontWeight: 590, uppercase: true, nowrap: true },
+    name: { text: 'TRƯƠNG BÌNH NGUYÊN', left: 78.53, top: 291.45, color: '#3bd6c6', fontSize: 12.953, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[3],
@@ -420,7 +420,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     image: { frame: { left: 0, top: 9.71, width: 232.35, height: 315.74 }, image: { left: '-36.7%', top: '-2.05%', width: '154.04%', height: '113.23%' } },
     title: { text: 'Chuyên gia', left: 216.97, top: 236.4, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 300, italic: true },
     field: { text: 'Quản trị Nhân sự Cao cấp', left: 216.97, top: 253.4, width: 100.39, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 400 },
-    name: { text: 'TRẦN MẠNH TƯỞNG', left: 86.63, top: 291.45, color: '#3bd6c6', fontSize: 12.953, fontWeight: 590, uppercase: true, nowrap: true },
+    name: { text: 'TRẦN MẠNH TƯỞNG', left: 86.63, top: 291.45, color: '#3bd6c6', fontSize: 12.953, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[4],
@@ -429,7 +429,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65 }, image: { left: '-70.42%', top: '0.01%', width: '225.02%', height: '161.15%' } },
     title: { text: 'Chuyên gia', left: 216.16, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 300, italic: true },
     field: { text: 'Kinh tế & Hội nhập Quốc tế', left: 216.16, top: 251.78, width: 99.58, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 400 },
-    name: { text: 'LÊ THỊ THÚY VÂN', left: 104.44, top: 291.45, color: '#3bd6c6', fontSize: 12.953, fontWeight: 590, uppercase: true, nowrap: true },
+    name: { text: 'LÊ THỊ THÚY VÂN', left: 104.44, top: 291.45, color: '#3bd6c6', fontSize: 12.953, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[5],
@@ -438,7 +438,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     image: { frame: { left: 0, top: 9.71, width: 202.4, height: 315.74 }, image: { left: '-23.6%', top: '2.82%', width: '147.2%', height: '94.36%' } },
     title: { text: 'Chuyên gia', left: 211.3, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 300, italic: true },
     field: { text: 'Chuyển đổi số & Đổi mới Sáng tạo', left: 211.3, top: 251.78, width: 102.01, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 400 },
-    name: { text: 'PHẠM XUÂN TÙNG', left: 90.67, top: 291.45, color: '#3bd6c6', fontSize: 12.953, fontWeight: 510, uppercase: true, nowrap: true },
+    name: { text: 'PHẠM XUÂN TÙNG', left: 90.67, top: 291.45, color: '#3bd6c6', fontSize: 12.953, fontWeight: 500, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[6],
@@ -447,7 +447,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     image: { frame: { left: -51.35, top: 27.73, width: 288, height: 307 }, image: { left: '-12.88%', top: '-11.89%', width: '132.97%', height: '111.89%' } },
     title: { text: 'Chuyên gia', left: 217.87, top: 234.78, translateXFull: true, alignRight: true, color: '#fff', fontSize: 11.334, fontWeight: 300, italic: true, nowrap: true },
     field: { text: 'Truyền thông & Thương hiệu', left: 217.78, top: 252.59, width: 117.39, translateXFull: true, alignRight: true, color: '#fff', fontSize: 11.334, fontWeight: 400 },
-    name: { text: 'TRẦN BẰNG VIỆT', left: 106.65, top: 291.45, color: '#3bd6c6', fontSize: 12.953, fontWeight: 590, uppercase: true, nowrap: true },
+    name: { text: 'TRẦN BẰNG VIỆT', left: 106.65, top: 291.45, color: '#3bd6c6', fontSize: 12.953, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[7],
@@ -456,7 +456,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     image: { frame: { left: -56.71, top: 17.73, width: 315, height: 308 }, objectCover: true },
     title: { text: 'Chuyên gia', left: 220.21, top: 233.16, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 300, italic: true },
     field: { text: 'Chiến lược & Quản trị Tổ chức', left: 220.21, top: 251.78, width: 97.96, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 400 },
-    name: { text: 'TRƯƠNG BÌNH NGUYÊN', left: 221.53, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 12.953, fontWeight: 590, uppercase: true, nowrap: true },
+    name: { text: 'TRƯƠNG BÌNH NGUYÊN', left: 221.53, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 12.953, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[8],
@@ -465,7 +465,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     image: { frame: { left: 0, top: 9.71, width: 232.35, height: 315.74 }, image: { left: '-36.7%', top: '-2.05%', width: '154.04%', height: '113.23%' } },
     title: { text: 'Chuyên gia', left: 216.97, top: 236.4, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 300, italic: true },
     field: { text: 'Quản trị Nhân sự Cao cấp', left: 216.97, top: 253.4, width: 100.39, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 400 },
-    name: { text: 'TRẦN MẠNH TƯỞNG', left: 218.63, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 12.953, fontWeight: 590, uppercase: true, nowrap: true },
+    name: { text: 'TRẦN MẠNH TƯỞNG', left: 218.63, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 12.953, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[9],
@@ -474,7 +474,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65 }, image: { left: '-70.42%', top: '0.01%', width: '225.02%', height: '161.15%' } },
     title: { text: 'Chuyên gia', left: 216.16, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 300, italic: true },
     field: { text: 'Kinh tế & Hội nhập Quốc tế', left: 216.16, top: 251.78, width: 99.58, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 400 },
-    name: { text: 'LÊ THỊ THÚY VÂN', left: 217.44, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 12.953, fontWeight: 590, uppercase: true, nowrap: true },
+    name: { text: 'LÊ THỊ THÚY VÂN', left: 217.44, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 12.953, fontWeight: 600, uppercase: true, nowrap: true },
   },
 ]
 
