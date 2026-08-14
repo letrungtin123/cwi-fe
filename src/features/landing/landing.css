@@ -1,7 +1,7 @@
 .design-page-shell {
   --figma-scale: 1;
   --figma-header-scale: 1;
-  --figma-page-height: 4742px;
+  --figma-page-height: 4111px;
   min-height: var(--figma-page-height);
   overflow-x: hidden;
   background: #f4f5f7;
@@ -137,6 +137,25 @@
   font-size: 16px;
   font-weight: 400;
   line-height: 20px;
+}
+
+.figma-button-red.figma-hero-survey-button {
+  gap: 8px;
+  border: 1px solid rgba(255, 151, 154, 0.95);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ff2d34 0%, #f3232b 46%, #d81920 100%);
+  box-shadow:
+    inset 0 1.2px 0 rgba(255, 255, 255, 0.34),
+    0 18px 34px rgba(225, 27, 34, 0.2);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0;
+}
+
+.figma-button-red.figma-hero-survey-button img {
+  width: 15px;
+  height: 13px;
 }
 .figma-text-gradient {
   color: transparent;

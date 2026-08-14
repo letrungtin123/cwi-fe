@@ -7,7 +7,6 @@ import {
   associationLogos,
   navItems,
   organizerLogos,
-  partnerLogos,
   reportStats,
   roundtableStats,
 } from './landingData'
@@ -46,13 +45,13 @@ const desktopHeroReveal: Variants = {
   },
 }
 const FIGMA_CANVAS_WIDTH = 1440
-const FIGMA_CANVAS_HEIGHT = 4742
+const FIGMA_CANVAS_HEIGHT = 4111
 const figmaScrollTargets: Record<(typeof navTargets)[number], number> = {
   '#top': 0,
   '#report': 874,
   '#report-card': 874,
   '#roundtable': 1817,
-  '#footer': 4360,
+  '#footer': 3729,
 }
 
 function getViewportScale() {
@@ -402,7 +401,7 @@ function HeroSection() {
       <p className="figma-hero-body-copy absolute left-[448px] top-[449px] w-[543px] text-center">
         Tham gia khảo sát của CEO Workforce Index để đối chuẩn năng lực đội ngũ của doanh nghiệp bạn với hàng trăm doanh nghiệp khác
       </p>
-      <RedButton action="survey" className="absolute left-[564px] top-[539px] h-[60px] w-[313px] text-[20px] font-medium">
+      <RedButton action="survey" className="figma-hero-survey-button absolute left-[564px] top-[539px] h-[60px] w-[313px] text-[22px] font-medium">
         <span>Thực hiện khảo sát</span>
         <AssetImage alt="" aria-hidden="true" asset="arrow1" className="h-[15px] w-[17px]" loading="eager" />
       </RedButton>
@@ -693,6 +692,9 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
   },
 ]
 
+const visibleAdvisors = advisors.slice(0, 5)
+const visibleAdvisorCardSpecs = advisorCardSpecs.slice(0, 5)
+
 function toCssLength(value: number | string) {
   return typeof value === 'number' ? `${value}px` : value
 }
@@ -824,58 +826,8 @@ const associationLogoSpecs: FigmaLogoSpec[] = [
   },
 ]
 
-const partnerLogoSpecs: FigmaLogoSpec[] = [
-  { alt: 'Borg', asset: 'borgs', height: 29.447, left: 154, objectCover: true, top: 32.1, width: 100.247 },
-  { alt: 'Peter Millar', asset: 'peterMillar', height: 29.983, left: 341, objectCover: true, top: 27.23, width: 187.212 },
-  { alt: 'Aviteur', asset: 'brand67', height: 84.433, left: 615, objectCover: true, top: 0, width: 129.892 },
-  {
-    alt: 'Belgo',
-    asset: 'brand68',
-    crop: { height: '135.75%', left: 0, top: '-35.26%', width: '100%' },
-    height: 67.705,
-    left: 831,
-    top: 12.64,
-    width: 91.254,
-  },
-  {
-    alt: 'Atlantic Lighting',
-    asset: 'brand65',
-    crop: { height: '151.52%', left: '-24.64%', top: '-19.7%', width: '144.93%' },
-    height: 79.16,
-    left: 1009,
-    top: 8.75,
-    width: 82.758,
-  },
-  {
-    alt: 'Alice + Olivia',
-    asset: 'aliceOlivia',
-    crop: { height: '385.34%', left: 0, top: '-137.93%', width: '100%' },
-    height: 53.757,
-    left: 30,
-    top: 126.88,
-    width: 207.149,
-  },
-  {
-    alt: 'VidaXL',
-    asset: 'vidaxl',
-    crop: { height: '231.21%', left: '-6.9%', top: '-67.05%', width: '114.94%' },
-    height: 59.667,
-    left: 316,
-    top: 123.62,
-    width: 120.024,
-  },
-  { alt: 'Sally Skoufis', asset: 'sallyskoufis', height: 57.387, left: 515, objectCover: true, top: 115.2, width: 201.368 },
-  { alt: 'F&C', asset: 'furnitureChoice', height: 71.005, left: 840, objectCover: true, top: 110, width: 71.005 },
-  {
-    alt: 'Mercury',
-    asset: 'mercury',
-    crop: { height: '100%', left: '-38.17%', top: 0, width: '138.17%' },
-    height: 39.019,
-    left: 1025,
-    top: 130.77,
-    width: 168.596,
-  },
-]
+const primaryAssociationLogoSpecs = associationLogoSpecs.slice(0, 6)
+const partnerAssociationLogoSpecs = associationLogoSpecs.slice(6).map((spec) => ({ ...spec, top: spec.top - 74 }))
 
 function FigmaLogoAsset({ spec }: { spec: FigmaLogoSpec }) {
   const imageStyle: CSSProperties = spec.crop ? boxStyle(spec.crop) : { inset: 0, height: '100%', width: '100%' }
@@ -888,7 +840,7 @@ function FigmaLogoAsset({ spec }: { spec: FigmaLogoSpec }) {
 }
 function AdvisorsSection() {
   return (
-    <section className="absolute left-0 top-[2527px] h-[1063px] w-full" aria-labelledby="advisors-title">
+    <section className="absolute left-0 top-[2527px] h-[708px] w-full" aria-labelledby="advisors-title">
       <AssetImage alt="" aria-hidden="true" asset="frame606" className="absolute left-[-162px] top-[24px] h-[728px] w-[895px] rotate-180 object-contain opacity-70" />
       <AssetImage alt="" aria-hidden="true" asset="frame605" className="absolute left-[1115px] top-[291px] h-[728px] w-[895px] rotate-180 object-contain opacity-70" />
       <m.div className="absolute left-0 top-0 h-[284px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal}>
@@ -912,7 +864,7 @@ function AdvisorsSection() {
           </ul>
         </div>
       </m.div>
-      <m.div className="absolute left-[112px] top-[334px] h-[729px] w-[1216px]" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal}>
+      <m.div className="absolute left-[112px] top-[334px] h-[374px] w-[1216px]" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal}>
         <FigmaSectionLabel
           className="absolute left-0 top-0 h-[19px] w-full"
           label="Hội đồng Cố vấn chuyên môn"
@@ -921,7 +873,7 @@ function AdvisorsSection() {
           textLeft={495}
           textWidth={226}
         />
-        {advisorCardSpecs.map((spec) => (
+        {visibleAdvisorCardSpecs.map((spec) => (
           <AdvisorCard key={`${spec.advisor.name}-${spec.left}-${spec.top}`} spec={spec} />
         ))}
       </m.div>
@@ -931,7 +883,7 @@ function AdvisorsSection() {
 
 function PartnersSection() {
   return (
-    <m.section className="absolute left-0 top-[3660px] h-[677px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="partners-title">
+    <m.section className="absolute left-0 top-[3305px] h-[401px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="partners-title">
       <FigmaSectionLabel
         as="h2"
         className="absolute left-0 top-0 h-[19px] w-full"
@@ -946,46 +898,41 @@ function PartnersSection() {
           <FigmaLogoAsset key={`organizer-a-${spec.asset}`} spec={spec} />
         ))}
       </div>
-      <div className="absolute left-[310px] top-[107px] h-[60px] w-[795px]">
-        {organizerLogoSpecs.map((spec) => (
-          <FigmaLogoAsset key={`organizer-b-${spec.asset}`} spec={spec} />
-        ))}
-      </div>
+
       <FigmaSectionLabel
         as="h3"
-        className="absolute left-0 top-[217px] h-[19px] w-full"
+        className="absolute left-0 top-[143px] h-[19px] w-full"
         label="Hiệp hội"
         leftLine={{ asset: 'line27', left: 464, width: 202 }}
         rightLine={{ asset: 'line30', left: 774, width: 202, flip: true }}
         textLeft={689}
         textWidth={64}
       />
-      <div className="absolute left-[136px] top-[264px] h-[141px] w-[1164px]">
-        {associationLogoSpecs.map((spec) => (
+      <div className="absolute left-[136px] top-[190px] h-[55px] w-[1164px]">
+        {primaryAssociationLogoSpecs.map((spec) => (
           <FigmaLogoAsset key={`association-${spec.asset}`} spec={spec} />
         ))}
       </div>
       <FigmaSectionLabel
         as="h3"
-        className="absolute left-0 top-[450px] h-[19px] w-full"
+        className="absolute left-0 top-[290px] h-[19px] w-full"
         label="Công ty đối tác"
         leftLine={{ asset: 'line27', left: 434, width: 202 }}
         rightLine={{ asset: 'line30', left: 804, width: 202, flip: true }}
         textLeft={659}
         textWidth={118}
       />
-      <div className="absolute left-[118px] top-[494px] h-[183.284px] w-[1203.596px]">
-        {partnerLogoSpecs.map((spec) => (
-          <FigmaLogoAsset key={`partner-${spec.asset}`} spec={spec} />
+      <div className="absolute left-[136px] top-[334px] h-[67px] w-[1164px]">
+        {partnerAssociationLogoSpecs.map((spec) => (
+          <FigmaLogoAsset key={`partner-association-${spec.asset}`} spec={spec} />
         ))}
       </div>
     </m.section>
   )
 }
-
 function FooterSection() {
   return (
-    <m.footer id="footer" className="absolute left-[99px] top-[4360px] h-[382px] w-[1451px] text-black" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} data-node-id="94:276">
+    <m.footer id="footer" className="absolute left-[99px] top-[3729px] h-[382px] w-[1451px] text-black" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} data-node-id="94:276">
       <div className="absolute left-[1046px] top-0 flex h-[382px] w-[405px] items-center justify-center" data-node-id="94:277">
         <div className="flex-none -scale-y-100">
           <AssetImage alt="" aria-hidden="true" asset="image131" className="h-[382px] w-[405px] object-cover" />
@@ -1128,7 +1075,7 @@ function MobileAdvisorCarousel() {
   const [activeIndex, setActiveIndex] = useState(0)
   const scrollRef = useRef<HTMLDivElement>(null)
   const progressStyle = {
-    '--mobile-carousel-progress': `${((activeIndex + 1) / advisors.length) * 100}%`,
+    '--mobile-carousel-progress': `${((activeIndex + 1) / visibleAdvisors.length) * 100}%`,
   } as CSSProperties
 
   useEffect(() => {
@@ -1144,7 +1091,7 @@ function MobileAdvisorCarousel() {
 
         const gap = 16
         const step = card.offsetWidth + gap
-        setActiveIndex(Math.min(advisors.length - 1, Math.max(0, Math.round(node.scrollLeft / step))))
+        setActiveIndex(Math.min(visibleAdvisors.length - 1, Math.max(0, Math.round(node.scrollLeft / step))))
       })
     }
 
@@ -1160,12 +1107,12 @@ function MobileAdvisorCarousel() {
   return (
     <div className="mobile-advisor-carousel" data-reveal>
       <div className="mobile-advisor-scroll" aria-label="Hội đồng Cố vấn chuyên môn" ref={scrollRef}>
-        {advisors.map((advisor, index) => (
+        {visibleAdvisors.map((advisor, index) => (
           <MobileAdvisorCard advisor={advisor} isActive={activeIndex === index} key={`${advisor.name}-${index}`} />
         ))}
       </div>
       <div className="mobile-carousel-meta" aria-live="polite">
-        <span>{String(activeIndex + 1).padStart(2, '0')} / {String(advisors.length).padStart(2, '0')}</span>
+        <span>{String(activeIndex + 1).padStart(2, '0')} / {String(visibleAdvisors.length).padStart(2, '0')}</span>
         <i style={progressStyle} />
         <span>SWIPE →</span>
       </div>
@@ -1241,8 +1188,8 @@ function MobileStickyCta() {
 }
 
 function MobileLandingPage() {
-  const firstPartnerRow = partnerLogos.slice(0, Math.ceil(partnerLogos.length / 2))
-  const secondPartnerRow = partnerLogos.slice(Math.ceil(partnerLogos.length / 2))
+  const mobileAssociationLogos = associationLogos.slice(0, 6)
+  const mobilePartnerLogos = associationLogos.slice(6)
 
   return (
     <main className="mobile-landing">
@@ -1331,10 +1278,9 @@ function MobileLandingPage() {
         <MobileSectionTitle>Đơn vị Đồng tổ chức</MobileSectionTitle>
         <MobileLogoRail logos={organizerLogos} variant="organizer" />
         <MobileSectionTitle>Hiệp hội</MobileSectionTitle>
-        <MobileLogoRail logos={associationLogos} />
+        <MobileLogoRail logos={mobileAssociationLogos} />
         <MobileSectionTitle>Công ty đối tác</MobileSectionTitle>
-        <MobileLogoRail logos={firstPartnerRow} />
-        <MobileLogoRail logos={secondPartnerRow} variant="marqueeReverse" />
+        <MobileLogoRail logos={mobilePartnerLogos} />
       </section>
 
       <section className="mobile-final-cta" data-reveal>
