@@ -3,7 +3,10 @@ import { cn } from '@/lib/cn'
 import { figmaAssets, type FigmaAssetKey } from './figmaAssets'
 import {
   advisors,
+  associationLogos,
   navItems,
+  organizerLogos,
+  partnerLogos,
   reportStats,
   roundtableStats,
 } from './landingData'
@@ -67,6 +70,17 @@ function scrollToFigmaTarget(href: (typeof navTargets)[number], scale: number) {
   const targetTop = figmaScrollTargets[href] * scale
   window.history.replaceState(null, '', href)
   window.scrollTo({ behavior: 'smooth', top: Math.round(targetTop) })
+}
+
+function scrollToMobileTarget(href: (typeof navTargets)[number]) {
+  const selector = `[data-mobile-target="${href}"]`
+  const target = document.querySelector<HTMLElement>(selector)
+  if (!target) return
+
+  const offset = 88
+  const top = target.getBoundingClientRect().top + window.scrollY - offset
+  window.history.replaceState(null, '', href)
+  window.scrollTo({ behavior: 'smooth', top: Math.max(0, Math.round(top)) })
 }
 function emitLandingAction(action: LandingAction) {
   window.dispatchEvent(new CustomEvent('cwi:landing-action', { detail: { action } }))
@@ -165,6 +179,7 @@ function FigmaSectionLabel({
 }
 function Header({ scale }: { scale: number }) {
   const [isHidden, setIsHidden] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const lastScrollYRef = useRef(0)
   const tickingRef = useRef(false)
 
@@ -227,39 +242,102 @@ function Header({ scale }: { scale: number }) {
     }
   }, [])
 
+  useEffect(() => {
+    if (!isMenuOpen) return
+
+    setIsHidden(false)
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsMenuOpen(false)
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isMenuOpen])
+
+  const handleMobileNav = (href: (typeof navTargets)[number]) => {
+    setIsMenuOpen(false)
+    window.setTimeout(() => scrollToMobileTarget(href), 120)
+  }
+
   return (
-    <header className={cn('figma-site-header', isHidden && 'header--hidden')}>
-      <div className="absolute left-[55px] top-[15px] h-[49px] w-[1110px]">
-        <AssetImage alt="CEO Workforce Index" asset="cwiLogo" className="absolute left-0 top-0 h-[49px] w-[108px]" loading="eager" />
-        <nav aria-label="Main navigation" className="figma-inter absolute left-[351px] top-[17px] h-[19px] w-[499px] whitespace-nowrap text-[16px] font-normal leading-[19px] text-black">
-          {headerNavSpecs.map((item) => (
-            <a
-              className="absolute top-0 h-[19px] cursor-pointer whitespace-nowrap leading-[19px] no-underline"
-              href={item.href}
-              key={item.label}
-              onClick={(event) => {
-                event.preventDefault()
-                scrollToFigmaTarget(item.href, scale)
-              }}
-              style={{ left: item.left, width: item.width }}
-            >
-              {item.label}
-            </a>
-          ))}
-        </nav>
-        <div className="absolute left-[878px] top-[11px] h-[30px] w-[60px]">
-          <AssetImage alt="" aria-hidden="true" asset="line38" className="figma-header-chrome-icon absolute left-[59px] top-0 h-[30px] w-[1px]" loading="eager" />
-          <AssetImage alt="" aria-hidden="true" asset="iconLanguage" className="figma-header-chrome-icon absolute left-0 top-[7px] h-[18px] w-[18px]" loading="eager" />
-          <span className="figma-inter absolute left-[25px] top-[6px] whitespace-nowrap text-[16px] font-medium leading-[19px] text-black underline">EN</span>
+    <>
+      <header className={cn('figma-site-header', isHidden && !isMenuOpen && 'header--hidden', isMenuOpen && 'mobile-menu-is-open')}>
+        <div className="absolute left-[55px] top-[15px] h-[49px] w-[1110px]">
+          <AssetImage alt="CEO Workforce Index" asset="cwiLogo" className="figma-header-logo absolute left-0 top-0 h-[49px] w-[108px]" loading="eager" />
+          <nav aria-label="Main navigation" className="figma-header-nav figma-inter absolute left-[351px] top-[17px] h-[19px] w-[499px] whitespace-nowrap text-[16px] font-normal leading-[19px] text-black">
+            {headerNavSpecs.map((item) => (
+              <a
+                className="absolute top-0 h-[19px] cursor-pointer whitespace-nowrap leading-[19px] no-underline"
+                href={item.href}
+                key={item.label}
+                onClick={(event) => {
+                  event.preventDefault()
+                  scrollToFigmaTarget(item.href, scale)
+                }}
+                style={{ left: item.left, width: item.width }}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+          <div className="figma-header-language absolute left-[878px] top-[11px] h-[30px] w-[60px]">
+            <AssetImage alt="" aria-hidden="true" asset="line38" className="figma-header-chrome-icon absolute left-[59px] top-0 h-[30px] w-[1px]" loading="eager" />
+            <AssetImage alt="" aria-hidden="true" asset="iconLanguage" className="figma-header-chrome-icon absolute left-0 top-[7px] h-[18px] w-[18px]" loading="eager" />
+            <span className="figma-inter absolute left-[25px] top-[6px] whitespace-nowrap text-[16px] font-medium leading-[19px] text-black underline">EN</span>
+          </div>
+          <RedButton action="login" className="figma-header-login-button absolute left-[954px] top-[5px] h-[41px] w-[144px] whitespace-nowrap text-[16px] font-medium">
+            Đăng nhập
+          </RedButton>
+          <button
+            aria-controls="mobile-navigation-menu"
+            aria-expanded={isMenuOpen}
+            aria-label={isMenuOpen ? 'Đóng menu' : 'Mở menu'}
+            className="mobile-menu-button"
+            onClick={() => setIsMenuOpen((open) => !open)}
+            type="button"
+          >
+            <span />
+            <span />
+          </button>
         </div>
-        <RedButton action="login" className="figma-header-login-button absolute left-[954px] top-[5px] h-[41px] w-[144px] whitespace-nowrap text-[16px] font-medium">
-          Đăng nhập
-        </RedButton>
+      </header>
+
+      <div aria-hidden={!isMenuOpen} className={cn('mobile-menu-overlay', isMenuOpen && 'is-open')} id="mobile-navigation-menu">
+        <div className="mobile-menu-panel" role="dialog" aria-modal="true" aria-label="Điều hướng mobile">
+          <div className="mobile-menu-topline">
+            <AssetImage alt="CEO Workforce Index" asset="cwiLogo" className="mobile-menu-logo" loading="eager" />
+            <button aria-label="Đóng menu" className="mobile-menu-close" onClick={() => setIsMenuOpen(false)} type="button">×</button>
+          </div>
+          <nav className="mobile-menu-nav" aria-label="Mobile navigation">
+            {navItems.map((label, index) => (
+              <button key={label} onClick={() => handleMobileNav(navTargets[index])} style={{ '--item-index': index } as CSSProperties} type="button">
+                <span>{String(index + 1).padStart(2, '0')}</span>
+                {label}
+              </button>
+            ))}
+          </nav>
+          <div className="mobile-menu-footer-row">
+            <div className="mobile-menu-language">
+              <AssetImage alt="" aria-hidden="true" asset="iconLanguage" />
+              <span>Language: <strong>EN</strong></span>
+            </div>
+            <RedButton action="survey" className="mobile-menu-cta" >
+              <span>Thực hiện khảo sát</span>
+              <AssetImage alt="" aria-hidden="true" asset="arrow1" className="h-[15px] w-[17px]" loading="eager" />
+            </RedButton>
+          </div>
+        </div>
       </div>
-    </header>
+    </>
   )
 }
-
 function Sparkles() {
   const dots: Array<{ asset: FigmaAssetKey; x: number; y: number }> = [
     { asset: 'group9301', x: 271, y: 265 },
@@ -334,7 +412,7 @@ function ReportCard() {
         <AssetImage alt="" aria-hidden="true" asset="iconDownload" className="h-[16px] w-[16px]" />
         <span>Tải báo cáo teaser miễn phí</span>
       </button>
-      <div className="absolute left-[51px] top-[575px] flex items-center gap-[10px] text-[14px] leading-[17px] text-[#e1242a]">
+      <div className="absolute left-0 top-[575px] flex w-full items-center justify-center gap-[10px] text-center text-[14px] leading-[17px] text-[#e1242a]">
         <AssetImage alt="" aria-hidden="true" asset="frame585" className="h-[12px] w-[10px]" />
         <p>
           <strong className="font-medium">BẢO MẬT DỮ LIỆU</strong>: Vui lòng xác thực tài khoản Client để mở khóa báo cáo
@@ -930,6 +1008,339 @@ function FooterSection() {
     </footer>
   )
 }
+function MobileSectionTitle({ children }: { children: ReactNode }) {
+  return (
+    <div className="mobile-section-title" data-reveal>
+      <span />
+      <strong>{children}</strong>
+      <span />
+    </div>
+  )
+}
+
+function MobileReportChart() {
+  const yLabels = [100, 75, 50, 25, 0]
+  const xLabels = ['Q3/2025', 'Q4/2025', 'Q1/2026', 'Q2/2026', 'Q3/2026', 'Q4/2026']
+
+  return (
+    <div className="mobile-chart-shell" data-reveal>
+      <div className="mobile-chart-heading">TỐC ĐỘ TĂNG TRƯỞNG</div>
+      <div className="mobile-chart-scroll" aria-label="Tốc độ tăng trưởng theo quý">
+        <div className="mobile-chart-inner">
+          <div className="mobile-chart-grid" />
+          <AssetImage alt="" aria-hidden="true" asset="vector154" className="mobile-chart-fill" />
+          <AssetImage alt="" aria-hidden="true" asset="vector153" className="mobile-chart-line" />
+          <AssetImage alt="" aria-hidden="true" asset="group9334" className="mobile-chart-focus" />
+          <div className="mobile-chart-y-labels" aria-hidden="true">
+            {yLabels.map((label) => <span key={label}>{label}</span>)}
+          </div>
+          <div className="mobile-chart-x-labels">
+            {xLabels.map((label) => <span className={label === 'Q3/2026' ? 'is-active' : undefined} key={label}>{label}</span>)}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function MobileUnlockCard() {
+  return (
+    <article className="mobile-unlock-card" data-mobile-target="#report-card" data-reveal>
+      <div className="mobile-unlock-visual">
+        <AssetImage alt="" aria-hidden="true" asset="bgForm" className="mobile-unlock-bg" />
+        <div className="mobile-unlock-copy">
+          <h3>Mở khóa báo cáo chẩn đoán năng lực lãnh đạo</h3>
+          <p>Khám phá vị thế năng lực của doanh nghiệp bạn so với 100+ tổ chức khác.</p>
+        </div>
+        <AssetImage alt="" aria-hidden="true" asset="frame619" className="mobile-unlock-lock" />
+      </div>
+      <RedButton action="unlock-report" className="mobile-action-button">
+        <AssetImage alt="" aria-hidden="true" asset="iconUnlock" className="h-[18px] w-[18px]" />
+        <span>Mở khóa báo cáo / Làm khảo sát</span>
+      </RedButton>
+      <button className="figma-button-outline figma-inter mobile-outline-button" data-action="download-teaser" onClick={() => emitLandingAction('download-teaser')} type="button">
+        <AssetImage alt="" aria-hidden="true" asset="iconDownload" className="h-[16px] w-[16px]" />
+        <span>Tải báo cáo teaser miễn phí</span>
+      </button>
+      <p className="mobile-security-note">
+        <AssetImage alt="" aria-hidden="true" asset="frame585" className="h-[12px] w-[10px]" />
+        <span><strong>BẢO MẬT DỮ LIỆU</strong>: Vui lòng xác thực tài khoản Client để mở khóa báo cáo</span>
+      </p>
+    </article>
+  )
+}
+
+function MobileStats() {
+  return (
+    <div className="mobile-stats-list" aria-label="Thông số nghiên cứu">
+      {reportStats.map((stat) => (
+        <div className="mobile-stat-row" data-reveal key={stat.value}>
+          <AssetImage alt="" aria-hidden="true" asset={stat.icon} className="mobile-stat-icon" />
+          <div>
+            <strong>{stat.value}</strong>
+            <span>{stat.label}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function MobileAdvisorCard({ advisor, isActive }: { advisor: (typeof advisors)[number]; isActive: boolean }) {
+  return (
+    <article className={cn('mobile-advisor-card', isActive && 'is-active')}>
+      <AssetImage alt="" aria-hidden="true" asset={advisor.image} className="mobile-advisor-image" />
+      <div className="mobile-advisor-blue" />
+      <div className="mobile-advisor-copy">
+        <em>{advisor.title}</em>
+        <span>{advisor.field}</span>
+        <strong>{advisor.name}</strong>
+      </div>
+    </article>
+  )
+}
+
+function MobileAdvisorCarousel() {
+  const [activeIndex, setActiveIndex] = useState(0)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const progressStyle = {
+    '--mobile-carousel-progress': `${((activeIndex + 1) / advisors.length) * 100}%`,
+  } as CSSProperties
+
+  useEffect(() => {
+    const node = scrollRef.current
+    if (!node) return
+
+    let frame = 0
+    const syncActive = () => {
+      window.cancelAnimationFrame(frame)
+      frame = window.requestAnimationFrame(() => {
+        const card = node.querySelector<HTMLElement>('.mobile-advisor-card')
+        if (!card) return
+
+        const gap = 16
+        const step = card.offsetWidth + gap
+        setActiveIndex(Math.min(advisors.length - 1, Math.max(0, Math.round(node.scrollLeft / step))))
+      })
+    }
+
+    syncActive()
+    node.addEventListener('scroll', syncActive, { passive: true })
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+      node.removeEventListener('scroll', syncActive)
+    }
+  }, [])
+
+  return (
+    <div className="mobile-advisor-carousel" data-reveal>
+      <div className="mobile-advisor-scroll" aria-label="Hội đồng Cố vấn chuyên môn" ref={scrollRef}>
+        {advisors.map((advisor, index) => (
+          <MobileAdvisorCard advisor={advisor} isActive={activeIndex === index} key={`${advisor.name}-${index}`} />
+        ))}
+      </div>
+      <div className="mobile-carousel-meta" aria-live="polite">
+        <span>{String(activeIndex + 1).padStart(2, '0')} / {String(advisors.length).padStart(2, '0')}</span>
+        <i style={progressStyle} />
+        <span>SWIPE →</span>
+      </div>
+    </div>
+  )
+}
+
+type MobileLogoRailVariant = 'organizer' | 'marquee' | 'marqueeReverse'
+
+function MobileLogoRail({
+  logos,
+  variant = 'marquee',
+}: {
+  logos: Array<{ asset: FigmaAssetKey; alt: string }>
+  variant?: MobileLogoRailVariant
+}) {
+  const shouldDuplicate = variant !== 'organizer'
+
+  return (
+    <div className={cn('mobile-logo-rail', `is-${variant}`)}>
+      <div className="mobile-logo-track">
+        {logos.map((logo) => (
+          <div className="mobile-logo-item" key={`${logo.asset}-${logo.alt}`}>
+            <AssetImage alt={logo.alt} asset={logo.asset} className="mobile-logo-image" />
+          </div>
+        ))}
+        {shouldDuplicate && logos.map((logo) => (
+          <div aria-hidden="true" className="mobile-logo-item" key={`${logo.asset}-${logo.alt}-duplicate`}>
+            <AssetImage alt="" asset={logo.asset} className="mobile-logo-image" />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function MobileStickyCta() {
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    let frame = 0
+    const syncVisibility = () => {
+      window.cancelAnimationFrame(frame)
+      frame = window.requestAnimationFrame(() => {
+        const hero = document.querySelector<HTMLElement>('[data-mobile-target="#top"]')
+        const footer = document.querySelector<HTMLElement>('[data-mobile-target="#footer"]')
+        const heroBottom = hero ? hero.offsetTop + hero.offsetHeight : 620
+        const footerTop = footer ? footer.offsetTop : Number.POSITIVE_INFINITY
+        const scrollBottom = window.scrollY + window.innerHeight
+        setIsVisible(window.scrollY > heroBottom - 120 && scrollBottom < footerTop + 80)
+      })
+    }
+
+    syncVisibility()
+    window.addEventListener('scroll', syncVisibility, { passive: true })
+    window.addEventListener('resize', syncVisibility)
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', syncVisibility)
+      window.removeEventListener('resize', syncVisibility)
+    }
+  }, [])
+
+  return (
+    <div className={cn('mobile-sticky-cta', isVisible && 'is-visible')} aria-hidden={!isVisible}>
+      <RedButton action="survey" className="mobile-sticky-button">
+        <span>Thực hiện khảo sát</span>
+        <AssetImage alt="" aria-hidden="true" asset="arrow1" className="h-[15px] w-[17px]" loading="eager" />
+      </RedButton>
+    </div>
+  )
+}
+
+function MobileLandingPage() {
+  const firstPartnerRow = partnerLogos.slice(0, Math.ceil(partnerLogos.length / 2))
+  const secondPartnerRow = partnerLogos.slice(Math.ceil(partnerLogos.length / 2))
+
+  return (
+    <main className="mobile-landing">
+      <section className="mobile-hero" data-mobile-target="#top" aria-labelledby="mobile-hero-title">
+        <AssetImage alt="" aria-hidden="true" asset="image75Bg" className="mobile-hero-bg" loading="eager" />
+        <div className="mobile-hero-gradient" />
+        <AssetImage alt="" aria-hidden="true" asset="group9301" className="mobile-spark mobile-spark-1" loading="eager" />
+        <AssetImage alt="" aria-hidden="true" asset="group9303" className="mobile-spark mobile-spark-2" loading="eager" />
+        <div className="mobile-hero-content" data-reveal>
+          <p className="mobile-eyebrow">NỀN TẢNG TRI THỨC DÀNH CHO LÃNH ĐẠO CẤP CAO</p>
+          <h1 id="mobile-hero-title">
+            <span><span>Hệ năng lực</span></span>
+            <span><span>tốt hơn</span></span>
+            <span className="mobile-heading-cluster"><span><em>Doanh nghiệp</em></span></span>
+            <span><span>mạnh hơn</span></span>
+          </h1>
+          <p className="mobile-hero-copy">Tham gia khảo sát của CEO Workforce Index để đối chuẩn năng lực đội ngũ của doanh nghiệp bạn với hàng trăm doanh nghiệp khác</p>
+          <RedButton action="survey" className="mobile-hero-button">
+            <span>Thực hiện khảo sát</span>
+            <AssetImage alt="" aria-hidden="true" asset="arrow1" className="mobile-button-arrow h-[15px] w-[17px]" loading="eager" />
+          </RedButton>
+        </div>
+        <div className="mobile-hero-transition" aria-hidden="true">
+          <span>Q3 / 2026</span>
+          <i />
+        </div>
+      </section>
+
+      <section className="mobile-section mobile-report-section" data-mobile-target="#report" aria-labelledby="mobile-report-title">
+        <div className="mobile-report-copy" data-reveal>
+          <span className="mobile-kicker">Q3 / 2026</span>
+          <h2 id="mobile-report-title">Tiêu điểm quý <em>3/2026</em></h2>
+          <p className="mobile-report-subtitle">Nâng cao năng lực lãnh đạo để mở rộng quy mô</p>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </div>
+        <MobileReportChart />
+        <MobileUnlockCard />
+        <MobileStats />
+      </section>
+
+      <section className="mobile-roundtable" data-mobile-target="#roundtable" aria-labelledby="mobile-roundtable-title">
+        <AssetImage alt="" aria-hidden="true" asset="bgCircleCeo" className="mobile-roundtable-bg" />
+        <div className="mobile-roundtable-content" data-reveal>
+          <h2 id="mobile-roundtable-title">
+            <span>Bàn tròn</span>
+            <AssetImage alt="CEO" asset="textCeo" className="mobile-text-ceo" loading="eager" />
+          </h2>
+          <p className="mobile-roundtable-subtitle">Khai mở góc nhìn - Kiến tạo giá trị</p>
+          <p>Không &quot;thuyết trình&quot;. Tranh luận để tìm kiếm những sự thật ngầm hiểu đắt giá nhất. Tham gia Bàn tròn CEO định kỳ dành riêng cho thành viên CWI.</p>
+          <div className="mobile-roundtable-stats">
+            {roundtableStats.map((stat) => (
+              <div key={stat.value}>
+                <AssetImage alt="" aria-hidden="true" asset={stat.icon} />
+                <strong>{stat.value}</strong>
+                <span>{stat.label}</span>
+              </div>
+            ))}
+          </div>
+          <RedButton action="roundtable-apply" className="mobile-roundtable-button">Đăng Ký Xét Duyệt Tham Gia</RedButton>
+        </div>
+        <div className="mobile-roundtable-photo-frame" data-reveal>
+          <AssetImage alt="Roundtable session" asset="image124" className="mobile-roundtable-photo" />
+        </div>
+      </section>
+
+      <section className="mobile-section mobile-advisors-section" aria-labelledby="mobile-advisors-title">
+        <div data-reveal>
+          <h2 id="mobile-advisors-title">Thước đo sức khỏe <em>hệ năng lực</em><br />cho Ban giám đốc</h2>
+          <div className="mobile-advisors-copy">
+            <p>Gần 25 năm qua, bà Phạm Thị Mỹ Lệ cùng cộng sự đã đồng hành với hàng trăm doanh nghiệp giải quyết bài toán về con người, năng lực lãnh đạo và hiệu quả tổ chức.</p>
+            <p>Từ thực tiễn đó, bà nhận thấy lãnh đạo có nhiều dữ liệu về thị trường và khách hàng, nhưng lại thiếu thông tin để đánh giá mức độ sẵn sàng của đội ngũ thực thi chiến lược tăng trưởng.</p>
+            <p><strong>CEO Workforce Index ra đời</strong></p>
+            <ol className="mobile-story-points">
+              <li>Một hệ tri thức và đối chuẩn năng lực điều hành tổ chức dành cho CEO.</li>
+              <li>Dữ liệu được phân tích chuyên sâu bởi AI.</li>
+              <li>Giúp lãnh đạo nhận diện và thu hẹp khoảng cách giữa mục tiêu tăng trưởng và năng lực thực thi của đội ngũ.</li>
+            </ol>
+          </div>
+        </div>
+        <MobileSectionTitle>Hội đồng Cố vấn chuyên môn</MobileSectionTitle>
+        <MobileAdvisorCarousel />
+      </section>
+
+      <section className="mobile-section mobile-partners-section" aria-labelledby="mobile-partners-title">
+        <h2 id="mobile-partners-title" className="sr-only">Đối tác</h2>
+        <MobileSectionTitle>Đơn vị Đồng tổ chức</MobileSectionTitle>
+        <MobileLogoRail logos={organizerLogos} variant="organizer" />
+        <MobileSectionTitle>Hiệp hội</MobileSectionTitle>
+        <MobileLogoRail logos={associationLogos} />
+        <MobileSectionTitle>Công ty đối tác</MobileSectionTitle>
+        <MobileLogoRail logos={firstPartnerRow} />
+        <MobileLogoRail logos={secondPartnerRow} variant="marqueeReverse" />
+      </section>
+
+      <section className="mobile-final-cta" data-reveal>
+        <h2>Hệ năng lực tốt hơn<br /><em>Doanh nghiệp</em> mạnh hơn</h2>
+        <RedButton action="survey" className="mobile-hero-button">
+          <span>Thực hiện khảo sát</span>
+          <AssetImage alt="" aria-hidden="true" asset="arrow1" className="mobile-button-arrow h-[15px] w-[17px]" loading="eager" />
+        </RedButton>
+      </section>
+
+      <footer className="mobile-footer" data-mobile-target="#footer">
+        <AssetImage alt="" aria-hidden="true" asset="image131" className="mobile-footer-pattern" />
+        <AssetImage alt="CEO Workforce Index" asset="footerLogo" className="mobile-footer-logo" />
+        <div>
+          <h3>CHÍNH SÁCH BẢO MẬT</h3>
+          <p>Mọi dữ liệu doanh nghiệp nhập vào hệ thống AI đều được mã hóa đầu cuối theo tiêu chuẩn bảo mật quốc tế <strong>ISO/IEC 27001.</strong></p>
+          <p>Chúng tôi cam kết không chia sẻ dữ liệu cho bên thứ ba dưới bất kỳ hình thức nào.</p>
+        </div>
+        <div>
+          <h3>THÔNG TIN LIÊN HỆ ĐẶC QUYỀN</h3>
+          <p><strong>Hotline VIP (24/7):</strong> 0909 123 456</p>
+          <p><strong>Email Ban điều hành CWI:</strong> cwi@xyz.com</p>
+          <p><strong>Trụ sở:</strong> 36 Mạc Đĩnh Chi, Phường Tân Định, TP. HCM</p>
+        </div>
+        <p className="mobile-copyright">Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về các <strong>Đơn vị đồng tổ chức và Đối tác.</strong></p>
+      </footer>
+      <MobileStickyCta />
+    </main>
+  )
+}
 export function LandingPage() {
   const scale = useFigmaViewportScale()
   const responsiveStyle = {
@@ -954,6 +1365,7 @@ export function LandingPage() {
           </main>
         </div>
       </div>
+      <MobileLandingPage />
     </div>
   )
 }
