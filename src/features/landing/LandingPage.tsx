@@ -1,5 +1,5 @@
 import { LazyMotion, domAnimation, m, type Variants } from 'framer-motion'
-import { useEffect, useRef, useState, type CSSProperties, type ImgHTMLAttributes, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ImgHTMLAttributes, type ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 import { figmaAssets, type FigmaAssetKey } from './figmaAssets'
 import {
@@ -52,6 +52,85 @@ const figmaScrollTargets: Record<(typeof navTargets)[number], number> = {
   '#report-card': 874,
   '#roundtable': 1817,
   '#footer': 3729,
+}
+
+function parseStatCount(value: string) {
+  const match = value.match(/^(.*?)(\d[\d.,]*)(.*)$/)
+  if (!match) return null
+
+  const target = Number(match[2].replace(/[^\d]/g, ''))
+  if (!Number.isFinite(target)) return null
+
+  return {
+    prefix: match[1],
+    suffix: match[3],
+    target,
+  }
+}
+
+function AnimatedStatValue({ value }: { value: string }) {
+  const parts = useMemo(() => parseStatCount(value), [value])
+  const [current, setCurrent] = useState(0)
+  const hasStartedRef = useRef(false)
+  const nodeRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    if (!parts) return
+
+    const node = nodeRef.current
+    if (!node) return
+
+    let frame = 0
+    let startTimer = 0
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting || hasStartedRef.current) return
+
+        hasStartedRef.current = true
+        setCurrent(0)
+
+        startTimer = window.setTimeout(() => {
+          const duration = 1800
+          const startedAt = window.performance.now()
+
+          const animate = (now: number) => {
+            const progress = Math.min(1, (now - startedAt) / duration)
+            const eased = 1 - Math.pow(1 - progress, 3)
+            setCurrent(Math.round(parts.target * eased))
+
+            if (progress < 1) {
+              frame = window.requestAnimationFrame(animate)
+              return
+            }
+
+            setCurrent(parts.target)
+            observer.disconnect()
+          }
+
+          frame = window.requestAnimationFrame(animate)
+        }, 180)
+      },
+      { rootMargin: '0px 0px -22% 0px', threshold: 0.65 },
+    )
+
+    observer.observe(node)
+
+    return () => {
+      window.clearTimeout(startTimer)
+      window.cancelAnimationFrame(frame)
+      observer.disconnect()
+    }
+  }, [parts])
+
+  if (!parts) return <span>{value}</span>
+
+  return (
+    <span ref={nodeRef} aria-label={value}>
+      {parts.prefix}
+      {current}
+      {parts.suffix}
+    </span>
+  )
 }
 
 function getViewportScale() {
@@ -508,7 +587,7 @@ function ReportSection() {
           return (
             <div className="absolute top-0 h-full text-center" key={stat.value} style={slot}>
               <AssetImage alt="" aria-hidden="true" asset={stat.icon} className="absolute left-1/2 top-[26px] h-[46px] w-[60px] -translate-x-1/2 object-contain" />
-              <strong className="absolute left-0 top-[84px] w-full text-center text-[18px] font-medium leading-[22px] text-[#144eaf]">{stat.value}</strong>
+              <strong className="absolute left-0 top-[84px] w-full text-center text-[18px] font-medium leading-[22px] text-[#144eaf]"><AnimatedStatValue value={stat.value} /></strong>
               <span className="absolute left-0 top-[108px] w-full text-center text-[14px] font-normal leading-[18px] text-black">{stat.label}</span>
             </div>
           )
@@ -1048,7 +1127,7 @@ function MobileStats() {
         <div className="mobile-stat-row" data-reveal key={stat.value}>
           <AssetImage alt="" aria-hidden="true" asset={stat.icon} className="mobile-stat-icon" />
           <div>
-            <strong>{stat.value}</strong>
+            <strong><AnimatedStatValue value={stat.value} /></strong>
             <span>{stat.label}</span>
           </div>
         </div>
