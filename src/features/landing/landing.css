@@ -1,28 +1,58 @@
 .design-page-shell {
-  min-height: 100vh;
-  overflow-x: auto;
+  --figma-scale: 1;
+  --figma-header-scale: 1;
+  --figma-page-height: 4742px;
+  min-height: var(--figma-page-height);
+  overflow-x: hidden;
   background: #f4f5f7;
 }
 
-.figma-canvas {
+.figma-canvas-stage {
   position: relative;
+  width: 100%;
+  height: var(--figma-page-height);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.figma-canvas-scale-box {
+  position: relative;
+  flex: 0 0 calc(1440px * var(--figma-scale));
+  width: calc(1440px * var(--figma-scale));
+  height: var(--figma-page-height);
+}
+.figma-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 1440px;
   height: 4742px;
-  margin: 0 auto;
+  margin: 0;
   overflow: hidden;
   background: #fff;
   font-family: var(--font-inter);
+  transform: scale(var(--figma-scale));
+  transform-origin: top left;
 }
 
+@supports (zoom: 1) {
+  .figma-canvas {
+    zoom: var(--figma-scale);
+    transform: none;
+  }
+}
 .figma-inter {
   font-family: var(--font-inter);
 }
+
 .figma-site-header {
   position: fixed;
-  top: 16px;
-  left: max(24px, calc((100vw - 1180px) / 2));
+  top: max(4px, calc(16px * var(--figma-header-scale, 1)));
+  left: calc(50% - 590px);
   z-index: 1000;
-  width: min(1180px, calc(100vw - 48px));
+  width: 1180px;
   height: 80px;
   overflow: hidden;
   color: #000;
@@ -34,14 +64,15 @@
   -webkit-backdrop-filter: none;
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);
+  transform: scale(var(--figma-header-scale, 1));
+  transform-origin: top center;
   transition: transform 220ms ease, opacity 180ms ease;
   will-change: transform, opacity;
 }
 .figma-site-header.header--hidden {
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-112%);
+  transform: translateY(-112%) scale(var(--figma-header-scale, 1));
 }
 
 .figma-header-chrome-icon {
@@ -66,7 +97,8 @@
 
 .figma-header-login-button {
   box-shadow: none;
-}.figma-button-red:focus-visible,
+}
+.figma-button-red:focus-visible,
 .figma-button-outline:focus-visible {
   outline: 3px solid rgba(20, 78, 175, 0.45);
   outline-offset: 3px;

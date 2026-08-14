@@ -19,6 +19,55 @@ const headerNavSpecs = [
   { href: navTargets[3], label: navItems[3], left: 305, width: 108 },
   { href: navTargets[4], label: navItems[4], left: 423, width: 76 },
 ] as const
+
+const FIGMA_CANVAS_WIDTH = 1440
+const FIGMA_CANVAS_HEIGHT = 4742
+const figmaScrollTargets: Record<(typeof navTargets)[number], number> = {
+  '#top': 0,
+  '#report': 874,
+  '#report-card': 874,
+  '#roundtable': 1817,
+  '#footer': 4360,
+}
+
+function getViewportScale() {
+  if (typeof window === 'undefined') return 1
+
+  const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
+  return Math.min(1, viewportWidth / FIGMA_CANVAS_WIDTH)
+}
+
+function useFigmaViewportScale() {
+  const [scale, setScale] = useState(getViewportScale)
+
+  useEffect(() => {
+    let frame = 0
+    const syncScale = () => {
+      window.cancelAnimationFrame(frame)
+      frame = window.requestAnimationFrame(() => setScale(getViewportScale()))
+    }
+
+    syncScale()
+    window.addEventListener('resize', syncScale)
+    window.addEventListener('orientationchange', syncScale)
+    window.visualViewport?.addEventListener('resize', syncScale)
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener('resize', syncScale)
+      window.removeEventListener('orientationchange', syncScale)
+      window.visualViewport?.removeEventListener('resize', syncScale)
+    }
+  }, [])
+
+  return scale
+}
+
+function scrollToFigmaTarget(href: (typeof navTargets)[number], scale: number) {
+  const targetTop = figmaScrollTargets[href] * scale
+  window.history.replaceState(null, '', href)
+  window.scrollTo({ behavior: 'smooth', top: Math.round(targetTop) })
+}
 function emitLandingAction(action: LandingAction) {
   window.dispatchEvent(new CustomEvent('cwi:landing-action', { detail: { action } }))
 }
@@ -114,7 +163,7 @@ function FigmaSectionLabel({
     </Tag>
   )
 }
-function Header() {
+function Header({ scale }: { scale: number }) {
   const [isHidden, setIsHidden] = useState(false)
   const lastScrollYRef = useRef(0)
   const tickingRef = useRef(false)
@@ -188,6 +237,10 @@ function Header() {
               className="absolute top-0 h-[19px] cursor-pointer whitespace-nowrap leading-[19px] no-underline"
               href={item.href}
               key={item.label}
+              onClick={(event) => {
+                event.preventDefault()
+                scrollToFigmaTarget(item.href, scale)
+              }}
               style={{ left: item.left, width: item.width }}
             >
               {item.label}
@@ -878,18 +931,29 @@ function FooterSection() {
   )
 }
 export function LandingPage() {
+  const scale = useFigmaViewportScale()
+  const responsiveStyle = {
+    '--figma-scale': scale,
+    '--figma-page-height': `${FIGMA_CANVAS_HEIGHT * scale}px`,
+    '--figma-header-scale': scale,
+  } as CSSProperties
+
   return (
-    <div className="design-page-shell">
-      <main id="top" className="figma-canvas" data-figma-file="R23rMZykc70t6C3YFqXyf9" data-figma-node="96:45">
-        <Header />
-        <HeroSection />
-        <div className="absolute left-0 top-[793px] h-[1358px] w-[1440px] rounded-t-[60px] bg-white" />
-        <ReportSection />
-        <RoundtableSection />
-        <AdvisorsSection />
-        <PartnersSection />
-        <FooterSection />
-      </main>
+    <div className="design-page-shell" style={responsiveStyle}>
+      <Header scale={scale} />
+      <div className="figma-canvas-stage">
+        <div className="figma-canvas-scale-box">
+          <main id="top" className="figma-canvas" data-figma-file="R23rMZykc70t6C3YFqXyf9" data-figma-node="96:45">
+            <HeroSection />
+            <div className="absolute left-0 top-[793px] h-[1358px] w-[1440px] rounded-t-[60px] bg-white" />
+            <ReportSection />
+            <RoundtableSection />
+            <AdvisorsSection />
+            <PartnersSection />
+            <FooterSection />
+          </main>
+        </div>
+      </div>
     </div>
   )
 }
