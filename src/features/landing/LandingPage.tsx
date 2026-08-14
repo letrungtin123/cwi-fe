@@ -1,3 +1,4 @@
+import { LazyMotion, domAnimation, m, type Variants } from 'framer-motion'
 import { useEffect, useRef, useState, type CSSProperties, type ImgHTMLAttributes, type ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 import { figmaAssets, type FigmaAssetKey } from './figmaAssets'
@@ -23,6 +24,27 @@ const headerNavSpecs = [
   { href: navTargets[4], label: navItems[4], left: 423, width: 76 },
 ] as const
 
+const desktopMotionViewport = { once: true, amount: 0.16, margin: '-96px 0px -120px 0px' } as const
+
+const desktopSectionReveal: Variants = {
+  hidden: { opacity: 0, scale: 0.988, y: 54 },
+  show: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { duration: 0.82, ease: [0.22, 1, 0.36, 1] },
+  },
+}
+
+const desktopHeroReveal: Variants = {
+  hidden: { opacity: 0, scale: 1.012, y: 16 },
+  show: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { duration: 0.95, ease: [0.22, 1, 0.36, 1] },
+  },
+}
 const FIGMA_CANVAS_WIDTH = 1440
 const FIGMA_CANVAS_HEIGHT = 4742
 const figmaScrollTargets: Record<(typeof navTargets)[number], number> = {
@@ -363,7 +385,7 @@ function Sparkles() {
 
 function HeroSection() {
   return (
-    <section className="absolute left-0 top-0 h-[940px] w-full overflow-hidden" aria-labelledby="hero-title">
+    <m.section animate="show" className="absolute left-0 top-0 h-[940px] w-full overflow-hidden" initial="hidden" variants={desktopHeroReveal} aria-labelledby="hero-title">
       <AssetImage alt="" aria-hidden="true" asset="image75Bg" className="figma-hero-bg absolute left-[-67px] top-0 h-[929px] w-[1574px]" loading="eager" />
       <div className="figma-hero-gradient absolute left-[-1px] top-0 h-[940px] w-[1442px]" />
       <AssetImage alt="" aria-hidden="true" asset="rectangle4329" className="absolute left-0 top-[763px] h-[156px] w-[1440px] object-cover" loading="eager" />
@@ -384,7 +406,7 @@ function HeroSection() {
         <span>Thực hiện khảo sát</span>
         <AssetImage alt="" aria-hidden="true" asset="arrow1" className="h-[15px] w-[17px]" loading="eager" />
       </RedButton>
-    </section>
+    </m.section>
   )
 }
 
@@ -459,7 +481,7 @@ function ReportChart() {
 
 function ReportSection() {
   return (
-    <section id="report" className="absolute left-0 top-[874px] h-[890px] w-full" aria-labelledby="report-title">
+    <m.section id="report" className="absolute left-0 top-[874px] h-[890px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="report-title">
       <h2 id="report-title" className="absolute left-[90px] top-0 text-[35px] font-medium leading-[40px] text-black">
         Tiêu điểm quý <em className="italic text-[#3bd6c6]">3/2026</em>
       </h2>
@@ -493,13 +515,13 @@ function ReportSection() {
           )
         })}
       </div>
-    </section>
+    </m.section>
   )
 }
 
 function RoundtableSection() {
   return (
-    <section id="roundtable" className="absolute left-[40px] top-[1817px] h-[640px] w-[1360px] overflow-hidden rounded-[20px]" aria-labelledby="roundtable-title">
+    <m.section id="roundtable" className="absolute left-[40px] top-[1817px] h-[640px] w-[1360px] overflow-hidden rounded-[20px]" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="roundtable-title">
       <AssetImage alt="" aria-hidden="true" asset="bgCircleCeo" className="absolute inset-0 h-full w-full object-cover" />
 
       <div className="absolute left-[70px] top-[94px] w-[420px] text-white">
@@ -544,7 +566,7 @@ function RoundtableSection() {
       <div className="absolute left-[594px] top-[80px] h-[480px] w-[686px] rounded-[16px] border border-white/90 p-[9px]">
         <AssetImage alt="Roundtable session" asset="image124" className="h-full w-full rounded-[8px] object-cover" />
       </div>
-    </section>
+    </m.section>
   )
 }
 type AdvisorTextSpec = {
@@ -869,26 +891,28 @@ function AdvisorsSection() {
     <section className="absolute left-0 top-[2527px] h-[1063px] w-full" aria-labelledby="advisors-title">
       <AssetImage alt="" aria-hidden="true" asset="frame606" className="absolute left-[-162px] top-[24px] h-[728px] w-[895px] rotate-180 object-contain opacity-70" />
       <AssetImage alt="" aria-hidden="true" asset="frame605" className="absolute left-[1115px] top-[291px] h-[728px] w-[895px] rotate-180 object-contain opacity-70" />
-      <h2 id="advisors-title" className="absolute left-[94px] top-0 w-[560px] text-[35px] font-medium leading-[40px] text-black">
-        Thước đo sức khỏe <em className="whitespace-nowrap italic text-[#3bd6c6]">hệ năng lực</em>
-        <br />
-        cho Ban giám đốc
-      </h2>
-      <div className="absolute left-[699px] top-0 w-[566px] text-[16px] font-normal leading-[20px] text-black">
-        <p>
-          Gần 25 năm qua, bà Phạm Thị Mỹ Lệ cùng cộng sự đã đồng hành với hàng trăm doanh nghiệp giải quyết bài toán về con người, năng lực lãnh đạo và hiệu quả tổ chức.
-        </p>
-        <p className="mt-[20px]">
-          Từ thực tiễn đó, bà nhận thấy lãnh đạo có nhiều dữ liệu về thị trường và khách hàng, nhưng lại thiếu thông tin để đánh giá mức độ sẵn sàng của đội ngũ thực thi chiến lược tăng trưởng.
-        </p>
-        <p className="mt-[20px] font-medium">CEO Workforce Index ra đời</p>
-        <ul className="mt-[8px] list-disc pl-[22px]">
-          <li>Một hệ tri thức và đối chuẩn năng lực điều hành tổ chức dành cho CEO.</li>
-          <li>Dữ liệu được phân tích chuyên sâu bởi AI.</li>
-          <li>Giúp lãnh đạo nhận diện và thu hẹp khoảng cách giữa mục tiêu tăng trưởng và năng lực thực thi của đội ngũ.</li>
-        </ul>
-      </div>
-      <div className="absolute left-[112px] top-[334px] h-[729px] w-[1216px]">
+      <m.div className="absolute left-0 top-0 h-[284px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal}>
+        <h2 id="advisors-title" className="absolute left-[94px] top-0 w-[560px] text-[35px] font-medium leading-[40px] text-black">
+          Thước đo sức khỏe <em className="whitespace-nowrap italic text-[#3bd6c6]">hệ năng lực</em>
+          <br />
+          cho Ban giám đốc
+        </h2>
+        <div className="absolute left-[699px] top-0 w-[566px] text-[16px] font-normal leading-[20px] text-black">
+          <p>
+            Gần 25 năm qua, bà Phạm Thị Mỹ Lệ cùng cộng sự đã đồng hành với hàng trăm doanh nghiệp giải quyết bài toán về con người, năng lực lãnh đạo và hiệu quả tổ chức.
+          </p>
+          <p className="mt-[20px]">
+            Từ thực tiễn đó, bà nhận thấy lãnh đạo có nhiều dữ liệu về thị trường và khách hàng, nhưng lại thiếu thông tin để đánh giá mức độ sẵn sàng của đội ngũ thực thi chiến lược tăng trưởng.
+          </p>
+          <p className="mt-[20px] font-medium">CEO Workforce Index ra đời</p>
+          <ul className="mt-[8px] list-disc pl-[22px]">
+            <li>Một hệ tri thức và đối chuẩn năng lực điều hành tổ chức dành cho CEO.</li>
+            <li>Dữ liệu được phân tích chuyên sâu bởi AI.</li>
+            <li>Giúp lãnh đạo nhận diện và thu hẹp khoảng cách giữa mục tiêu tăng trưởng và năng lực thực thi của đội ngũ.</li>
+          </ul>
+        </div>
+      </m.div>
+      <m.div className="absolute left-[112px] top-[334px] h-[729px] w-[1216px]" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal}>
         <FigmaSectionLabel
           className="absolute left-0 top-0 h-[19px] w-full"
           label="Hội đồng Cố vấn chuyên môn"
@@ -900,14 +924,14 @@ function AdvisorsSection() {
         {advisorCardSpecs.map((spec) => (
           <AdvisorCard key={`${spec.advisor.name}-${spec.left}-${spec.top}`} spec={spec} />
         ))}
-      </div>
+      </m.div>
     </section>
   )
 }
 
 function PartnersSection() {
   return (
-    <section className="absolute left-0 top-[3660px] h-[677px] w-full" aria-labelledby="partners-title">
+    <m.section className="absolute left-0 top-[3660px] h-[677px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="partners-title">
       <FigmaSectionLabel
         as="h2"
         className="absolute left-0 top-0 h-[19px] w-full"
@@ -955,13 +979,13 @@ function PartnersSection() {
           <FigmaLogoAsset key={`partner-${spec.asset}`} spec={spec} />
         ))}
       </div>
-    </section>
+    </m.section>
   )
 }
 
 function FooterSection() {
   return (
-    <footer id="footer" className="absolute left-[99px] top-[4360px] h-[382px] w-[1451px] text-black" data-node-id="94:276">
+    <m.footer id="footer" className="absolute left-[99px] top-[4360px] h-[382px] w-[1451px] text-black" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} data-node-id="94:276">
       <div className="absolute left-[1046px] top-0 flex h-[382px] w-[405px] items-center justify-center" data-node-id="94:277">
         <div className="flex-none -scale-y-100">
           <AssetImage alt="" aria-hidden="true" asset="image131" className="h-[382px] w-[405px] object-cover" />
@@ -1005,7 +1029,7 @@ function FooterSection() {
         Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về các <strong className="font-medium">Đơn vị đồng tổ chức và Đối tác.</strong>
       </p>
       <AssetImage alt="" aria-hidden="true" asset="line22" className="absolute left-0 top-[51.5px] h-px w-[1240px]" data-node-id="94:316" />
-    </footer>
+    </m.footer>
   )
 }
 function MobileSectionTitle({ children }: { children: ReactNode }) {
@@ -1350,23 +1374,25 @@ export function LandingPage() {
   } as CSSProperties
 
   return (
-    <div className="design-page-shell" style={responsiveStyle}>
-      <Header scale={scale} />
-      <div className="figma-canvas-stage">
-        <div className="figma-canvas-scale-box">
-          <main id="top" className="figma-canvas" data-figma-file="R23rMZykc70t6C3YFqXyf9" data-figma-node="96:45">
-            <HeroSection />
-            <div className="absolute left-0 top-[793px] h-[1358px] w-[1440px] rounded-t-[60px] bg-white" />
-            <ReportSection />
-            <RoundtableSection />
-            <AdvisorsSection />
-            <PartnersSection />
-            <FooterSection />
-          </main>
+    <LazyMotion features={domAnimation}>
+      <div className="design-page-shell" style={responsiveStyle}>
+        <Header scale={scale} />
+        <div className="figma-canvas-stage">
+          <div className="figma-canvas-scale-box">
+            <main id="top" className="figma-canvas" data-figma-file="R23rMZykc70t6C3YFqXyf9" data-figma-node="96:45">
+              <HeroSection />
+              <div className="absolute left-0 top-[793px] h-[1358px] w-[1440px] rounded-t-[60px] bg-white" />
+              <ReportSection />
+              <RoundtableSection />
+              <AdvisorsSection />
+              <PartnersSection />
+              <FooterSection />
+            </main>
+          </div>
         </div>
+        <MobileLandingPage />
       </div>
-      <MobileLandingPage />
-    </div>
+    </LazyMotion>
   )
 }
 
