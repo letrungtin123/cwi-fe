@@ -17,6 +17,37 @@
 .figma-inter {
   font-family: var(--font-inter);
 }
+.figma-site-header {
+  position: fixed;
+  top: 16px;
+  left: max(24px, calc((100vw - 1180px) / 2));
+  z-index: 1000;
+  width: min(1180px, calc(100vw - 48px));
+  height: 80px;
+  overflow: hidden;
+  color: #000;
+  background: #fff;
+  border-bottom: 0;
+  border-radius: 50px;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition: transform 220ms ease, opacity 180ms ease;
+  will-change: transform, opacity;
+}
+.figma-site-header.header--hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-112%);
+}
+
+.figma-header-chrome-icon {
+  filter: none;
+  opacity: 1;
+}
 
 .figma-button-red {
   cursor: pointer;

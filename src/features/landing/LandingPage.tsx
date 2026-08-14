@@ -1,4 +1,4 @@
-import type { CSSProperties, ImgHTMLAttributes, ReactNode } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type ImgHTMLAttributes, type ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 import { figmaAssets, type FigmaAssetKey } from './figmaAssets'
 import {
@@ -115,14 +115,77 @@ function FigmaSectionLabel({
   )
 }
 function Header() {
+  const [isHidden, setIsHidden] = useState(false)
+  const lastScrollYRef = useRef(0)
+  const tickingRef = useRef(false)
+
+  useEffect(() => {
+    const hideThreshold = 92
+    const topLock = 12
+
+    const syncHeader = (scrollY: number) => {
+      if (scrollY <= topLock) {
+        setIsHidden(false)
+        lastScrollYRef.current = scrollY
+        return
+      }
+
+      const previousY = lastScrollYRef.current
+      const delta = scrollY - previousY
+
+      if (delta < 0) {
+        setIsHidden(false)
+      } else if (delta > 0 && scrollY > hideThreshold) {
+        setIsHidden(true)
+      }
+
+      lastScrollYRef.current = scrollY
+    }
+
+    const handleScroll = () => {
+      if (tickingRef.current) return
+
+      tickingRef.current = true
+      window.requestAnimationFrame(() => {
+        syncHeader(window.scrollY || window.pageYOffset)
+        tickingRef.current = false
+      })
+    }
+
+    const handleWheel = (event: WheelEvent) => {
+      const scrollY = window.scrollY || window.pageYOffset
+
+      if (scrollY <= topLock) {
+        setIsHidden(false)
+        return
+      }
+
+      if (event.deltaY < 0) {
+        setIsHidden(false)
+      } else if (event.deltaY > 0 && scrollY > hideThreshold) {
+        setIsHidden(true)
+      }
+    }
+
+    lastScrollYRef.current = window.scrollY || window.pageYOffset
+    syncHeader(lastScrollYRef.current)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener('wheel', handleWheel, { passive: true })
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('wheel', handleWheel)
+    }
+  }, [])
+
   return (
-    <header className="absolute left-[129px] top-[35px] z-20 h-[80px] w-[1180px] rounded-[50px] bg-white">
+    <header className={cn('figma-site-header', isHidden && 'header--hidden')}>
       <div className="absolute left-[55px] top-[15px] h-[49px] w-[1110px]">
         <AssetImage alt="CEO Workforce Index" asset="cwiLogo" className="absolute left-0 top-0 h-[49px] w-[108px]" loading="eager" />
-        <nav aria-label="Main navigation" className="figma-inter absolute left-[351px] top-[17px] h-[19px] w-[499px] text-[16px] font-normal leading-[19px] text-black">
+        <nav aria-label="Main navigation" className="figma-inter absolute left-[351px] top-[17px] h-[19px] w-[499px] whitespace-nowrap text-[16px] font-normal leading-[19px] text-black">
           {headerNavSpecs.map((item) => (
             <a
-              className="absolute top-0 h-[19px] cursor-pointer px-[10px] leading-[19px] no-underline"
+              className="absolute top-0 h-[19px] cursor-pointer whitespace-nowrap leading-[19px] no-underline"
               href={item.href}
               key={item.label}
               style={{ left: item.left, width: item.width }}
@@ -132,11 +195,11 @@ function Header() {
           ))}
         </nav>
         <div className="absolute left-[878px] top-[11px] h-[30px] w-[60px]">
-          <AssetImage alt="" aria-hidden="true" asset="line38" className="absolute left-[59px] top-0 h-[30px] w-[1px]" loading="eager" />
-          <AssetImage alt="" aria-hidden="true" asset="iconLanguage" className="absolute left-0 top-[7px] h-[18px] w-[18px]" loading="eager" />
-          <span className="figma-inter absolute left-[25px] top-[6px] text-[16px] font-medium leading-[19px] text-black underline">EN</span>
+          <AssetImage alt="" aria-hidden="true" asset="line38" className="figma-header-chrome-icon absolute left-[59px] top-0 h-[30px] w-[1px]" loading="eager" />
+          <AssetImage alt="" aria-hidden="true" asset="iconLanguage" className="figma-header-chrome-icon absolute left-0 top-[7px] h-[18px] w-[18px]" loading="eager" />
+          <span className="figma-inter absolute left-[25px] top-[6px] whitespace-nowrap text-[16px] font-medium leading-[19px] text-black underline">EN</span>
         </div>
-        <RedButton action="login" className="figma-header-login-button absolute left-[954px] top-[5px] h-[41px] w-[144px] text-[16px] font-medium">
+        <RedButton action="login" className="figma-header-login-button absolute left-[954px] top-[5px] h-[41px] w-[144px] whitespace-nowrap text-[16px] font-medium">
           Đăng nhập
         </RedButton>
       </div>
@@ -174,12 +237,11 @@ function HeroSection() {
       <div className="figma-hero-gradient absolute left-[-1px] top-0 h-[940px] w-[1442px]" />
       <AssetImage alt="" aria-hidden="true" asset="rectangle4329" className="absolute left-0 top-[763px] h-[156px] w-[1440px] object-cover" loading="eager" />
       <Sparkles />
-      <Header />
       <p className="absolute left-[495px] top-[220px] w-[451px] text-center text-[16px] font-medium uppercase leading-[19px] text-[#13e6d0]">
         Nền Tảng Tri Thức dành cho Lãnh Đạo Cấp Cao
       </p>
       <h1 id="hero-title" className="absolute left-[236px] top-[254px] w-[968px] text-center text-[81px] font-medium leading-[90px] text-white">
-        <span className="block origin-center scale-x-[0.952]">Hệ năng lực tốt hơn</span>
+        <span className="block">Hệ năng lực tốt hơn</span>
         <span className="block">
           <em className="figma-text-gradient font-semibold italic">Doanh nghiệp</em> mạnh hơn
         </span>
@@ -203,7 +265,7 @@ function ReportCard() {
         <h3 className="absolute left-[35px] top-[30px] w-[413px] text-[30px] font-medium leading-[35px] text-white">
           Mở khóa báo cáo chẩn đoán năng lực lãnh đạo
         </h3>
-        <p className="absolute left-[35px] top-[106px] w-[333px] text-[16px] font-light leading-[19px] text-white">
+        <p className="absolute left-[35px] top-[106px] w-[333px] text-[16px] font-normal leading-[19px] text-white">
           Khám phá vị thế năng lực của doanh nghiệp bạn so với 100+ tổ chức khác.
         </p>
         <AssetImage alt="" aria-hidden="true" asset="group9304" className="absolute left-[291px] top-[38px] h-[242px] w-[46px]" />
@@ -241,15 +303,15 @@ function ReportChart() {
           <AssetImage alt="" aria-hidden="true" asset="ellipse2006" className="absolute h-[4px] w-[4px]" key={x} style={{ left: x - 2, top: [375.7, 279.9, 236.4, 243, 233.2, 66.8][index] }} />
         ))}
       </div>
-      <p className="absolute left-0 top-0 w-[230px] text-[16px] font-light leading-[26px] text-black">TỐC ĐỘ TĂNG TRƯỞNG</p>
-      <div className="absolute left-0 top-[55px] text-[14px] font-light leading-[26px] text-black">
+      <p className="absolute left-0 top-0 w-[230px] text-[16px] font-normal leading-[26px] text-black">TỐC ĐỘ TĂNG TRƯỞNG</p>
+      <div className="absolute left-0 top-[55px] text-[14px] font-normal leading-[26px] text-black">
         <span className="absolute left-0 top-0">100</span>
         <span className="absolute left-0 top-[87px]">75</span>
         <span className="absolute left-0 top-[174px]">50</span>
         <span className="absolute left-0 top-[262px]">25</span>
         <span className="absolute left-[10px] top-[347px]">0</span>
       </div>
-      <div className="absolute left-0 top-0 text-[14px] font-light leading-[26px] text-black">
+      <div className="absolute left-0 top-0 text-[14px] font-normal leading-[26px] text-black">
         <span className="absolute left-[105px] top-[434px]">Q3/2025</span>
         <span className="absolute left-[197px] top-[434px]">Q4/2025</span>
         <span className="absolute left-[289px] top-[434px]">Q1/2026</span>
@@ -273,7 +335,7 @@ function ReportSection() {
       <p className="absolute left-[90px] top-[45px] w-[500px] text-[20px] font-normal leading-[20px] text-black">
         Nâng cao năng lực lãnh đạo để mở rộng quy mô
       </p>
-      <p className="absolute left-[90px] top-[80px] w-[500px] text-[16px] font-light leading-[20px] text-black">
+      <p className="absolute left-[90px] top-[80px] w-[500px] text-[16px] font-normal leading-[20px] text-black">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
       </p>
       <ReportChart />
@@ -319,8 +381,8 @@ function RoundtableSection() {
             loading="eager"
           />
         </h2>
-        <p className="mt-0 text-[18px] font-light leading-[22px]">Khai mở góc nhìn - Kiến tạo giá trị</p>
-        <p className="mt-[8px] w-[420px] text-[16px] font-light leading-[20px]">
+        <p className="mt-0 text-[18px] font-normal leading-[22px]">Khai mở góc nhìn - Kiến tạo giá trị</p>
+        <p className="mt-[8px] w-[420px] text-[16px] font-normal leading-[20px]">
           Không &quot;thuyết trình&quot;. Tranh luận để tìm kiếm những sự thật ngầm hiểu đắt giá nhất. Tham gia Bàn tròn CEO định kỳ dành riêng cho thành viên CWI.
         </p>
       </div>
@@ -338,7 +400,7 @@ function RoundtableSection() {
             <div className="absolute top-0 h-full text-center" key={stat.value} style={slot}>
               <AssetImage alt="" aria-hidden="true" asset={stat.icon} className="absolute left-1/2 top-0 h-[37px] w-[49px] -translate-x-1/2 object-contain" />
               <strong className="absolute left-0 top-[53px] w-full whitespace-nowrap text-[20px] font-medium leading-[24px]">{stat.value}</strong>
-              <span className="absolute left-0 top-[78px] w-full text-[16px] font-light leading-[20px]">{stat.label}</span>
+              <span className="absolute left-0 top-[78px] w-full text-[16px] font-normal leading-[20px]">{stat.label}</span>
             </div>
           )
         })}
@@ -391,90 +453,90 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     left: 0,
     top: 49,
     image: { frame: { left: -31, top: 28, width: 228, height: 328 }, objectCover: true },
-    title: { text: 'Chairwoman', left: 214.44, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 300, italic: true },
-    field: { text: 'Chuyển đổi số & Đổi mới Sáng tạo', left: 214.44, top: 251.78, width: 102.01, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 400 },
-    name: { text: 'PHẠM THỊ MỸ LỆ', left: 214.14, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 12.953, fontWeight: 500, uppercase: true, nowrap: true },
+    title: { text: 'Chairwoman', left: 214.44, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, italic: true },
+    field: { text: 'Chuyển đổi số & Đổi mới Sáng tạo', left: 214.44, top: 251.78, width: 102.01, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    name: { text: 'PHẠM THỊ MỸ LỆ', left: 214.14, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 500, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[1],
     left: 246.35,
     top: 49.27,
     image: { frame: { left: 0, top: 29.95, width: 232.35, height: 295.5 }, image: { left: '-35.21%', top: '-12.05%', width: '156.95%', height: '123.43%' } },
-    title: { text: 'Chuyên gia', left: 217.87, top: 234.78, translateXFull: true, alignRight: true, color: '#fff', fontSize: 11.334, fontWeight: 300, italic: true, nowrap: true },
-    field: { text: 'Truyền thông & Thương hiệu', left: 217.78, top: 252.59, width: 117.39, translateXFull: true, alignRight: true, color: '#fff', fontSize: 11.334, fontWeight: 400 },
-    name: { text: 'TRƯƠNG CHÍ DŨNG', left: 93.1, top: 291.45, color: '#3bd6c6', fontSize: 12.953, fontWeight: 600, uppercase: true, nowrap: true },
+    title: { text: 'Chuyên gia', left: 217.87, top: 234.78, translateXFull: true, alignRight: true, color: '#fff', fontSize: 11, fontWeight: 300, italic: true, nowrap: true },
+    field: { text: 'Truyền thông & Thương hiệu', left: 217.78, top: 252.59, width: 117.39, translateXFull: true, alignRight: true, color: '#fff', fontSize: 11, fontWeight: 400 },
+    name: { text: 'TRƯƠNG CHÍ DŨNG', left: 93.1, top: 291.45, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[2],
     left: 492.7,
     top: 49.27,
     image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65, roundedTopLeft: true }, image: { left: '-26.82%', top: 0, width: '139.72%', height: '100%' } },
-    title: { text: 'Chuyên gia', left: 220.21, top: 233.16, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 300, italic: true },
-    field: { text: 'Chiến lược & Quản trị Tổ chức', left: 220.21, top: 251.78, width: 97.96, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 400 },
-    name: { text: 'TRƯƠNG BÌNH NGUYÊN', left: 78.53, top: 291.45, color: '#3bd6c6', fontSize: 12.953, fontWeight: 600, uppercase: true, nowrap: true },
+    title: { text: 'Chuyên gia', left: 220.21, top: 233.16, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, italic: true },
+    field: { text: 'Chiến lược & Quản trị Tổ chức', left: 220.21, top: 251.78, width: 97.96, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    name: { text: 'TRƯƠNG BÌNH NGUYÊN', left: 78.53, top: 291.45, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[3],
     left: 739.06,
     top: 49.27,
     image: { frame: { left: 0, top: 9.71, width: 232.35, height: 315.74 }, image: { left: '-36.7%', top: '-2.05%', width: '154.04%', height: '113.23%' } },
-    title: { text: 'Chuyên gia', left: 216.97, top: 236.4, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 300, italic: true },
-    field: { text: 'Quản trị Nhân sự Cao cấp', left: 216.97, top: 253.4, width: 100.39, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 400 },
-    name: { text: 'TRẦN MẠNH TƯỞNG', left: 86.63, top: 291.45, color: '#3bd6c6', fontSize: 12.953, fontWeight: 600, uppercase: true, nowrap: true },
+    title: { text: 'Chuyên gia', left: 216.97, top: 236.4, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, italic: true },
+    field: { text: 'Quản trị Nhân sự Cao cấp', left: 216.97, top: 253.4, width: 100.39, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    name: { text: 'TRẦN MẠNH TƯỞNG', left: 86.63, top: 291.45, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[4],
     left: 985.41,
     top: 49,
     image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65 }, image: { left: '-70.42%', top: '0.01%', width: '225.02%', height: '161.15%' } },
-    title: { text: 'Chuyên gia', left: 216.16, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 300, italic: true },
-    field: { text: 'Kinh tế & Hội nhập Quốc tế', left: 216.16, top: 251.78, width: 99.58, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 400 },
-    name: { text: 'LÊ THỊ THÚY VÂN', left: 104.44, top: 291.45, color: '#3bd6c6', fontSize: 12.953, fontWeight: 600, uppercase: true, nowrap: true },
+    title: { text: 'Chuyên gia', left: 216.16, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, italic: true },
+    field: { text: 'Kinh tế & Hội nhập Quốc tế', left: 216.16, top: 251.78, width: 99.58, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    name: { text: 'LÊ THỊ THÚY VÂN', left: 104.44, top: 291.45, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[5],
     left: 0,
     top: 404,
     image: { frame: { left: 0, top: 9.71, width: 202.4, height: 315.74 }, image: { left: '-23.6%', top: '2.82%', width: '147.2%', height: '94.36%' } },
-    title: { text: 'Chuyên gia', left: 211.3, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 300, italic: true },
-    field: { text: 'Chuyển đổi số & Đổi mới Sáng tạo', left: 211.3, top: 251.78, width: 102.01, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 400 },
-    name: { text: 'PHẠM XUÂN TÙNG', left: 90.67, top: 291.45, color: '#3bd6c6', fontSize: 12.953, fontWeight: 500, uppercase: true, nowrap: true },
+    title: { text: 'Chuyên gia', left: 211.3, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, italic: true },
+    field: { text: 'Chuyển đổi số & Đổi mới Sáng tạo', left: 211.3, top: 251.78, width: 102.01, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    name: { text: 'PHẠM XUÂN TÙNG', left: 90.67, top: 291.45, color: '#3bd6c6', fontSize: 13, fontWeight: 500, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[6],
     left: 246.35,
     top: 404.27,
     image: { frame: { left: -51.35, top: 27.73, width: 288, height: 307 }, image: { left: '-12.88%', top: '-11.89%', width: '132.97%', height: '111.89%' } },
-    title: { text: 'Chuyên gia', left: 217.87, top: 234.78, translateXFull: true, alignRight: true, color: '#fff', fontSize: 11.334, fontWeight: 300, italic: true, nowrap: true },
-    field: { text: 'Truyền thông & Thương hiệu', left: 217.78, top: 252.59, width: 117.39, translateXFull: true, alignRight: true, color: '#fff', fontSize: 11.334, fontWeight: 400 },
-    name: { text: 'TRẦN BẰNG VIỆT', left: 106.65, top: 291.45, color: '#3bd6c6', fontSize: 12.953, fontWeight: 600, uppercase: true, nowrap: true },
+    title: { text: 'Chuyên gia', left: 217.87, top: 234.78, translateXFull: true, alignRight: true, color: '#fff', fontSize: 11, fontWeight: 300, italic: true, nowrap: true },
+    field: { text: 'Truyền thông & Thương hiệu', left: 217.78, top: 252.59, width: 117.39, translateXFull: true, alignRight: true, color: '#fff', fontSize: 11, fontWeight: 400 },
+    name: { text: 'TRẦN BẰNG VIỆT', left: 106.65, top: 291.45, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[7],
     left: 492.7,
     top: 404.27,
     image: { frame: { left: -56.71, top: 17.73, width: 315, height: 308 }, objectCover: true },
-    title: { text: 'Chuyên gia', left: 220.21, top: 233.16, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 300, italic: true },
-    field: { text: 'Chiến lược & Quản trị Tổ chức', left: 220.21, top: 251.78, width: 97.96, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 400 },
-    name: { text: 'TRƯƠNG BÌNH NGUYÊN', left: 221.53, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 12.953, fontWeight: 600, uppercase: true, nowrap: true },
+    title: { text: 'Chuyên gia', left: 220.21, top: 233.16, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, italic: true },
+    field: { text: 'Chiến lược & Quản trị Tổ chức', left: 220.21, top: 251.78, width: 97.96, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    name: { text: 'TRƯƠNG BÌNH NGUYÊN', left: 221.53, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[8],
     left: 739.06,
     top: 404.27,
     image: { frame: { left: 0, top: 9.71, width: 232.35, height: 315.74 }, image: { left: '-36.7%', top: '-2.05%', width: '154.04%', height: '113.23%' } },
-    title: { text: 'Chuyên gia', left: 216.97, top: 236.4, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 300, italic: true },
-    field: { text: 'Quản trị Nhân sự Cao cấp', left: 216.97, top: 253.4, width: 100.39, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 400 },
-    name: { text: 'TRẦN MẠNH TƯỞNG', left: 218.63, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 12.953, fontWeight: 600, uppercase: true, nowrap: true },
+    title: { text: 'Chuyên gia', left: 216.97, top: 236.4, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, italic: true },
+    field: { text: 'Quản trị Nhân sự Cao cấp', left: 216.97, top: 253.4, width: 100.39, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    name: { text: 'TRẦN MẠNH TƯỞNG', left: 218.63, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[9],
     left: 985.41,
     top: 404,
     image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65 }, image: { left: '-70.42%', top: '0.01%', width: '225.02%', height: '161.15%' } },
-    title: { text: 'Chuyên gia', left: 216.16, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 300, italic: true },
-    field: { text: 'Kinh tế & Hội nhập Quốc tế', left: 216.16, top: 251.78, width: 99.58, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12.144, fontWeight: 400 },
-    name: { text: 'LÊ THỊ THÚY VÂN', left: 217.44, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 12.953, fontWeight: 600, uppercase: true, nowrap: true },
+    title: { text: 'Chuyên gia', left: 216.16, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, italic: true },
+    field: { text: 'Kinh tế & Hội nhập Quốc tế', left: 216.16, top: 251.78, width: 99.58, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    name: { text: 'LÊ THỊ THÚY VÂN', left: 217.44, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
 ]
 
@@ -681,7 +743,7 @@ function AdvisorsSection() {
         <br />
         cho Ban giám đốc
       </h2>
-      <div className="absolute left-[699px] top-0 w-[566px] text-[16px] font-light leading-[20px] text-black">
+      <div className="absolute left-[699px] top-0 w-[566px] text-[16px] font-normal leading-[20px] text-black">
         <p>
           Gần 25 năm qua, bà Phạm Thị Mỹ Lệ cùng cộng sự đã đồng hành với hàng trăm doanh nghiệp giải quyết bài toán về con người, năng lực lãnh đạo và hiệu quả tổ chức.
         </p>
@@ -780,7 +842,7 @@ function FooterSection() {
       <h3 className="absolute left-[475px] top-[111.172px] h-[25px] w-[222px] text-[19px] font-semibold uppercase leading-[25px]" data-node-id="94:283">
         CHÍNH SÁCH BẢO MẬT
       </h3>
-      <div className="absolute left-[475px] top-[154.172px] h-[123px] w-[339px] text-[13.5px] font-light leading-[18px]" data-node-id="94:279">
+      <div className="absolute left-[475px] top-[154.172px] h-[123px] w-[339px] text-[14px] font-normal leading-[18px]" data-node-id="94:279">
         <p>
           Mọi dữ liệu doanh nghiệp nhập vào hệ thống AI đều
           <br />
@@ -798,17 +860,17 @@ function FooterSection() {
       <h3 className="absolute left-[850px] top-[111.172px] h-[25px] w-[319px] text-[19px] font-semibold uppercase leading-[25px]" data-node-id="94:284">
         THÔNG TIN LIÊN HỆ ĐẶC QUYỀN
       </h3>
-      <p className="absolute left-[850px] top-[151.172px] h-[27px] w-[221px] text-[13.5px] font-light leading-[26px]" data-node-id="94:280">
+      <p className="absolute left-[850px] top-[151.172px] h-[27px] w-[420px] whitespace-nowrap text-[14px] font-normal leading-[26px]" data-node-id="94:280">
         <strong className="font-medium">Hotline VIP (24/7):</strong> 0909 123 456
       </p>
-      <p className="absolute left-[850px] top-[178.172px] h-[26px] w-[265px] text-[13.5px] font-light leading-[26px]" data-node-id="94:281">
+      <p className="absolute left-[850px] top-[178.172px] h-[26px] w-[420px] whitespace-nowrap text-[14px] font-normal leading-[26px]" data-node-id="94:281">
         <strong className="font-medium">Email Ban điều hành CWI:</strong> cwi@xyz.com
       </p>
-      <p className="absolute left-[850px] top-[204.172px] h-[27px] w-[382px] text-[13.5px] font-light leading-[26px]" data-node-id="94:282">
+      <p className="absolute left-[850px] top-[204.172px] h-[27px] w-[420px] whitespace-nowrap text-[14px] font-normal leading-[26px]" data-node-id="94:282">
         <strong className="font-medium">Trụ sở:</strong> 36 Mạc Đĩnh Chi, Phường Tân Định, TP. HCM
       </p>
 
-      <p className="absolute left-[322px] top-[338px] h-[20px] w-[598px] whitespace-nowrap text-center text-[14px] font-light leading-[20px]" data-node-id="94:278">
+      <p className="absolute left-[322px] top-[338px] h-[20px] w-[598px] whitespace-nowrap text-center text-[14px] font-normal leading-[20px]" data-node-id="94:278">
         Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về các <strong className="font-medium">Đơn vị đồng tổ chức và Đối tác.</strong>
       </p>
       <AssetImage alt="" aria-hidden="true" asset="line22" className="absolute left-0 top-[51.5px] h-px w-[1240px]" data-node-id="94:316" />
@@ -819,6 +881,7 @@ export function LandingPage() {
   return (
     <div className="design-page-shell">
       <main id="top" className="figma-canvas" data-figma-file="R23rMZykc70t6C3YFqXyf9" data-figma-node="96:45">
+        <Header />
         <HeroSection />
         <div className="absolute left-0 top-[793px] h-[1358px] w-[1440px] rounded-t-[60px] bg-white" />
         <ReportSection />
