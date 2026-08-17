@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { Download, LockKeyhole, X } from 'lucide-react'
+import { CircleAlert, Download, LockKeyhole, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { getAnswerDisplay, type Answers } from './surveyScoring'
 import { contactCopy, introCopy, partOneQuestions, reportParts, roundtableCopy } from './surveyData'
@@ -21,10 +21,7 @@ type IntroScreenProps = {
 export function IntroScreen({ onStart }: IntroScreenProps) {
   return (
     <section className="survey-intro-screen">
-      <div className="survey-intro-brand">
-        <SurveyBrandMark decorative variant="intro" />
-        <span>CEO WORKFORCE INDEX · 2026Q3</span>
-      </div>
+
       <div className="survey-intro-copy">
         <SurveyEyebrow>GIỚI THIỆU</SurveyEyebrow>
         <h1>
@@ -73,10 +70,11 @@ type ContactScreenProps = {
 
 export function ContactScreen({ consent, contact, error, mode, onBack, onConsentChange, onContactChange, onSkipPrivate, onSubmit }: ContactScreenProps) {
   const isPrivate = mode === 'private'
+  const isContactReady = Boolean(contact.name.trim() && contact.email.trim())
 
   return (
     <section className="survey-form-screen" aria-labelledby="survey-contact-title">
-      <SurveyBrandMark decorative variant="trust" />
+
       <SurveyEyebrow>{isPrivate ? 'PHẦN 2 - KHẢO SÁT ĐỊNH DANH · NHẬN BÁO CÁO' : 'PHẦN 1 - KHẢO SÁT KHUYẾT DANH · NHẬN BÁO CÁO'}</SurveyEyebrow>
       <h1 id="survey-contact-title">{isPrivate ? 'Nhận Báo cáo Riêng tư' : 'Nhận Báo cáo Khuyết danh'}</h1>
       <p className="survey-thankyou">{contactCopy.thankYou}</p>
@@ -91,13 +89,16 @@ export function ContactScreen({ consent, contact, error, mode, onBack, onConsent
         <div className="survey-form-grid">
           <label htmlFor="survey-contact-name">
             <span>Họ tên *</span>
-            <input autoComplete="name" id="survey-contact-name" onChange={(event) => onContactChange({ ...contact, name: event.currentTarget.value })} placeholder="Họ và tên" value={contact.name} />
+            <input autoComplete="name" id="survey-contact-name" onChange={(event) => onContactChange({ ...contact, name: event.currentTarget.value })} placeholder="Họ và tên" required value={contact.name} />
           </label>
           <label htmlFor="survey-contact-email">
             <span>Email công ty/cá nhân *</span>
-            <input autoComplete="email" id="survey-contact-email" onChange={(event) => onContactChange({ ...contact, email: event.currentTarget.value })} placeholder="name@company.com" type="email" value={contact.email} />
+            <input autoComplete="email" id="survey-contact-email" onChange={(event) => onContactChange({ ...contact, email: event.currentTarget.value })} placeholder="name@company.com" required type="email" value={contact.email} />
           </label>
         </div>
+        {isPrivate && !isContactReady ? (
+          <p className="survey-contact-required" role="status"><CircleAlert aria-hidden="true" size={15} /><span>*Vui lòng nhập thông tin trước khi tiếp tục</span></p>
+        ) : null}
 
         {isPrivate ? (
           <section className="survey-privacy-section" aria-labelledby="survey-privacy-title">
@@ -108,9 +109,9 @@ export function ContactScreen({ consent, contact, error, mode, onBack, onConsent
             <div className="survey-privacy-copy">
               {contactCopy.privacy.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
             </div>
-            <div className="survey-consent-grid" role="radiogroup" aria-label="Đồng ý xử lý dữ liệu">
-              <ConsentOption checked={consent === 'yes'} id="survey-consent-yes" label="Đồng ý" onChange={() => onConsentChange('yes')} />
-              <ConsentOption checked={consent === 'no'} id="survey-consent-no" label="Không đồng ý" onChange={() => onConsentChange('no')} />
+            <div aria-disabled={!isContactReady} className="survey-consent-grid" role="radiogroup" aria-label="Đồng ý xử lý dữ liệu">
+              <ConsentOption checked={consent === 'yes'} disabled={!isContactReady} id="survey-consent-yes" label="Đồng ý" onChange={() => onConsentChange('yes')} />
+              <ConsentOption checked={consent === 'no'} disabled={!isContactReady} id="survey-consent-no" label="Không đồng ý" onChange={() => onConsentChange('no')} />
             </div>
             {consent === 'no' ? (
               <div className="survey-consent-warning" role="alert">
@@ -134,10 +135,10 @@ export function ContactScreen({ consent, contact, error, mode, onBack, onConsent
   )
 }
 
-function ConsentOption({ checked, id, label, onChange }: { checked: boolean; id: string; label: string; onChange: () => void }) {
+function ConsentOption({ checked, disabled, id, label, onChange }: { checked: boolean; disabled: boolean; id: string; label: string; onChange: () => void }) {
   return (
-    <div className={cn('survey-consent-option', checked && 'is-selected')}>
-      <input checked={checked} id={id} name="survey-consent" onChange={onChange} type="radio" />
+    <div className={cn('survey-consent-option', checked && 'is-selected', disabled && 'is-disabled')}>
+      <input checked={checked} disabled={disabled} id={id} name="survey-consent" onChange={onChange} type="radio" />
       <label htmlFor={id}>
         <span className="survey-consent-radio" aria-hidden="true" />
         {label}
@@ -180,6 +181,7 @@ type ResultScreenProps = {
 
 export function ResultScreen({ answers, mode, onBackHome, onOpenRoundtable, otherAnswers, scores }: ResultScreenProps) {
   const isPrivate = mode === 'private'
+
 
   return (
     <section className="survey-result-screen" aria-labelledby="survey-result-title">
@@ -233,6 +235,7 @@ export function ResultScreen({ answers, mode, onBackHome, onOpenRoundtable, othe
 
 function ReportIdentity({ mode }: { mode: 'part1' | 'private' }) {
   const isPrivate = mode === 'private'
+
   return (
     <>
       <div className="survey-report-print-brand">
