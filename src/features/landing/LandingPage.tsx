@@ -15,6 +15,11 @@ import './landing.css'
 type LandingAction = 'login' | 'survey' | 'unlock-report' | 'download-teaser' | 'roundtable-apply'
 
 const navTargets = ['#top', '#report', '#report-card', '#roundtable', '#footer'] as const
+const legalLinks = [
+  { href: "/privacy-policy", label: "Chính sách bảo mật" },
+  { href: "/terms-of-operation", label: "Quy chế hoạt động" },
+] as const
+
 const headerNavSpecs = [
   { href: navTargets[0], label: navItems[0], left: 0, width: 97 },
   { href: navTargets[1], label: navItems[1], left: 107, width: 96 },
@@ -277,7 +282,7 @@ function FigmaSectionLabel({
     </Tag>
   )
 }
-function Header({ scale }: { scale: number }) {
+function Header({ scale, isPolicyPage = false }: { scale: number; isPolicyPage?: boolean }) {
   const [isHidden, setIsHidden] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const lastScrollYRef = useRef(0)
@@ -363,6 +368,10 @@ function Header({ scale }: { scale: number }) {
 
   const handleMobileNav = (href: (typeof navTargets)[number]) => {
     setIsMenuOpen(false)
+    if (isPolicyPage) {
+      window.location.assign('/' + href)
+      return
+    }
     window.setTimeout(() => scrollToMobileTarget(href), 120)
   }
 
@@ -375,9 +384,10 @@ function Header({ scale }: { scale: number }) {
             {headerNavSpecs.map((item) => (
               <a
                 className="absolute top-0 h-[19px] cursor-pointer whitespace-nowrap leading-[19px] no-underline"
-                href={item.href}
+                href={isPolicyPage ? '/' + item.href : item.href}
                 key={item.label}
                 onClick={(event) => {
+                  if (isPolicyPage) return
                   event.preventDefault()
                   scrollToFigmaTarget(item.href, scale)
                 }}
@@ -437,6 +447,10 @@ function Header({ scale }: { scale: number }) {
       </div>
     </>
   )
+}
+export function SiteHeader({ isPolicyPage = false }: { isPolicyPage?: boolean }) {
+  const scale = useFigmaViewportScale()
+  return <Header isPolicyPage={isPolicyPage} scale={scale} />
 }
 function Sparkles() {
   const dots: Array<{ asset: FigmaAssetKey; x: number; y: number }> = [
@@ -1051,6 +1065,13 @@ function FooterSection() {
         <strong className="font-medium">Trụ sở:</strong> 36 Mạc Đĩnh Chi, Phường Tân Định, TP. HCM
       </p>
 
+      <nav aria-label="Thông tin pháp lý" className="absolute left-[322px] top-[303px] flex h-[20px] w-[598px] items-center justify-center gap-[24px] text-center text-[14px] leading-[20px]">
+        {legalLinks.map((link) => (
+          <a className="figma-inter cursor-pointer text-[#144eaf] underline decoration-[#144eaf] underline-offset-[3px] transition-colors hover:text-[#0d3b87] focus-visible:rounded-[2px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#144eaf]" href={link.href} key={link.href}>
+            {link.label}
+          </a>
+        ))}
+      </nav>
       <p className="absolute left-[322px] top-[338px] h-[20px] w-[598px] whitespace-nowrap text-center text-[14px] font-normal leading-[20px]" data-node-id="94:278">
         Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về các <strong className="font-medium">Đơn vị đồng tổ chức và Đối tác.</strong>
       </p>
@@ -1384,6 +1405,11 @@ function MobileLandingPage() {
           <p><strong>Email Ban điều hành CWI:</strong> cwi@xyz.com</p>
           <p><strong>Trụ sở:</strong> 36 Mạc Đĩnh Chi, Phường Tân Định, TP. HCM</p>
         </div>
+        <nav aria-label="Thông tin pháp lý" className="mobile-footer-legal">
+          {legalLinks.map((link) => (
+            <a href={link.href} key={link.href}>{link.label}</a>
+          ))}
+        </nav>
         <p className="mobile-copyright">Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về các <strong>Đơn vị đồng tổ chức và Đối tác.</strong></p>
       </footer>
       <MobileStickyCta />
