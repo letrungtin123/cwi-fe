@@ -287,6 +287,18 @@
   color: #344054;
 }
 
+.policy-subheading {
+  margin: 22px 0 7px;
+  color: #00132f;
+  font-size: 15px;
+  font-weight: 760;
+  line-height: 1.6;
+}
+
+.policy-subheading:first-child {
+  margin-top: 0;
+}
+
 .policy-paragraph,
 .policy-list {
   margin: 0;
@@ -532,6 +544,7 @@
     line-height: 24px;
   }
 
+  .policy-subheading,
   .policy-paragraph,
   .policy-list {
     font-size: 14px;
@@ -626,6 +639,7 @@
     line-height: 23px;
   }
 
+  .policy-subheading,
   .policy-paragraph,
   .policy-list {
     font-size: 13px;

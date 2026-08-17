@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react'
 import { LandingPage } from '@/features/landing/LandingPage'
 import { PrivacyPolicyPage } from '@/features/landing/PrivacyPolicyPage'
+import { TermsOfOperationPage } from '@/features/landing/TermsOfOperationPage'
 import { SurveyExperience } from '@/features/survey/SurveyExperience'
 
-type AppMode = 'landing' | 'survey' | 'privacy'
+type AppMode = 'landing' | 'survey' | 'privacy' | 'terms'
 type LandingActionEvent = CustomEvent<{ action?: string }>
 
 function getInitialMode(): AppMode {
-  return typeof window !== 'undefined' && window.location.pathname === '/privacy-policy' ? 'privacy' : 'landing'
+  if (typeof window === 'undefined') return 'landing'
+  if (window.location.pathname === '/privacy-policy') return 'privacy'
+  if (window.location.pathname === '/terms-of-operation') return 'terms'
+  return 'landing'
 }
 
 function App() {
@@ -36,6 +40,11 @@ function App() {
     return (
       <PrivacyPolicyPage />
     )
+  }
+
+
+  if (mode === 'terms') {
+    return <TermsOfOperationPage />
   }
 
   if (mode === 'survey') {
