@@ -96,9 +96,9 @@
 .survey-primary-button--hero { min-height: 56px; padding-inline: 28px; font-size: 16px; box-shadow: inset 0 1.2px 0 rgba(255,255,255,.34), 0 16px 32px rgba(225,27,34,.2); }
 .survey-primary-button--task { box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 8px 20px rgba(225,27,34,.16); }
 .survey-primary-button--task:hover:not(:disabled) { box-shadow: inset 0 1px 0 rgba(255,255,255,.36), 0 10px 23px rgba(225,27,34,.2); }
-.survey-button-arrow { flex: none; height: 13px; object-fit: contain; transition: transform 180ms cubic-bezier(.2,.8,.2,1); width: 15px; }
-.survey-primary-button:hover:not(:disabled) .survey-button-arrow { transform: translateX(3px); }
-.survey-primary-button:active:not(:disabled) .survey-button-arrow { transform: translateX(4px); }
+.survey-button-arrow { flex: none; height: 13px; object-fit: contain; width: 15px; }
+
+
 .survey-outline-button {
   background: #fff;
   border: 1px solid var(--survey-action-outline);
@@ -518,7 +518,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .survey-page *, .survey-page *::before, .survey-page *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
-  .survey-button-arrow { transition: none; }
+
 }
 @media print {
   .survey-app-header, .survey-drawer, .survey-drawer-backdrop, .survey-mobile-question-nav, .survey-result-actions, .survey-roundtable-invitation, .survey-modal-backdrop { display: none !important; }
