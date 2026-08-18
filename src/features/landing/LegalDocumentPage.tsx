@@ -1,5 +1,5 @@
 import { ChevronRight, ShieldCheck } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import footerLogo from '@/assets/figma/footer-logo.svg'
 import image131 from '@/assets/figma/image-131.png'
 import { SiteHeader } from './LandingPage'
@@ -32,6 +32,153 @@ function DocumentBlock({ block }: { block: LegalDocumentBlock }) {
     <ul className="policy-list">
       {block.items.map((item) => <li key={item}>{item}</li>)}
     </ul>
+  )
+}
+
+
+function LegalDocumentToc({ items }: { items: readonly LegalTocItem[] }) {
+  const [activeId, setActiveId] = useState(items[0]?.id ?? '')
+  const [isOpen, setIsOpen] = useState(false)
+  const mobileToggleRef = useRef<HTMLButtonElement>(null)
+  const sheetRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    let frame = 0
+
+    const syncActiveSection = () => {
+      window.cancelAnimationFrame(frame)
+      frame = window.requestAnimationFrame(() => {
+        const anchorLine = window.innerHeight * 0.28
+        let currentId = items[0]?.id ?? ''
+
+        for (const item of items) {
+          const section = document.getElementById('policy-' + item.id)
+          if (section && section.getBoundingClientRect().top <= anchorLine) currentId = item.id
+        }
+
+        setActiveId((previous) => previous === currentId ? previous : currentId)
+      })
+    }
+
+    syncActiveSection()
+    window.addEventListener('scroll', syncActiveSection, { passive: true })
+    window.addEventListener('resize', syncActiveSection)
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', syncActiveSection)
+      window.removeEventListener('resize', syncActiveSection)
+    }
+  }, [items])
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    const previousOverflow = document.body.style.overflow
+    const toggleButton = mobileToggleRef.current
+    document.body.style.overflow = 'hidden'
+
+    const focusableSelector = 'button, a[href]'
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false)
+        return
+      }
+
+      if (event.key !== 'Tab') return
+      const focusable = sheetRef.current
+        ? Array.from(sheetRef.current.querySelectorAll<HTMLElement>(focusableSelector))
+        : []
+      if (focusable.length === 0) return
+
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+
+    window.requestAnimationFrame(() => sheetRef.current?.querySelector<HTMLElement>(focusableSelector)?.focus())
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleKeyDown)
+      toggleButton?.focus()
+    }
+  }, [isOpen])
+
+  const activeIndex = Math.max(0, items.findIndex((item) => item.id === activeId))
+  const activeItem = items[activeIndex] ?? items[0]
+
+  const selectSection = (id: string) => {
+    setActiveId(id)
+    setIsOpen(false)
+    const target = document.getElementById('policy-' + id)
+    if (!target) return
+
+    window.history.replaceState(null, '', '#policy-' + id)
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  return (
+    <>
+      <aside className="privacy-toc privacy-toc-desktop" aria-label="Mục lục tài liệu">
+        <div className="privacy-toc-heading">
+          <span>Nội dung</span>
+          <strong>Mục lục</strong>
+        </div>
+        <nav className="privacy-toc-links">
+          {items.map((item, index) => (
+            <a className={item.id === activeId ? 'is-active' : undefined} href={'#policy-' + item.id} key={item.id} onClick={() => setActiveId(item.id)}>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              {item.label}
+              <ChevronRight aria-hidden="true" size={15} strokeWidth={1.8} />
+            </a>
+          ))}
+        </nav>
+      </aside>
+
+      <div className={isOpen ? 'privacy-mobile-toc is-open' : 'privacy-mobile-toc'}>
+        <div className="privacy-mobile-toc-bar">
+          <div className="privacy-mobile-toc-current" aria-live="polite">
+            <span>{String(activeIndex + 1).padStart(2, '0')} / {String(items.length).padStart(2, '0')}</span>
+            <strong>{activeItem?.label}</strong>
+          </div>
+          <button aria-expanded={isOpen} className="privacy-mobile-toc-trigger" onClick={() => setIsOpen(true)} ref={mobileToggleRef} type="button">
+            <span>Mục lục</span>
+            <ChevronRight aria-hidden="true" size={16} strokeWidth={2} />
+          </button>
+        </div>
+
+        {isOpen && (
+          <div className="privacy-mobile-toc-backdrop" onMouseDown={() => setIsOpen(false)}>
+            <section aria-label="Mục lục tài liệu" className="privacy-mobile-toc-sheet" onMouseDown={(event) => event.stopPropagation()} ref={sheetRef} role="dialog">
+              <div className="privacy-mobile-toc-sheet-head">
+                <div>
+                  <span>Nội dung</span>
+                  <strong>Mục lục</strong>
+                </div>
+                <button aria-label="Đóng mục lục" className="privacy-mobile-toc-close" onClick={() => setIsOpen(false)} type="button">×</button>
+              </div>
+              <nav className="privacy-mobile-toc-sheet-links">
+                {items.map((item, index) => (
+                  <button className={item.id === activeId ? 'is-active' : undefined} key={item.id} onClick={() => selectSection(item.id)} type="button">
+                    <span>{String(index + 1).padStart(2, '0')}</span>
+                    <strong>{item.label}</strong>
+                    <ChevronRight aria-hidden="true" size={16} strokeWidth={1.8} />
+                  </button>
+                ))}
+              </nav>
+            </section>
+          </div>
+        )}
+      </div>
+    </>
   )
 }
 
@@ -90,21 +237,7 @@ export function LegalDocumentPage({ config }: { config: LegalDocumentConfig }) {
         </section>
 
         <div className="privacy-layout" id="policy-content">
-          <aside className="privacy-toc" aria-label="Mục lục tài liệu">
-            <div className="privacy-toc-heading">
-              <span>Nội dung</span>
-              <strong>Mục lục</strong>
-            </div>
-            <nav className="privacy-toc-links">
-              {config.toc.map((item, index) => (
-                <a href={'#policy-' + item.id} key={item.id}>
-                  <span>{String(index + 1).padStart(2, '0')}</span>
-                  {item.label}
-                  <ChevronRight aria-hidden="true" size={15} strokeWidth={1.8} />
-                </a>
-              ))}
-            </nav>
-          </aside>
+          <LegalDocumentToc items={config.toc} />
 
           <article className="privacy-document">
             <div className="privacy-document-intro">

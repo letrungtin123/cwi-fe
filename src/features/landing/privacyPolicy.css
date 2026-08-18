@@ -654,3 +654,290 @@
     gap: 10px 18px;
   }
 }
+
+/* Mobile legal reading pass: compact sticky navigation and wider editorial surface. */
+.privacy-mobile-toc {
+  display: none;
+}
+
+
+@media (max-width: 900px) {
+  .privacy-toc-desktop {
+    display: none;
+  }
+
+  .privacy-mobile-toc {
+    position: sticky;
+    top: 76px;
+    z-index: 30;
+    display: block;
+    margin: 0 -18px;
+    border-bottom: 1px solid rgba(20, 78, 175, 0.14);
+    background: rgba(244, 245, 247, 0.94);
+    box-shadow: 0 8px 20px rgba(0, 19, 47, 0.06);
+    backdrop-filter: blur(16px) saturate(1.15);
+    -webkit-backdrop-filter: blur(16px) saturate(1.15);
+    transition: top 220ms ease;
+  }
+
+  .privacy-mobile-toc.is-open {
+    z-index: 1200;
+  }
+
+  .privacy-page:has(.figma-site-header.header--hidden) .privacy-mobile-toc {
+    top: 10px;
+  }
+
+  .privacy-mobile-toc-bar {
+    display: grid;
+    min-height: 58px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 18px;
+  }
+
+  .privacy-mobile-toc-current {
+    display: grid;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  .privacy-mobile-toc-current span,
+  .privacy-mobile-toc-sheet-head span {
+    color: #144eaf;
+    font-size: 10px;
+    font-weight: 760;
+    letter-spacing: 0.1em;
+    line-height: 14px;
+    text-transform: uppercase;
+  }
+
+  .privacy-mobile-toc-current strong {
+    overflow: hidden;
+    color: #00132f;
+    font-size: 14px;
+    font-weight: 650;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .privacy-mobile-toc-trigger {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 13px;
+    color: #144eaf;
+    border: 1px solid rgba(20, 78, 175, 0.24);
+    border-radius: 999px;
+    background: #fff;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 18px;
+    touch-action: manipulation;
+  }
+
+  .privacy-mobile-toc-trigger svg {
+    transform: rotate(90deg);
+  }
+
+  .privacy-mobile-toc-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: flex;
+    align-items: flex-end;
+    padding: 16px 12px env(safe-area-inset-bottom);
+    background: rgba(0, 19, 47, 0.42);
+  }
+
+  .privacy-mobile-toc-sheet {
+    width: 100%;
+    max-height: min(82dvh, 680px);
+    overflow-y: auto;
+    padding: 20px 18px 22px;
+    border: 1px solid rgba(20, 78, 175, 0.14);
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: 0 24px 70px rgba(0, 19, 47, 0.22);
+    overscroll-behavior: contain;
+  }
+
+  .privacy-mobile-toc-sheet-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(20, 78, 175, 0.12);
+  }
+
+  .privacy-mobile-toc-sheet-head > div {
+    display: grid;
+    gap: 3px;
+  }
+
+  .privacy-mobile-toc-sheet-head strong {
+    color: #00132f;
+    font-size: 22px;
+    font-weight: 650;
+    line-height: 28px;
+  }
+
+  .privacy-mobile-toc-close {
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    color: #00132f;
+    border: 1px solid rgba(20, 78, 175, 0.16);
+    border-radius: 999px;
+    background: #f7faff;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 26px;
+    line-height: 1;
+  }
+
+  .privacy-mobile-toc-sheet-links {
+    display: grid;
+    gap: 4px;
+    margin-top: 12px;
+  }
+
+  .privacy-mobile-toc-sheet-links button {
+    display: grid;
+    min-height: 48px;
+    grid-template-columns: 28px minmax(0, 1fr) 16px;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    color: #344054;
+    border: 0;
+    border-radius: 11px;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 19px;
+    text-align: left;
+    touch-action: manipulation;
+  }
+
+  .privacy-mobile-toc-sheet-links button span {
+    color: #144eaf;
+    font-size: 11px;
+    font-weight: 760;
+  }
+
+  .privacy-mobile-toc-sheet-links button svg {
+    color: #98a2b3;
+  }
+
+  .privacy-mobile-toc-sheet-links button.is-active,
+  .privacy-mobile-toc-sheet-links button:active {
+    color: #00347f;
+    background: #eef5ff;
+  }
+
+  .privacy-layout {
+    margin-top: 18px;
+  }
+
+  .privacy-page:has(.figma-site-header.header--hidden) .privacy-section {
+    scroll-margin-top: 80px;
+  }
+
+  .privacy-section {
+    scroll-margin-top: 146px;
+  }
+
+  .privacy-document {
+    padding-top: 24px;
+  }
+
+  .policy-paragraph,
+  .policy-list {
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  .privacy-section h2 {
+    font-size: 19px;
+    line-height: 27px;
+  }
+
+  .policy-subheading {
+    font-size: 15px;
+    line-height: 1.65;
+  }
+}
+
+@media (max-width: 560px) {
+  .privacy-main {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .privacy-mobile-toc {
+    margin-right: -12px;
+    margin-left: -12px;
+  }
+
+  .privacy-mobile-toc-bar {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .privacy-document {
+    padding: 24px 0 48px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .privacy-document-intro {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 4px 0 22px;
+    border: 0;
+    border-bottom: 1px solid rgba(20, 78, 175, 0.14);
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .privacy-document-icon {
+    display: none;
+  }
+
+  .privacy-document-heading {
+    margin-top: 30px;
+  }
+
+  .privacy-document-heading span {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .privacy-section h2 {
+    font-size: 19px;
+    line-height: 27px;
+  }
+
+  .policy-paragraph,
+  .policy-list,
+  .policy-subheading {
+    font-size: 15px;
+  }
+
+  .privacy-footer {
+    padding-top: 36px;
+  }
+}

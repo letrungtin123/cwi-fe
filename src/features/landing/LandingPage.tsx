@@ -285,6 +285,7 @@ function FigmaSectionLabel({
 function Header({ scale, isPolicyPage = false }: { scale: number; isPolicyPage?: boolean }) {
   const [isHidden, setIsHidden] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
   const lastScrollYRef = useRef(0)
   const tickingRef = useRef(false)
 
@@ -352,17 +353,41 @@ function Header({ scale, isPolicyPage = false }: { scale: number; isPolicyPage?:
 
     setIsHidden(false)
     const previousOverflow = document.body.style.overflow
+    const menuButton = menuButtonRef.current
     document.body.style.overflow = 'hidden'
+    const focusableSelector = 'button, a[href]'
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setIsMenuOpen(false)
+      if (event.key === 'Escape') {
+        setIsMenuOpen(false)
+        return
+      }
+
+      if (event.key !== 'Tab') return
+      const panel = document.getElementById('mobile-navigation-menu')
+      const focusable = panel
+        ? Array.from(panel.querySelectorAll<HTMLElement>(focusableSelector))
+        : []
+      if (focusable.length === 0) return
+
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
     }
 
+    window.requestAnimationFrame(() => document.querySelector<HTMLElement>('#mobile-navigation-menu button')?.focus())
     window.addEventListener('keydown', handleKeyDown)
 
     return () => {
       document.body.style.overflow = previousOverflow
       window.removeEventListener('keydown', handleKeyDown)
+      menuButton?.focus()
     }
   }, [isMenuOpen])
 
@@ -411,6 +436,7 @@ function Header({ scale, isPolicyPage = false }: { scale: number; isPolicyPage?:
             aria-label={isMenuOpen ? 'Đóng menu' : 'Mở menu'}
             className="mobile-menu-button"
             onClick={() => setIsMenuOpen((open) => !open)}
+            ref={menuButtonRef}
             type="button"
           >
             <span />
@@ -419,10 +445,16 @@ function Header({ scale, isPolicyPage = false }: { scale: number; isPolicyPage?:
         </div>
       </header>
 
-      <div aria-hidden={!isMenuOpen} className={cn('mobile-menu-overlay', isMenuOpen && 'is-open')} id="mobile-navigation-menu">
-        <div className="mobile-menu-panel" role="dialog" aria-modal="true" aria-label="Điều hướng mobile">
+      <div
+        aria-hidden={!isMenuOpen}
+        className={cn('mobile-menu-overlay', isMenuOpen && 'is-open')}
+        id="mobile-navigation-menu"
+        onClick={(event) => {
+          if (event.target === event.currentTarget) setIsMenuOpen(false)
+        }}
+      >
+        <div className="mobile-menu-panel" onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-label="Điều hướng mobile">
           <div className="mobile-menu-topline">
-            <AssetImage alt="CEO Workforce Index" asset="cwiLogo" className="mobile-menu-logo" loading="eager" />
             <button aria-label="Đóng menu" className="mobile-menu-close" onClick={() => setIsMenuOpen(false)} type="button">×</button>
           </div>
           <nav className="mobile-menu-nav" aria-label="Mobile navigation">
@@ -1214,7 +1246,6 @@ function MobileAdvisorCarousel() {
       <div className="mobile-carousel-meta" aria-live="polite">
         <span>{String(activeIndex + 1).padStart(2, '0')} / {String(visibleAdvisors.length).padStart(2, '0')}</span>
         <i style={progressStyle} />
-        <span>SWIPE →</span>
       </div>
     </div>
   )
@@ -1224,65 +1255,82 @@ type MobileLogoRailVariant = 'organizer' | 'marquee' | 'marqueeReverse'
 
 function MobileLogoRail({
   logos,
-  variant = 'marquee',
+  variant = "marquee",
 }: {
   logos: Array<{ asset: FigmaAssetKey; alt: string }>
   variant?: MobileLogoRailVariant
 }) {
-  const shouldDuplicate = variant !== 'organizer'
+  const railRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const node = railRef.current
+    if (!node || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+
+    let frame = 0
+    let last = performance.now()
+    let interactionTimeout = 0
+    let isInteracting = false
+
+    const pause = () => {
+      isInteracting = true
+      window.clearTimeout(interactionTimeout)
+      interactionTimeout = window.setTimeout(() => {
+        isInteracting = false
+        last = performance.now()
+      }, 900)
+    }
+
+    const resume = () => {
+      window.clearTimeout(interactionTimeout)
+      isInteracting = false
+      last = performance.now()
+    }
+
+    const tick = (now: number) => {
+      const elapsed = Math.min(now - last, 64)
+      last = now
+
+      if (!isInteracting) {
+        const loopWidth = node.scrollWidth / 2
+        if (loopWidth > node.clientWidth) {
+          node.scrollLeft += elapsed * 0.06
+          if (node.scrollLeft >= loopWidth) node.scrollLeft -= loopWidth
+        }
+      }
+
+      frame = window.requestAnimationFrame(tick)
+    }
+
+    node.addEventListener("pointerdown", pause, { passive: true })
+    node.addEventListener("pointerup", resume, { passive: true })
+    node.addEventListener("pointercancel", resume, { passive: true })
+    node.addEventListener("wheel", pause, { passive: true })
+    frame = window.requestAnimationFrame(tick)
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.clearTimeout(interactionTimeout)
+      node.removeEventListener("pointerdown", pause)
+      node.removeEventListener("pointerup", resume)
+      node.removeEventListener("pointercancel", resume)
+      node.removeEventListener("wheel", pause)
+    }
+  }, [logos.length])
 
   return (
-    <div className={cn('mobile-logo-rail', `is-${variant}`)}>
+    <div ref={railRef} className={cn("mobile-logo-rail", "is-" + variant)}>
       <div className="mobile-logo-track">
         {logos.map((logo) => (
-          <div className="mobile-logo-item" key={`${logo.asset}-${logo.alt}`}>
+          <div className="mobile-logo-item" key={logo.asset + "-" + logo.alt}>
             <AssetImage alt={logo.alt} asset={logo.asset} className="mobile-logo-image" />
           </div>
         ))}
-        {shouldDuplicate && logos.map((logo) => (
-          <div aria-hidden="true" className="mobile-logo-item" key={`${logo.asset}-${logo.alt}-duplicate`}>
+        {logos.map((logo) => (
+          <div aria-hidden="true" className="mobile-logo-item" key={logo.asset + "-" + logo.alt + "-duplicate"}>
             <AssetImage alt="" asset={logo.asset} className="mobile-logo-image" />
           </div>
         ))}
       </div>
-    </div>
-  )
-}
-
-function MobileStickyCta() {
-  const [isVisible, setIsVisible] = useState(false)
-
-  useEffect(() => {
-    let frame = 0
-    const syncVisibility = () => {
-      window.cancelAnimationFrame(frame)
-      frame = window.requestAnimationFrame(() => {
-        const hero = document.querySelector<HTMLElement>('[data-mobile-target="#top"]')
-        const footer = document.querySelector<HTMLElement>('[data-mobile-target="#footer"]')
-        const heroBottom = hero ? hero.offsetTop + hero.offsetHeight : 620
-        const footerTop = footer ? footer.offsetTop : Number.POSITIVE_INFINITY
-        const scrollBottom = window.scrollY + window.innerHeight
-        setIsVisible(window.scrollY > heroBottom - 120 && scrollBottom < footerTop + 80)
-      })
-    }
-
-    syncVisibility()
-    window.addEventListener('scroll', syncVisibility, { passive: true })
-    window.addEventListener('resize', syncVisibility)
-
-    return () => {
-      window.cancelAnimationFrame(frame)
-      window.removeEventListener('scroll', syncVisibility)
-      window.removeEventListener('resize', syncVisibility)
-    }
-  }, [])
-
-  return (
-    <div className={cn('mobile-sticky-cta', isVisible && 'is-visible')} aria-hidden={!isVisible}>
-      <RedButton action="survey" className="mobile-sticky-button">
-        <span>Thực hiện khảo sát</span>
-        <AssetImage alt="" aria-hidden="true" asset="arrow1" className="h-[15px] w-[17px]" loading="eager" />
-      </RedButton>
     </div>
   )
 }
@@ -1311,10 +1359,6 @@ function MobileLandingPage() {
             <span>Thực hiện khảo sát</span>
             <AssetImage alt="" aria-hidden="true" asset="arrow1" className="mobile-button-arrow h-[15px] w-[17px]" loading="eager" />
           </RedButton>
-        </div>
-        <div className="mobile-hero-transition" aria-hidden="true">
-          <span>Q3 / 2026</span>
-          <i />
         </div>
       </section>
 
@@ -1412,7 +1456,6 @@ function MobileLandingPage() {
         </nav>
         <p className="mobile-copyright">Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về các <strong>Đơn vị đồng tổ chức và Đối tác.</strong></p>
       </footer>
-      <MobileStickyCta />
     </main>
   )
 }
