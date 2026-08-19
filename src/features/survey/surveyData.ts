@@ -27,6 +27,7 @@ export const jobTitleOptions = [
   'Giám đốc / C-level',
   'Giám đốc Khối / Business Unit',
   'Founder / Chủ doanh nghiệp',
+  'HRD/HRM',
   'Khác',
 ] as const
 

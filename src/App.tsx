@@ -3,6 +3,7 @@ import { LandingPage } from '@/features/landing/LandingPage'
 import { PrivacyPolicyPage } from '@/features/landing/PrivacyPolicyPage'
 import { TermsOfOperationPage } from '@/features/landing/TermsOfOperationPage'
 import { SurveyExperience } from '@/features/survey/SurveyExperience'
+import { clearSurveySession, hasSurveySession } from '@/features/survey/surveyPersistence'
 
 type AppMode = 'landing' | 'survey' | 'privacy' | 'terms'
 type LandingActionEvent = CustomEvent<{ action?: string }>
@@ -11,6 +12,7 @@ function getInitialMode(): AppMode {
   if (typeof window === 'undefined') return 'landing'
   if (window.location.pathname === '/privacy-policy') return 'privacy'
   if (window.location.pathname === '/terms-of-operation') return 'terms'
+  if (hasSurveySession()) return 'survey'
   return 'landing'
 }
 
@@ -51,6 +53,7 @@ function App() {
     return (
       <SurveyExperience
         onBackHome={() => {
+          clearSurveySession()
           setMode('landing')
           window.requestAnimationFrame(() => window.scrollTo({ top: 0 }))
         }}

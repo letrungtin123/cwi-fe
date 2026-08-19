@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react'
-import { CircleAlert, Download, LockKeyhole, X } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Check, CheckCircle2, ChevronDown, CircleAlert, Download, LockKeyhole, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { contactCopy, introCopy, jobTitleOptions, reportParts, roundtableCopy } from './surveyData'
 import { marketBenchmarkData, type MarketBenchmarkData } from './surveyReportData'
@@ -56,6 +56,105 @@ export function IntroScreen({ onStart }: IntroScreenProps) {
   )
 }
 
+function JobTitleSelect({ onChange, value }: { onChange: (value: string) => void; value: string }) {
+  const [open, setOpen] = useState(false)
+  const rootRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const optionRefs = useRef<Array<HTMLButtonElement | null>>([])
+  const options = ['', ...jobTitleOptions]
+  const selectedIndex = Math.max(0, options.findIndex((option) => option === value))
+
+  useEffect(() => {
+    if (!open) return
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) setOpen(false)
+    }
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        setOpen(false)
+        triggerRef.current?.focus()
+      }
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [open])
+
+  const focusOption = (index: number) => {
+    window.requestAnimationFrame(() => optionRefs.current[index]?.focus())
+  }
+
+  const chooseOption = (option: string) => {
+    onChange(option)
+    setOpen(false)
+    window.requestAnimationFrame(() => triggerRef.current?.focus())
+  }
+
+  const handleTriggerKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      setOpen(true)
+      focusOption(selectedIndex)
+    }
+  }
+
+  const handleOptionKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault()
+      focusOption((index + 1) % options.length)
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault()
+      focusOption((index - 1 + options.length) % options.length)
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      chooseOption(options[index])
+    }
+  }
+
+  return (
+    <div className="survey-job-title-select" ref={rootRef}>
+      <button
+        aria-controls="survey-job-title-options"
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        className={cn('survey-job-title-trigger', !value && 'is-placeholder', open && 'is-open')}
+        id="survey-contact-title"
+        onClick={() => setOpen((current) => !current)}
+        onKeyDown={handleTriggerKeyDown}
+        ref={triggerRef}
+        type="button"
+      >
+        <span>{value || 'Chọn chức vụ'}</span>
+        <ChevronDown aria-hidden="true" size={18} />
+      </button>
+      {open ? (
+        <div aria-label="Chọn chức vụ" className="survey-job-title-menu" id="survey-job-title-options" role="listbox">
+          {options.map((option, index) => (
+            <button
+              aria-selected={value === option}
+              className={cn('survey-job-title-option', value === option && option && 'is-selected', !option && 'is-placeholder')}
+              key={option}
+              onClick={() => chooseOption(option)}
+              onKeyDown={(event) => handleOptionKeyDown(event, index)}
+              ref={(element) => { optionRefs.current[index] = element }}
+              role="option"
+              type="button"
+            >
+              <span>{option || 'Chọn chức vụ'}</span>
+              {value === option ? <Check aria-hidden="true" size={16} /> : null}
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  )
+}
 type ContactScreenProps = {
   consent: ConsentChoice
   contact: ContactState
@@ -70,14 +169,14 @@ type ContactScreenProps = {
 
 export function ContactScreen({ consent, contact, error, mode, onBack, onConsentChange, onContactChange, onSkipPrivate, onSubmit }: ContactScreenProps) {
   const isPrivate = mode === 'private'
-  const selectedTitle = contact.jobTitle === 'Khác' ? contact.jobTitleOther.trim() : contact.jobTitle.trim()
+  const selectedTitle = contact.jobTitle.trim()
   const isContactReady = Boolean(contact.name.trim() && contact.email.trim() && selectedTitle)
   const privacyParagraphs = isPrivate ? contactCopy.privatePrivacy : [contactCopy.anonymousPrivacy]
 
   return (
     <section className="survey-form-screen" aria-labelledby="survey-contact-title">
-      <SurveyEyebrow>{isPrivate ? 'PHẦN 2 - KHẢO SÁT ĐỊNH DANH · Nhận báo cáo' : 'PHẦN 1 - KHẢO SÁT KHUYẾT DANH · Nhận báo cáo'}</SurveyEyebrow>
-      <h1 id="survey-contact-title">{isPrivate ? 'Nhận Báo cáo Riêng tư' : 'Nhận Báo cáo Khuyết danh'}</h1>
+      <SurveyEyebrow>{isPrivate ? '\u0050\u0048\u1ea6\u004e 2 - \u004b\u0048\u1ea2\u004f S\u00c1T \u0110\u1eca\u004e\u0048 \u0044\u0041\u004e\u0048 \u00b7 \u004e\u0068\u1ead\u006e \u0062\u00e1o c\u00e1o' : '\u0050\u0048\u1ea6\u004e 1 - \u004b\u0048\u1ea2\u004f S\u00c1T \u004b\u0048\u0055\u0059\u1ebe\u0054 \u0044\u0041\u004e\u0048 \u00b7 \u004e\u0068\u1ead\u006e \u0062\u00e1o c\u00e1o'}</SurveyEyebrow>
+      <h1 id="survey-contact-title">{isPrivate ? '\u004e\u0068\u1ead\u006e B\u00e1o c\u00e1o Ri\u00eang t\u01b0' : '\u004e\u0068\u1ead\u006e B\u00e1o c\u00e1o Khuy\u1ebft danh'}</h1>
       <p className="survey-thankyou">{contactCopy.thankYou}</p>
 
       <form
@@ -90,37 +189,21 @@ export function ContactScreen({ consent, contact, error, mode, onBack, onConsent
         <div className="survey-form-grid">
           <label htmlFor="survey-contact-name">
             <span>Họ tên *</span>
-            <input autoComplete="name" id="survey-contact-name" onChange={(event) => onContactChange({ ...contact, name: event.currentTarget.value })} placeholder="Họ và tên" required value={contact.name} />
+            <input autoComplete="name" id="survey-contact-name" onChange={(event) => onContactChange({ ...contact, name: event.currentTarget.value })} placeholder="Họ và tên" value={contact.name} />
           </label>
           <label htmlFor="survey-contact-email">
             <span>Email công ty cá nhân *</span>
-            <input autoComplete="email" id="survey-contact-email" onChange={(event) => onContactChange({ ...contact, email: event.currentTarget.value })} placeholder="name@company.com" required type="email" value={contact.email} />
+            <input autoComplete="email" id="survey-contact-email" onChange={(event) => onContactChange({ ...contact, email: event.currentTarget.value })} placeholder="name@company.com" inputMode="email" type="text" value={contact.email} />
           </label>
           <label htmlFor="survey-contact-title">
             <span>Chức vụ *</span>
-            <select
-              autoComplete="organization-title"
-              id="survey-contact-title"
-              onChange={(event) => onContactChange({ ...contact, jobTitle: event.currentTarget.value, jobTitleOther: event.currentTarget.value === 'Khác' ? contact.jobTitleOther : '' })}
-              required
+            <JobTitleSelect
+              onChange={(value) => onContactChange({ ...contact, jobTitle: value, jobTitleOther: '' })}
               value={contact.jobTitle}
-            >
-              <option value="">Chọn chức vụ</option>
-              {jobTitleOptions.map((option) => <option key={option} value={option}>{option}</option>)}
-            </select>
-            {contact.jobTitle === 'Khác' ? (
-              <input
-                autoComplete="organization-title"
-                autoFocus
-                onChange={(event) => onContactChange({ ...contact, jobTitleOther: event.currentTarget.value })}
-                placeholder="Nhập chức vụ của Anh/Chị"
-                required
-                value={contact.jobTitleOther}
-              />
-            ) : null}
+            />
           </label>
         </div>
-        {!isContactReady ? (
+        {!isContactReady && !error ? (
           <p className="survey-contact-required" role="status"><CircleAlert aria-hidden="true" size={15} /><span>*Vui lòng nhập thông tin trước khi tiếp tục</span></p>
         ) : null}
 
@@ -149,7 +232,7 @@ export function ContactScreen({ consent, contact, error, mode, onBack, onConsent
         {error ? <p className="survey-inline-error" role="alert">{error}</p> : null}
         <div className="survey-form-actions">
           <button className="survey-primary-button" disabled={isPrivate && consent === 'no'} type="submit">
-            {isPrivate ? 'Nhận báo cáo' : 'Nhận báo cáo Phần 1'}
+            {isPrivate ? '\u0047\u1eedi \u006b\u1ebft qu\u1ea3' : '\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1'}
             <SurveyForwardArrow />
           </button>
           <button className="survey-outline-button" onClick={onBack} type="button">Xem lại câu trả lời</button>
@@ -258,11 +341,11 @@ function ReportIdentity({ mode }: { mode: 'part1' | 'private' }) {
       </div>
       <header className="survey-result-identity">
         <SurveyBrandMark variant="report" />
-        <p className="survey-report-kicker">{isPrivate ? 'PHẦN 2 - KHẢO SÁT ĐỊNH DANH' : 'PHẦN 1 - KHẢO SÁT KHUYẾT DANH'}</p>
-        <h1 id="survey-result-title">{isPrivate ? 'Báo cáo Riêng tư' : 'Báo cáo Khuyết danh'}</h1>
-        <p>{isPrivate ? 'Tổng cấu trúc: 25 trang = tối đa 20 trang kết quả Phần 1 + 5 trang phân tích sâu và khuyến nghị riêng. Wireframe dưới đây là bản demo rút gọn.' : 'Cấu trúc báo cáo đầy đủ: tối đa 20 trang tùy theo dữ liệu đầu vào. Wireframe dưới đây là bản demo rút gọn.'}</p>
+        <p className="survey-report-kicker">{isPrivate ? '\u0047\u1eedi \u006b\u1ebft qu\u1ea3' : '\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1'}</p>
+        <h1 id="survey-result-title">{isPrivate ? '\u0047\u1eedi \u006b\u1ebft qu\u1ea3' : '\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1'}</h1>
+        <p>{isPrivate ? '\u0047\u1eedi \u006b\u1ebft qu\u1ea3' : '\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1'}</p>
         <div className="survey-report-meta">
-          <span>{isPrivate ? 'Phần 1 + Phần 2' : '18 câu · Phần 1'}</span>
+          <span>{isPrivate ? '\u0047\u1eedi \u006b\u1ebft qu\u1ea3' : '\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1'}</span>
         </div>
       </header>
     </>
@@ -589,23 +672,97 @@ export function RoundtableModal({ contact, error, onChange, onClose, onContinue,
         <div className="survey-modal-body">
           <div className="survey-form-grid">
             <label htmlFor="survey-roundtable-name"><span>Họ tên *</span><input autoComplete="name" id="survey-roundtable-name" onChange={(event) => onChange({ ...contact, name: event.currentTarget.value })} value={contact.name} /></label>
-            <label htmlFor="survey-roundtable-email"><span>Email công ty cá nhân *</span><input autoComplete="email" id="survey-roundtable-email" onChange={(event) => onChange({ ...contact, email: event.currentTarget.value })} type="email" value={contact.email} /></label>
+            <label htmlFor="survey-roundtable-email"><span>Email công ty cá nhân *</span><input autoComplete="email" id="survey-roundtable-email" onChange={(event) => onChange({ ...contact, email: event.currentTarget.value })} inputMode="email" type="text" value={contact.email} /></label>
           </div>
           {error ? <p className="survey-inline-error" role="alert">{error}</p> : null}
           {registered ? <p className="survey-success-message">✓ Anh/Chị đã đăng ký tham dự CEO Roundtable thành công.</p> : null}
           <div className="survey-modal-actions">
             {registered ? (
-              <button className="survey-primary-button" onClick={onContinue} type="button">Tiếp tục xem báo cáo</button>
+              <button className="survey-primary-button" onClick={onContinue} type="button">{'\u0054\u0069\u1ebfp \u0074\u1ee5c \u0067\u1eedi \u006b\u1ebft \u0071\u0075\u1ea3'}</button>
             ) : (
               <>
                 <button className="survey-primary-button" onClick={onRegister} type="button">
                   Đăng ký tham dự
                   <SurveyForwardArrow />
                 </button>
-                <button className="survey-outline-button" onClick={onSkip} type="button">Bỏ qua & xem báo cáo</button>
+                <button className="survey-outline-button" onClick={onSkip} type="button">{'\u0042\u1ecf \u0071\u0075\u0061 & \u0067\u1eedi \u006b\u1ebft \u0071\u0075\u1ea3'}</button>
               </>
             )}
           </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const submissionCompleteCopy = {
+  close: '\u0110\u00f3ng',
+  home: '\u0054\u0072\u0061\u006e\u0067 \u0063\u0068\u1ee7',
+  eyebrow: 'KH\u1ea2O S\u00c1T \u0110\u00c3 HO\u00c0N T\u1ea4T',
+  message: 'C\u1ea3m \u01a1n anh/ch\u1ecb \u0111\u00e3 ho\u00e0n th\u00e0nh kh\u1ea3o s\u00e1t. B\u00e1o c\u00e1o s\u1ebd \u0111\u01b0\u1ee3c h\u1ec7 th\u1ed1ng x\u1eed l\u00fd v\u00e0 g\u1eedi \u0111\u1ebfn email anh/ch\u1ecb trong \u00edt ph\u00fat n\u1eefa',
+  title: 'C\u1ea3m \u01a1n anh/ch\u1ecb',
+}
+
+type SubmissionCompleteModalProps = {
+  onClose: () => void
+  onHome: () => void
+  open: boolean
+}
+
+export function SubmissionCompleteModal({ onClose, onHome, open }: SubmissionCompleteModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null)
+  const initialFocusRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+
+    const previousFocus = document.activeElement as HTMLElement | null
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    window.requestAnimationFrame(() => initialFocusRef.current?.focus())
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        onClose()
+        return
+      }
+      if (event.key !== 'Tab' || !modalRef.current) return
+      const focusable = Array.from(modalRef.current.querySelectorAll<HTMLElement>('button, input, [href], [tabindex]:not([tabindex="-1"])'))
+      if (!focusable.length) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = previousOverflow
+      window.requestAnimationFrame(() => previousFocus?.focus())
+    }
+  }, [onClose, open])
+
+  if (!open) return null
+
+  return (
+    <div className="survey-modal-backdrop survey-submission-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }} role="presentation">
+      <div aria-labelledby="survey-submission-title" aria-modal="true" className="survey-submission-modal" ref={modalRef} role="dialog">
+        <div className="survey-submission-modal-content">
+          <div className="survey-submission-modal-top">
+            <div aria-hidden="true" className="survey-submission-modal-icon"><CheckCircle2 size={30} /></div>
+            <button aria-label={submissionCompleteCopy.close} className="survey-submission-modal-close" onClick={onClose} ref={initialFocusRef} type="button"><X aria-hidden="true" size={18} /></button>
+          </div>
+          <SurveyEyebrow>{submissionCompleteCopy.eyebrow}</SurveyEyebrow>
+          <h2 id="survey-submission-title">{submissionCompleteCopy.title}</h2>
+          <p>{submissionCompleteCopy.message}</p>
+          <button className="survey-primary-button survey-submission-modal-button" onClick={onHome} type="button">{submissionCompleteCopy.home}</button>
         </div>
       </div>
     </div>

@@ -11,13 +11,11 @@ import {
   LoadingScreen,
   ResultScreen,
   RoundtableModal,
+  SubmissionCompleteModal,
 } from './SurveyScreens'
 import './survey.css'
 
-type SurveyScreen = 'intro' | 'part1' | 'part2' | 'contact1' | 'contact2' | 'loading' | 'result'
-type ReportMode = 'part1' | 'private'
-type ContactState = { email: string; name: string; jobTitle: string; jobTitleOther: string }
-type ConsentChoice = 'yes' | 'no' | ''
+import { readSurveySession, writeSurveySession, type ContactState, type ConsentChoice, type ReportMode, type SurveyScreen, type SurveySession } from './surveyPersistence'
 
 const emptyContact: ContactState = { email: '', name: '', jobTitle: '', jobTitleOther: '' }
 
@@ -26,7 +24,7 @@ function countAnswers(questions: SurveyQuestion[], hasAnswer: (question: SurveyQ
 }
 
 function isContactValid(contact: ContactState) {
-  const title = contact.jobTitle === 'Khác' ? contact.jobTitleOther.trim() : contact.jobTitle.trim()
+  const title = contact.jobTitle.trim()
   if (!contact.name.trim() || !validEmail(contact.email.trim()) || !title) {
     return 'Vui lòng điền đầy đủ Họ tên, Email công ty cá nhân hợp lệ và Chức vụ.'
   }
@@ -39,23 +37,24 @@ function scrollToTop() {
 }
 
 export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
-  const [screen, setScreen] = useState<SurveyScreen>('intro')
-  const [answers, setAnswers] = useState<Answers>({})
-  const [otherAnswers, setOtherAnswers] = useState<Answers>({})
-  const [activeQuestion, setActiveQuestion] = useState(partOneQuestions[0]?.n ?? 1)
+  const [restoredSession] = useState<SurveySession | null>(() => readSurveySession())
+  const [screen, setScreen] = useState<SurveyScreen>(() => restoredSession?.screen ?? 'intro')
+  const [answers, setAnswers] = useState<Answers>(() => restoredSession?.answers ?? {})
+  const [otherAnswers, setOtherAnswers] = useState<Answers>(() => restoredSession?.otherAnswers ?? {})
+  const [activeQuestion, setActiveQuestion] = useState(() => restoredSession?.activeQuestion ?? partOneQuestions[0]?.n ?? 1)
   const [drawerOpen, setDrawerOpen] = useState(() => window.matchMedia('(min-width: 768px)').matches)
-  const [questionError, setQuestionError] = useState('')
-  const [missingQuestionNumbers, setMissingQuestionNumbers] = useState<number[]>([])
-  const [formError, setFormError] = useState('')
-  const [roundtableError, setRoundtableError] = useState('')
-  const [contact, setContact] = useState<ContactState>(emptyContact)
-  const [roundtableContact, setRoundtableContact] = useState<ContactState>(emptyContact)
-  const [consent, setConsent] = useState<ConsentChoice>('')
-  const [reportMode, setReportMode] = useState<ReportMode>('part1')
-  const [loadingStep, setLoadingStep] = useState(1)
-  const [roundtableOpen, setRoundtableOpen] = useState(false)
-  const [roundtableRegistered, setRoundtableRegistered] = useState(false)
-  const [roundtableRequiresReport, setRoundtableRequiresReport] = useState(false)
+  const [questionError, setQuestionError] = useState(() => restoredSession?.questionError ?? '')
+  const [missingQuestionNumbers, setMissingQuestionNumbers] = useState<number[]>(() => restoredSession?.missingQuestionNumbers ?? [])
+  const [formError, setFormError] = useState(() => restoredSession?.formError ?? '')
+  const [roundtableError, setRoundtableError] = useState(() => restoredSession?.roundtableError ?? '')
+  const [contact, setContact] = useState<ContactState>(() => restoredSession?.contact ?? emptyContact)
+  const [roundtableContact, setRoundtableContact] = useState<ContactState>(() => restoredSession?.roundtableContact ?? emptyContact)
+  const [consent, setConsent] = useState<ConsentChoice>(() => restoredSession?.consent ?? '')
+  const [reportMode, setReportMode] = useState<ReportMode>(() => restoredSession?.reportMode ?? 'part1')
+  const [loadingStep, setLoadingStep] = useState(() => restoredSession?.loadingStep ?? 1)
+  const [roundtableOpen, setRoundtableOpen] = useState(() => restoredSession?.roundtableOpen ?? false)
+  const [roundtableRegistered, setRoundtableRegistered] = useState(() => restoredSession?.roundtableRegistered ?? false)
+  const [submissionModalOpen, setSubmissionModalOpen] = useState(() => restoredSession?.submissionModalOpen ?? false)
   const roundtableTriggerRef = useRef<HTMLButtonElement | null>(null)
 
   const hasAnswer = useCallback(
@@ -68,6 +67,33 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
   const scores = useMemo(() => getSurveyScores(answers), [answers])
   const drawerQuestions = screen === 'part2' ? partTwoQuestions : partOneQuestions
   const canOpenDrawer = screen === 'part1' || screen === 'part2'
+
+  useEffect(() => {
+    if (!restoredSession) return
+    window.requestAnimationFrame(() => window.scrollTo({ behavior: 'auto', top: 0 }))
+  }, [restoredSession])
+
+  useEffect(() => {
+    writeSurveySession({
+      activeQuestion,
+      answers,
+      consent,
+      contact,
+      formError,
+      loadingStep,
+      missingQuestionNumbers,
+      otherAnswers,
+      reportMode,
+      roundtableContact,
+      roundtableError,
+      roundtableOpen,
+      roundtableRegistered,
+      screen,
+      submissionModalOpen,
+      questionError,
+      version: 1,
+    })
+  }, [activeQuestion, answers, consent, contact, formError, loadingStep, missingQuestionNumbers, otherAnswers, questionError, reportMode, roundtableContact, roundtableError, roundtableOpen, roundtableRegistered, screen, submissionModalOpen])
 
   useEffect(() => {
     const desktopMedia = window.matchMedia('(min-width: 768px)')
@@ -84,6 +110,13 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
     setMissingQuestionNumbers([])
     setDrawerOpen((nextScreen === 'part1' || nextScreen === 'part2') && window.matchMedia('(min-width: 768px)').matches)
     window.requestAnimationFrame(scrollToTop)
+  }, [])
+
+  const openSubmissionComplete = useCallback(() => {
+    setSubmissionModalOpen(true)
+    setDrawerOpen(false)
+    setQuestionError('')
+    setMissingQuestionNumbers([])
   }, [])
 
   useEffect(() => {
@@ -175,10 +208,6 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
     goToScreen('contact2')
   }
 
-  const beginReportLoading = (mode: ReportMode) => {
-    setReportMode(mode)
-    goToScreen('loading')
-  }
 
   const startReportLoading = () => {
     if (screen === 'contact1') {
@@ -189,7 +218,6 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
       }
 
       setReportMode('part1')
-      setRoundtableRequiresReport(true)
       setRoundtableContact(contact)
       setRoundtableRegistered(false)
       setRoundtableError('')
@@ -214,7 +242,6 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
     }
 
     setReportMode('private')
-    setRoundtableRequiresReport(true)
     setRoundtableContact(contact)
     setRoundtableRegistered(false)
     setRoundtableError('')
@@ -255,7 +282,6 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
 
   const openRoundtableFromResult = (trigger: HTMLButtonElement) => {
     roundtableTriggerRef.current = trigger
-    setRoundtableRequiresReport(false)
     setRoundtableContact(contact)
     setRoundtableRegistered(false)
     setRoundtableError('')
@@ -268,14 +294,13 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
   }
 
   const continueFromRoundtable = () => {
-    const nextMode = reportMode
-    const shouldStartReport = roundtableRequiresReport
     closeRoundtable()
-    if (shouldStartReport) beginReportLoading(nextMode)
+    openSubmissionComplete()
   }
 
   const backToLanding = () => {
     setRoundtableOpen(false)
+    setSubmissionModalOpen(false)
     onBackHome()
   }
 
@@ -352,7 +377,7 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
           <SurveyQuestionPage
             answers={answers}
             completedCount={partTwoCompleted}
-            endNote="Nhấn “Xem kết quả” để nhận Báo cáo Khuyết danh Phần 1 hoặc Báo cáo toàn phần (Phần 1 + Phần 2), tùy theo phần khảo sát Anh/Chị đã hoàn thành."
+            endNote="Nhấn “Gửi kết quả” để nhận Báo cáo Khuyết danh Phần 1 hoặc Báo cáo toàn phần (Phần 1 + Phần 2), tùy theo phần khảo sát Anh/Chị đã hoàn thành."
             error={questionError}
             intro="Các câu tiếp theo giúp hiểu sâu sắc về chính doanh nghiệp của Anh/Chị từ đó tăng độ chính xác khi phân tích vấn đề và khuyến nghị hành động trong Báo cáo Riêng tư."
             missingQuestionNumbers={missingQuestionNumbers}
@@ -363,9 +388,9 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
             onSecondary={clearPartTwoAnswers}
             otherAnswers={otherAnswers}
             part={2}
-            primaryLabel={partTwoCompleted > 0 ? 'Xem kết quả' : 'Xem kết quả Phần 1'}
+            primaryLabel={partTwoCompleted > 0 ? '\u0047\u1eedi \u006b\u1ebft qu\u1ea3' : '\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1'}
             questions={partTwoQuestions}
-            subtitle="Đây là phần có thông tin riêng và nhạy cảm, nếu Anh/Chị không muốn tham gia khảo sát Phần 2 này, vui lòng nhấn nút “Xem kết quả” bên dưới để nhận Báo cáo Khuyết danh từ Phần 1."
+            subtitle="Đây là phần có thông tin riêng và nhạy cảm, nếu Anh/Chị không muốn tham gia khảo sát Phần 2 này, vui lòng nhấn nút “Gửi kết quả Phần 1” bên dưới để nhận Báo cáo Khuyết danh từ Phần 1."
           />
         ) : null}
 
@@ -433,6 +458,12 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
         onSkip={continueFromRoundtable}
         open={roundtableOpen}
         registered={roundtableRegistered}
+      />
+
+      <SubmissionCompleteModal
+        onClose={() => setSubmissionModalOpen(false)}
+        onHome={backToLanding}
+        open={submissionModalOpen}
       />
     </main>
   )
