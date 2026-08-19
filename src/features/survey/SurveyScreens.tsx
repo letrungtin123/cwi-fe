@@ -604,6 +604,7 @@ function PrivateAnalysisSection({ answers, otherAnswers }: { answers: Answers; o
 type RoundtableModalProps = {
   contact: ContactState
   error?: string
+  isSubmitting?: boolean
   onChange: (next: ContactState) => void
   onClose: () => void
   onContinue: () => void
@@ -613,7 +614,7 @@ type RoundtableModalProps = {
   registered: boolean
 }
 
-export function RoundtableModal({ contact, error, onChange, onClose, onContinue, onRegister, onSkip, open, registered }: RoundtableModalProps) {
+export function RoundtableModal({ contact, error, isSubmitting = false, onChange, onClose, onContinue, onRegister, onSkip, open, registered }: RoundtableModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
   const initialFocusRef = useRef<HTMLButtonElement>(null)
 
@@ -678,14 +679,14 @@ export function RoundtableModal({ contact, error, onChange, onClose, onContinue,
           {registered ? <p className="survey-success-message">✓ Anh/Chị đã đăng ký tham dự CEO Roundtable thành công.</p> : null}
           <div className="survey-modal-actions">
             {registered ? (
-              <button className="survey-primary-button" onClick={onContinue} type="button">{'\u0054\u0069\u1ebfp \u0074\u1ee5c \u0067\u1eedi \u006b\u1ebft \u0071\u0075\u1ea3'}</button>
+              <button className="survey-primary-button" disabled={isSubmitting} onClick={onContinue} type="button">{isSubmitting ? 'Đang gửi kết quả...' : '\u0054\u0069\u1ebfp \u0074\u1ee5c \u0067\u1eedi \u006b\u1ebft \u0071\u0075\u1ea3'}</button>
             ) : (
               <>
-                <button className="survey-primary-button" onClick={onRegister} type="button">
+                <button className="survey-primary-button" disabled={isSubmitting} onClick={onRegister} type="button">
                   Đăng ký tham dự
                   <SurveyForwardArrow />
                 </button>
-                <button className="survey-outline-button" onClick={onSkip} type="button">{'\u0042\u1ecf \u0071\u0075\u0061 & \u0067\u1eedi \u006b\u1ebft \u0071\u0075\u1ea3'}</button>
+                <button className="survey-outline-button" disabled={isSubmitting} onClick={onSkip} type="button">{isSubmitting ? 'Đang gửi kết quả...' : '\u0042\u1ecf \u0071\u0075\u0061 & \u0067\u1eedi \u006b\u1ebft \u0071\u0075\u1ea3'}</button>
               </>
             )}
           </div>

@@ -13,9 +13,11 @@ import {
   RoundtableModal,
   SubmissionCompleteModal,
 } from './SurveyScreens'
+import { createSurveySubmissionIdempotencyKey, submitSurveySubmission } from './surveyApi'
+import { buildSurveySubmissionPayload } from './surveySubmissionPayload'
 import './survey.css'
 
-import { readSurveySession, writeSurveySession, type ContactState, type ConsentChoice, type ReportMode, type SurveyScreen, type SurveySession } from './surveyPersistence'
+import { clearSurveySession, readSurveySession, writeSurveySession, type ContactState, type ConsentChoice, type ReportMode, type SurveyScreen, type SurveySession } from './surveyPersistence'
 
 const emptyContact: ContactState = { email: '', name: '', jobTitle: '', jobTitleOther: '' }
 
@@ -55,6 +57,12 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
   const [roundtableOpen, setRoundtableOpen] = useState(() => restoredSession?.roundtableOpen ?? false)
   const [roundtableRegistered, setRoundtableRegistered] = useState(() => restoredSession?.roundtableRegistered ?? false)
   const [submissionModalOpen, setSubmissionModalOpen] = useState(() => restoredSession?.submissionModalOpen ?? false)
+  const [partTwoPrivacyRefused, setPartTwoPrivacyRefused] = useState(() => restoredSession?.partTwoPrivacyRefused ?? false)
+  const [submissionIdempotencyKey] = useState(() => restoredSession?.submissionIdempotencyKey ?? createSurveySubmissionIdempotencyKey())
+  const [submissionError, setSubmissionError] = useState(() => restoredSession?.submissionError ?? '')
+  const [submittedSubmissionId, setSubmittedSubmissionId] = useState(() => restoredSession?.submittedSubmissionId ?? '')
+  const [submittedAt, setSubmittedAt] = useState(() => restoredSession?.submittedAt ?? '')
+  const [submitting, setSubmitting] = useState(false)
   const roundtableTriggerRef = useRef<HTMLButtonElement | null>(null)
 
   const hasAnswer = useCallback(
@@ -83,17 +91,22 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
       loadingStep,
       missingQuestionNumbers,
       otherAnswers,
+      partTwoPrivacyRefused,
       reportMode,
       roundtableContact,
       roundtableError,
       roundtableOpen,
       roundtableRegistered,
       screen,
+      submittedAt,
+      submittedSubmissionId,
+      submissionError,
+      submissionIdempotencyKey,
       submissionModalOpen,
       questionError,
       version: 1,
     })
-  }, [activeQuestion, answers, consent, contact, formError, loadingStep, missingQuestionNumbers, otherAnswers, questionError, reportMode, roundtableContact, roundtableError, roundtableOpen, roundtableRegistered, screen, submissionModalOpen])
+  }, [activeQuestion, answers, consent, contact, formError, loadingStep, missingQuestionNumbers, otherAnswers, partTwoPrivacyRefused, questionError, reportMode, roundtableContact, roundtableError, roundtableOpen, roundtableRegistered, screen, submittedAt, submittedSubmissionId, submissionError, submissionIdempotencyKey, submissionModalOpen])
 
   useEffect(() => {
     const desktopMedia = window.matchMedia('(min-width: 768px)')
@@ -107,6 +120,7 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
     setScreen(nextScreen)
     setQuestionError('')
     setFormError('')
+    setSubmissionError('')
     setMissingQuestionNumbers([])
     setDrawerOpen((nextScreen === 'part1' || nextScreen === 'part2') && window.matchMedia('(min-width: 768px)').matches)
     window.requestAnimationFrame(scrollToTop)
@@ -205,11 +219,13 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
 
     setMissingQuestionNumbers([])
     setReportMode('private')
+    setPartTwoPrivacyRefused(false)
     goToScreen('contact2')
   }
 
 
   const startReportLoading = () => {
+    setSubmissionError('')
     if (screen === 'contact1') {
       const validationError = isContactValid(contact)
       if (validationError) {
@@ -242,9 +258,11 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
     }
 
     setReportMode('private')
+    setPartTwoPrivacyRefused(false)
     setRoundtableContact(contact)
     setRoundtableRegistered(false)
     setRoundtableError('')
+    setSubmissionError('')
     setRoundtableOpen(true)
   }
 
@@ -262,11 +280,18 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
     setQuestionError('')
     setMissingQuestionNumbers([])
     setActiveQuestion(partTwoQuestions[0]?.n ?? 19)
+    setConsent('')
+    setPartTwoPrivacyRefused(false)
   }
   const skipPrivateReport = () => {
+    const completedPartTwo = partTwoQuestions.every((question) => hasAnswer(question))
+    const refusedAfterPartTwo = consent === 'no' && completedPartTwo
+
     setReportMode('part1')
-    setConsent('')
+    setPartTwoPrivacyRefused(refusedAfterPartTwo)
+    if (!refusedAfterPartTwo) setConsent('')
     setFormError('')
+    setSubmissionError('')
     goToScreen('contact1')
   }
 
@@ -277,6 +302,7 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
     }
 
     setRoundtableError('')
+    setSubmissionError('')
     setRoundtableRegistered(true)
   }
 
@@ -285,6 +311,7 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
     setRoundtableContact(contact)
     setRoundtableRegistered(false)
     setRoundtableError('')
+    setSubmissionError('')
     setRoundtableOpen(true)
   }
 
@@ -293,12 +320,42 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
     window.requestAnimationFrame(() => roundtableTriggerRef.current?.focus())
   }
 
-  const continueFromRoundtable = () => {
-    closeRoundtable()
-    openSubmissionComplete()
+  const continueFromRoundtable = async () => {
+    if (submitting) return
+    if (submittedSubmissionId) {
+      closeRoundtable()
+      openSubmissionComplete()
+      return
+    }
+
+    setSubmitting(true)
+    setSubmissionError('')
+
+    try {
+      const payload = buildSurveySubmissionPayload({
+        answers,
+        consent,
+        contact,
+        otherAnswers,
+        partTwoPrivacyRefused,
+        reportMode,
+        roundtableContact,
+        roundtableRegistered,
+      })
+      const result = await submitSurveySubmission(payload, submissionIdempotencyKey)
+      setSubmittedSubmissionId(result.submissionId)
+      setSubmittedAt(result.submittedAt)
+      closeRoundtable()
+      openSubmissionComplete()
+    } catch (error) {
+      setSubmissionError(error instanceof Error ? error.message : 'Không thể gửi kết quả khảo sát. Vui lòng thử lại.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const backToLanding = () => {
+    if (submittedSubmissionId) clearSurveySession()
     setRoundtableOpen(false)
     setSubmissionModalOpen(false)
     onBackHome()
@@ -404,6 +461,7 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
             onConsentChange={setConsent}
             onContactChange={(nextContact) => {
               setContact(nextContact)
+              setSubmissionError('')
               setFormError('')
             }}
             onSkipPrivate={skipPrivateReport}
@@ -420,10 +478,13 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
             onBack={reviewPartTwoAnswers}
             onConsentChange={(value) => {
               setConsent(value)
+              setPartTwoPrivacyRefused(false)
+              setSubmissionError('')
               setFormError('')
             }}
             onContactChange={(nextContact) => {
               setContact(nextContact)
+              setSubmissionError('')
               setFormError('')
             }}
             onSkipPrivate={skipPrivateReport}
@@ -447,9 +508,11 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
 
       <RoundtableModal
         contact={roundtableContact}
-        error={roundtableError}
+        error={roundtableError || submissionError}
+        isSubmitting={submitting}
         onChange={(nextContact) => {
           setRoundtableContact(nextContact)
+          setSubmissionError('')
           setRoundtableError('')
         }}
         onClose={closeRoundtable}

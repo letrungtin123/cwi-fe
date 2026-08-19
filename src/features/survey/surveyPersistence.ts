@@ -16,12 +16,17 @@ export type SurveySession = {
   loadingStep: number
   missingQuestionNumbers: number[]
   otherAnswers: Answers
+  partTwoPrivacyRefused: boolean
   reportMode: ReportMode
   roundtableContact: ContactState
   roundtableError: string
   roundtableOpen: boolean
   roundtableRegistered: boolean
   screen: SurveyScreen
+  submittedAt: string
+  submittedSubmissionId: string
+  submissionError: string
+  submissionIdempotencyKey: string
   submissionModalOpen: boolean
   questionError: string
   version: 1
