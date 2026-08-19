@@ -20,6 +20,16 @@ export type TextQuestion = {
 
 export type SurveyQuestion = LikertQuestion | McqQuestion | TextQuestion
 
+export const jobTitleOptions = [
+  'Chủ tịch HĐQT',
+  'CEO / Tổng Giám đốc',
+  'Phó Tổng Giám đốc',
+  'Giám đốc / C-level',
+  'Giám đốc Khối / Business Unit',
+  'Founder / Chủ doanh nghiệp',
+  'Khác',
+] as const
+
 export const partOneQuestions: SurveyQuestion[] = [
   { n: 1, type: 'likert', q: 'Doanh nghiệp của chúng tôi có đủ năng lực nhân sự để đạt mục tiêu tăng trưởng mong muốn trong 2–3 năm tới.' },
   { n: 2, type: 'likert', q: 'Đội ngũ quản lý của chúng tôi chuyển hóa chiến lược thành kết quả một cách hiệu quả.' },

@@ -16,17 +16,20 @@ import './survey.css'
 
 type SurveyScreen = 'intro' | 'part1' | 'part2' | 'contact1' | 'contact2' | 'loading' | 'result'
 type ReportMode = 'part1' | 'private'
-type ContactState = { email: string; name: string }
+type ContactState = { email: string; name: string; jobTitle: string; jobTitleOther: string }
 type ConsentChoice = 'yes' | 'no' | ''
 
-const emptyContact: ContactState = { email: '', name: '' }
+const emptyContact: ContactState = { email: '', name: '', jobTitle: '', jobTitleOther: '' }
 
 function countAnswers(questions: SurveyQuestion[], hasAnswer: (question: SurveyQuestion) => boolean) {
   return questions.reduce((count, question) => count + (hasAnswer(question) ? 1 : 0), 0)
 }
 
 function isContactValid(contact: ContactState) {
-  if (!contact.name.trim() || !validEmail(contact.email.trim())) return 'Vui lòng điền đầy đủ Họ tên và Email công ty cá nhân hợp lệ.'
+  const title = contact.jobTitle === 'Khác' ? contact.jobTitleOther.trim() : contact.jobTitle.trim()
+  if (!contact.name.trim() || !validEmail(contact.email.trim()) || !title) {
+    return 'Vui lòng điền đầy đủ Họ tên, Email công ty cá nhân hợp lệ và Chức vụ.'
+  }
   return ''
 }
 
@@ -52,6 +55,7 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
   const [loadingStep, setLoadingStep] = useState(1)
   const [roundtableOpen, setRoundtableOpen] = useState(false)
   const [roundtableRegistered, setRoundtableRegistered] = useState(false)
+  const [roundtableRequiresReport, setRoundtableRequiresReport] = useState(false)
   const roundtableTriggerRef = useRef<HTMLButtonElement | null>(null)
 
   const hasAnswer = useCallback(
@@ -87,14 +91,15 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
 
     setLoadingStep(1)
     const timers = [
-      window.setTimeout(() => setLoadingStep(2), 250),
-      window.setTimeout(() => setLoadingStep(3), 500),
-      window.setTimeout(() => setLoadingStep(4), 750),
-      window.setTimeout(() => goToScreen('result'), 950),
+      window.setTimeout(() => setLoadingStep(2), 350),
+      window.setTimeout(() => setLoadingStep(3), 700),
+      window.setTimeout(() => setLoadingStep(4), 1050),
+      window.setTimeout(() => goToScreen('result'), 1350),
     ]
 
     return () => timers.forEach((timer) => window.clearTimeout(timer))
   }, [goToScreen, screen])
+
 
   const navigateToQuestion = useCallback((questionNumber: number) => {
     setActiveQuestion(questionNumber)
@@ -119,7 +124,12 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
   const handleAnswer = useCallback((question: SurveyQuestion, value: string) => {
     setQuestionError('')
     setMissingQuestionNumbers([])
-    setAnswers((current) => ({ ...current, [question.n]: value }))
+    setAnswers((current) => {
+      const next = { ...current }
+      if (value) next[question.n] = value
+      else delete next[question.n]
+      return next
+    })
     if (value !== OTHER_OPTION) {
       setOtherAnswers((current) => {
         if (!(question.n in current)) return current
@@ -142,7 +152,7 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
 
     if (missing.length) {
       setMissingQuestionNumbers(missing)
-      setQuestionError('Vui lòng trả lời các câu sau trước khi tiếp tục: ' + missing.map((number) => 'Câu ' + number).join(', ') + '.')
+      setQuestionError(`Anh/Chị còn ${missing.length} câu chưa hoàn thành: ${missing.join(', ')}.`)
       return
     }
 
@@ -156,7 +166,7 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
 
     if (missing.length) {
       setMissingQuestionNumbers(missing)
-      setQuestionError('Vui lòng trả lời các câu sau trước khi tiếp tục: ' + missing.map((number) => 'Câu ' + number).join(', ') + '.')
+      setQuestionError(`Anh/Chị chưa hoàn thành PHẦN 2 - KHẢO SÁT ĐỊNH DANH. Vui lòng hoàn tất các câu: ${missing.join(', ')}.`)
       return
     }
 
@@ -165,19 +175,50 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
     goToScreen('contact2')
   }
 
+  const beginReportLoading = (mode: ReportMode) => {
+    setReportMode(mode)
+    goToScreen('loading')
+  }
+
   const startReportLoading = () => {
+    if (screen === 'contact1') {
+      const validationError = isContactValid(contact)
+      if (validationError) {
+        setFormError(validationError)
+        return
+      }
+
+      setReportMode('part1')
+      setRoundtableRequiresReport(true)
+      setRoundtableContact(contact)
+      setRoundtableRegistered(false)
+      setRoundtableError('')
+      setRoundtableOpen(true)
+      return
+    }
+
+    if (!consent) {
+      setFormError('Vui lòng chọn “Đồng ý” hoặc “Không đồng ý” trước khi tiếp tục.')
+      return
+    }
+
+    if (consent === 'no') {
+      setFormError('Vui lòng chọn “Đồng ý” để nhận Báo cáo Riêng tư.')
+      return
+    }
+
     const validationError = isContactValid(contact)
     if (validationError) {
       setFormError(validationError)
       return
     }
 
-    if (screen === 'contact2' && consent !== 'yes') {
-      setFormError('Vui lòng chọn Đồng ý để nhận Báo cáo Riêng tư.')
-      return
-    }
-
-    goToScreen('loading')
+    setReportMode('private')
+    setRoundtableRequiresReport(true)
+    setRoundtableContact(contact)
+    setRoundtableRegistered(false)
+    setRoundtableError('')
+    setRoundtableOpen(true)
   }
 
   const clearPartTwoAnswers = () => {
@@ -198,13 +239,13 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
   const skipPrivateReport = () => {
     setReportMode('part1')
     setConsent('')
+    setFormError('')
     goToScreen('contact1')
   }
 
   const registerRoundtable = () => {
-    const validationError = isContactValid(roundtableContact)
-    if (validationError) {
-      setRoundtableError(validationError)
+    if (!roundtableContact.name.trim() || !validEmail(roundtableContact.email.trim())) {
+      setRoundtableError('Vui lòng điền Họ tên và Email hợp lệ để đăng ký CEO Roundtable.')
       return
     }
 
@@ -214,6 +255,7 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
 
   const openRoundtableFromResult = (trigger: HTMLButtonElement) => {
     roundtableTriggerRef.current = trigger
+    setRoundtableRequiresReport(false)
     setRoundtableContact(contact)
     setRoundtableRegistered(false)
     setRoundtableError('')
@@ -223,6 +265,13 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
   const closeRoundtable = () => {
     setRoundtableOpen(false)
     window.requestAnimationFrame(() => roundtableTriggerRef.current?.focus())
+  }
+
+  const continueFromRoundtable = () => {
+    const nextMode = reportMode
+    const shouldStartReport = roundtableRequiresReport
+    closeRoundtable()
+    if (shouldStartReport) beginReportLoading(nextMode)
   }
 
   const backToLanding = () => {
@@ -357,13 +406,15 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
           />
         ) : null}
 
-        {screen === 'loading' ? <LoadingScreen step={loadingStep} /> : null}
+        {screen === 'loading' ? <LoadingScreen reportMode={reportMode} step={loadingStep} /> : null}
 
         {screen === 'result' ? (
           <ResultScreen
+            answers={answers}
             mode={reportMode}
             onBackHome={backToLanding}
             onOpenRoundtable={openRoundtableFromResult}
+            otherAnswers={otherAnswers}
             scores={scores}
           />
         ) : null}
@@ -377,7 +428,9 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
           setRoundtableError('')
         }}
         onClose={closeRoundtable}
+        onContinue={continueFromRoundtable}
         onRegister={registerRoundtable}
+        onSkip={continueFromRoundtable}
         open={roundtableOpen}
         registered={roundtableRegistered}
       />

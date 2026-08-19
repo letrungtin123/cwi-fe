@@ -20,7 +20,7 @@ export function QuestionCard({ answer, error, isMissing = false, onAnswer, onOth
   return (
     <article className={cn(isMissing && 'is-missing', 'survey-question-card', `is-${question.type}`)} data-question={question.n} id={`survey-q-${question.n}`}>
       <div className="survey-question-number">Câu {question.n}</div>
-      <h1 className="survey-question-title" id={`survey-question-${question.n}`}>{question.q}</h1>
+      <h1 className="survey-question-title" id={`survey-question-${question.n}`}>{question.n}. {question.q}</h1>
       <QuestionInput
         answer={answer}
         describedBy={describedBy}
@@ -90,6 +90,9 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, ot
                   id={id}
                   name={`survey-q-${question.n}`}
                   onChange={() => onAnswer(question, option)}
+                  onClick={() => {
+                    if (part === 2 && answer === option) onAnswer(question, '')
+                  }}
                   type="radio"
                   value={option}
                 />
@@ -127,7 +130,7 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, ot
         className="survey-text-input"
         id={inputId}
         onChange={(event) => onAnswer(question, event.currentTarget.value)}
-        placeholder="https://tencongty.vn"
+        placeholder="https://..."
         type="url"
         value={answer || ''}
       />
