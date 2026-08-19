@@ -1,8 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { CircleAlert, Download, LockKeyhole, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
-import { getAnswerDisplay, type Answers } from './surveyScoring'
-import { contactCopy, introCopy, partOneQuestions, reportParts, roundtableCopy } from './surveyData'
+import { contactCopy, introCopy, reportParts, roundtableCopy } from './surveyData'
 import { marketBenchmarkData, type MarketBenchmarkData } from './surveyReportData'
 import { SurveyBrandMark, SurveyEyebrow, SurveyForwardArrow } from './SurveyChrome'
 
@@ -23,7 +22,7 @@ export function IntroScreen({ onStart }: IntroScreenProps) {
     <section className="survey-intro-screen">
 
       <div className="survey-intro-copy">
-        <SurveyEyebrow>GIỚI THIỆU</SurveyEyebrow>
+        <SurveyEyebrow>{introCopy.eyebrow}</SurveyEyebrow>
         <h1>
           <span>{introCopy.title}</span>
           <span>{introCopy.emphasis}</span>
@@ -71,13 +70,13 @@ type ContactScreenProps = {
 export function ContactScreen({ consent, contact, error, mode, onBack, onConsentChange, onContactChange, onSkipPrivate, onSubmit }: ContactScreenProps) {
   const isPrivate = mode === 'private'
   const isContactReady = Boolean(contact.name.trim() && contact.email.trim())
+  const privacyParagraphs = isPrivate ? contactCopy.privatePrivacy : [contactCopy.anonymousPrivacy]
 
   return (
     <section className="survey-form-screen" aria-labelledby="survey-contact-title">
-
-      <SurveyEyebrow>{isPrivate ? 'PHẦN 2 - KHẢO SÁT ĐỊNH DANH · NHẬN BÁO CÁO' : 'PHẦN 1 - KHẢO SÁT KHUYẾT DANH · NHẬN BÁO CÁO'}</SurveyEyebrow>
-      <h1 id="survey-contact-title">{isPrivate ? 'Nhận Báo cáo Riêng tư' : 'Nhận Báo cáo Khuyết danh'}</h1>
-      <p className="survey-thankyou">{contactCopy.thankYou}</p>
+      <SurveyEyebrow>{isPrivate ? 'PHẦN 2 - KHẢO SÁT ĐỊNH DANH · Nhận báo cáo' : 'PHẦN 1 - KHẢO SÁT KHUYẾT DANH · Tải PDF'}</SurveyEyebrow>
+      <h1 id="survey-contact-title">{isPrivate ? 'Nhận Báo cáo Riêng tư' : 'Tải Báo cáo Khuyết danh'}</h1>
+      {isPrivate ? <p className="survey-thankyou">{contactCopy.thankYou}</p> : null}
 
       <form
         className="survey-contact-form"
@@ -92,7 +91,7 @@ export function ContactScreen({ consent, contact, error, mode, onBack, onConsent
             <input autoComplete="name" id="survey-contact-name" onChange={(event) => onContactChange({ ...contact, name: event.currentTarget.value })} placeholder="Họ và tên" required value={contact.name} />
           </label>
           <label htmlFor="survey-contact-email">
-            <span>Email công ty/cá nhân *</span>
+            <span>Email công ty cá nhân *</span>
             <input autoComplete="email" id="survey-contact-email" onChange={(event) => onContactChange({ ...contact, email: event.currentTarget.value })} placeholder="name@company.com" required type="email" value={contact.email} />
           </label>
         </div>
@@ -100,35 +99,33 @@ export function ContactScreen({ consent, contact, error, mode, onBack, onConsent
           <p className="survey-contact-required" role="status"><CircleAlert aria-hidden="true" size={15} /><span>*Vui lòng nhập thông tin trước khi tiếp tục</span></p>
         ) : null}
 
-        {isPrivate ? (
-          <section className="survey-privacy-section" aria-labelledby="survey-privacy-title">
-            <div className="survey-privacy-heading">
-              <LockKeyhole aria-hidden="true" size={18} />
-              <h2 id="survey-privacy-title">Bảo mật dữ liệu</h2>
+        <section className="survey-privacy-section" aria-labelledby="survey-privacy-title">
+          <div className="survey-privacy-heading">
+            <LockKeyhole aria-hidden="true" size={18} />
+            <h2 id="survey-privacy-title">THÔNG TIN BẢO MẬT</h2>
+          </div>
+          <div className="survey-privacy-copy">
+            {privacyParagraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+          </div>
+          <div aria-disabled={!isContactReady} className="survey-consent-grid" role="radiogroup" aria-label="Đồng ý">
+            <ConsentOption checked={consent === 'yes'} disabled={!isContactReady} id="survey-consent-yes" label="Đồng ý" onChange={() => onConsentChange('yes')} />
+            {isPrivate ? <ConsentOption checked={consent === 'no'} disabled={!isContactReady} id="survey-consent-no" label="Không đồng ý" onChange={() => onConsentChange('no')} /> : null}
+          </div>
+          {isPrivate && consent === 'no' ? (
+            <div className="survey-consent-warning" role="alert">
+              <p>Để nhận được báo cáo vui lòng chọn "Đồng ý" để cấp quyền cho chúng tôi xử lý dữ liệu của Anh/Chị.</p>
+              <button className="survey-text-button" onClick={onSkipPrivate} type="button">Bỏ qua Phần 2 và nhận báo cáo Phần 1</button>
             </div>
-            <div className="survey-privacy-copy">
-              {contactCopy.privacy.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-            </div>
-            <div aria-disabled={!isContactReady} className="survey-consent-grid" role="radiogroup" aria-label="Đồng ý xử lý dữ liệu">
-              <ConsentOption checked={consent === 'yes'} disabled={!isContactReady} id="survey-consent-yes" label="Đồng ý" onChange={() => onConsentChange('yes')} />
-              <ConsentOption checked={consent === 'no'} disabled={!isContactReady} id="survey-consent-no" label="Không đồng ý" onChange={() => onConsentChange('no')} />
-            </div>
-            {consent === 'no' ? (
-              <div className="survey-consent-warning" role="alert">
-                <p>Để nhận được báo cáo vui lòng chọn "Đồng ý" để cấp quyền cho chúng tôi xử lý dữ liệu của Anh/Chị.</p>
-                <button className="survey-text-button" onClick={onSkipPrivate} type="button">Bỏ qua Phần 2 và nhận báo cáo Phần 1</button>
-              </div>
-            ) : null}
-          </section>
-        ) : null}
+          ) : null}
+        </section>
 
         {error ? <p className="survey-inline-error" role="alert">{error}</p> : null}
         <div className="survey-form-actions">
           <button className="survey-primary-button" disabled={isPrivate && consent === 'no'} type="submit">
-            {isPrivate ? 'Nhận báo cáo' : 'Nhận báo cáo Phần 1'}
+            {isPrivate ? 'Nhận báo cáo' : 'Tải xuống PDF'}
             <SurveyForwardArrow />
           </button>
-          <button className="survey-outline-button" onClick={onBack} type="button">Xem lại câu trả lời</button>
+          <button className="survey-outline-button" onClick={onBack} type="button">{isPrivate ? 'Xem lại câu trả lời' : 'Quay lại báo cáo'}</button>
         </div>
       </form>
     </section>
@@ -147,16 +144,14 @@ function ConsentOption({ checked, disabled, id, label, onChange }: { checked: bo
   )
 }
 
-export function LoadingScreen({ mode, step }: { mode: 'part1' | 'private'; step: number }) {
+export function LoadingScreen({ step }: { step: number }) {
   const steps = ['Tổng hợp câu trả lời', 'Đối chiếu dữ liệu', 'Phân tích các nhóm năng lực', 'Tạo báo cáo']
 
   return (
     <section className="survey-loading-screen" aria-live="polite">
       <SurveyBrandMark decorative variant="trust" />
-      <SurveyEyebrow>ĐANG PHÂN TÍCH</SurveyEyebrow>
-
-      <h1>{mode === 'private' ? 'Đang tạo Báo cáo Riêng tư' : 'Đang tạo Báo cáo Khuyết danh'}</h1>
-      <p>{mode === 'private' ? 'Tổng hợp kết quả PHẦN 1 - KHẢO SÁT KHUYẾT DANH và 6 câu PHẦN 2 - KHẢO SÁT ĐỊNH DANH.' : 'Tổng hợp 18 câu PHẦN 1 - KHẢO SÁT KHUYẾT DANH.'}</p>
+      <h1>Đang tạo báo cáo...</h1>
+      <p>Hệ thống đang tổng hợp câu trả lời và chuẩn bị báo cáo.</p>
       <div className="survey-loading-line" aria-hidden="true"><i style={{ width: Math.min(step, 4) * 25 + '%' }} /></div>
       <div className="survey-loading-steps">
         {steps.map((item, index) => (
@@ -171,17 +166,14 @@ export function LoadingScreen({ mode, step }: { mode: 'part1' | 'private'; step:
 }
 
 type ResultScreenProps = {
-  answers: Answers
   mode: 'part1' | 'private'
   onBackHome: () => void
   onOpenRoundtable: (trigger: HTMLButtonElement) => void
-  otherAnswers: Answers
   scores: ScoreSet
 }
 
-export function ResultScreen({ answers, mode, onBackHome, onOpenRoundtable, otherAnswers, scores }: ResultScreenProps) {
+export function ResultScreen({ mode, onBackHome, onOpenRoundtable, scores }: ResultScreenProps) {
   const isPrivate = mode === 'private'
-
 
   return (
     <section className="survey-result-screen" aria-labelledby="survey-result-title">
@@ -190,35 +182,17 @@ export function ResultScreen({ answers, mode, onBackHome, onOpenRoundtable, othe
       <PersonalScoreSection scores={scores} />
       <DomainAnalysisSection domains={scores.domains} />
 
-      <section className="survey-result-section">
-        <ReportSectionHeading number="04" eyebrow="CÂU TRẢ LỜI" title="Câu trả lời của Anh/Chị" />
-        <details className="survey-answer-disclosure">
-          <summary>Xem 18 câu trả lời <span aria-hidden="true">+</span></summary>
-          <div className="survey-answer-list">
-            {partOneQuestions.map((question) => (
-              <article key={question.n}>
-                <strong>{String(question.n).padStart(2, '0')}</strong>
-                <div>
-                  <p>{question.q}</p>
-                  <span>{getAnswerDisplay(question.n, answers, otherAnswers)}</span>
-                </div>
-              </article>
-            ))}
-          </div>
-        </details>
-      </section>
-
-      {isPrivate ? <PrivateAnalysisSection answers={answers} otherAnswers={otherAnswers} /> : null}
+      {isPrivate ? <PrivateAnalysisSection /> : null}
 
       <section className="survey-roundtable-invitation">
-        <SurveyEyebrow>CEO ROUNDTABLE</SurveyEyebrow>
-        <h2>Tiếp tục cuộc đối thoại cùng nhóm CEO Đồng kiến tạo</h2>
-        <p>{roundtableCopy.paragraphs[0]}</p>
+        <SurveyEyebrow>CEO Roundtable</SurveyEyebrow>
+        <h2>Đăng kí tham dự CEO Roundtable</h2>
+        {roundtableCopy.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
         <div className="survey-round-meta">
           {roundtableCopy.meta.map((item) => <span key={item}>{item}</span>)}
         </div>
         <button className="survey-outline-button" onClick={(event) => onOpenRoundtable(event.currentTarget)} type="button">
-          Đăng ký tham dự CEO Roundtable
+          Đăng ký tham dự
         </button>
       </section>
 
@@ -244,14 +218,11 @@ function ReportIdentity({ mode }: { mode: 'part1' | 'private' }) {
       </div>
       <header className="survey-result-identity">
         <SurveyBrandMark variant="report" />
-        <p className="survey-report-kicker">CEO WORKFORCE INDEX · Q3/2026</p>
-        <span className="survey-report-period">BÁO CÁO {isPrivate ? 'RIÊNG TƯ' : 'KHUYẾT DANH'}</span>
-        <h1 id="survey-result-title">Báo cáo chẩn đoán<br />Năng lực Lãnh đạo cho Tăng trưởng</h1>
-        <p>{isPrivate ? 'Báo cáo Riêng tư · Tổng hợp kết quả Phần 1 và bối cảnh doanh nghiệp từ Phần 2.' : 'Báo cáo Khuyết danh · Tổng hợp kết quả từ 18 câu hỏi đánh giá năng lực lãnh đạo.'}</p>
+        <p className="survey-report-kicker">{isPrivate ? 'PHẦN 2 - KHẢO SÁT ĐỊNH DANH' : 'PHẦN 1 - KHẢO SÁT KHUYẾT DANH'}</p>
+        <h1 id="survey-result-title">{isPrivate ? 'Báo cáo Riêng tư' : 'Báo cáo Khuyết danh'}</h1>
+        <p>{isPrivate ? 'Tổng cấu trúc: 25 trang = tối đa 20 trang kết quả Phần 1 + 5 trang phân tích sâu và khuyến nghị riêng. Wireframe dưới đây là bản demo rút gọn.' : 'Cấu trúc báo cáo đầy đủ: tối đa 20 trang tùy theo dữ liệu đầu vào. Wireframe dưới đây là bản demo rút gọn.'}</p>
         <div className="survey-report-meta">
-          <span>CEO Workforce Index</span>
-          <span>Q3/2026</span>
-          <span>{isPrivate ? 'Phần 1 + Phần 2' : 'Phần 1'}</span>
+          <span>{isPrivate ? 'Phần 1 + Phần 2' : '18 câu · Phần 1'}</span>
         </div>
       </header>
     </>
@@ -263,7 +234,7 @@ function ReportSectionHeading({ number, eyebrow, title }: { number: string; eyeb
     <div className="survey-section-heading">
       <span className="survey-report-section-number">{number}</span>
       <div>
-        <SurveyEyebrow>{eyebrow}</SurveyEyebrow>
+        {eyebrow ? <SurveyEyebrow>{eyebrow}</SurveyEyebrow> : null}
         <h2>{title}</h2>
       </div>
     </div>
@@ -275,21 +246,24 @@ function MarketBenchmarkSection({ data }: { data: MarketBenchmarkData }) {
 
   return (
     <section className="survey-result-section survey-market-section">
-      <ReportSectionHeading number="01" eyebrow="KẾT QUẢ THỊ TRƯỜNG" title="Bối cảnh năng lực lãnh đạo Q3/2026" />
-      <p className="survey-section-lede">Bối cảnh thị trường giúp đặt kết quả trong tổng thể nghiên cứu của CEO Workforce Index.</p>
+      <ReportSectionHeading number="1." eyebrow="" title="Kết quả thị trường" />
+      <p className="survey-section-lede">Kết quả thị trường được lấy từ Teaser Report để tạo bối cảnh đối chuẩn.</p>
       {hasLiveData ? (
-        <div className="survey-market-metrics">
-          {data.metrics.map((metric) => (
-            <div key={metric.label}>
-              <span>{metric.label}</span>
-              <strong>{metric.value}</strong>
-              <small>{metric.description}</small>
-            </div>
-          ))}
-        </div>
+        <>
+          <p className="survey-section-lede">{data.sourceLabel}</p>
+          <div className="survey-market-metrics">
+            {data.metrics.map((metric) => (
+              <div key={metric.label}>
+                <span>{metric.label}</span>
+                <strong>{metric.value}</strong>
+                <small>{metric.description}</small>
+              </div>
+            ))}
+          </div>
+        </>
       ) : (
         <div className="survey-market-pending" role="status">
-          <strong>Đối chuẩn thị trường {data.period}</strong>
+          <strong>{data.sourceLabel}</strong>
           <p>Dữ liệu đối chuẩn thị trường đang được tổng hợp trong kỳ nghiên cứu {data.period}.</p>
         </div>
       )}
@@ -299,8 +273,8 @@ function MarketBenchmarkSection({ data }: { data: MarketBenchmarkData }) {
 function PersonalScoreSection({ scores }: { scores: ScoreSet }) {
   return (
     <section className="survey-result-section">
-      <ReportSectionHeading number="02" eyebrow="KẾT QUẢ CỦA ANH/CHỊ" title="Tổng quan từ Phần 1" />
-      <p className="survey-section-lede">Điểm được tính trực tiếp từ các câu trả lời thuộc bộ câu hỏi đánh giá năng lực lãnh đạo.</p>
+      <ReportSectionHeading number="2." eyebrow="" title="Input của Anh/Chị cho 18 câu hỏi" />
+      <p className="survey-section-lede">Tóm tắt các tín hiệu từ câu trả lời của Anh/Chị.</p>
       <div className="survey-score-rows">
         <ScoreRow label="Leadership Capacity" value={scores.overall} />
         <ScoreRow label="Scale Readiness" value={scores.scale} />
@@ -308,12 +282,11 @@ function PersonalScoreSection({ scores }: { scores: ScoreSet }) {
     </section>
   )
 }
-
 function DomainAnalysisSection({ domains }: { domains: ScoreSet['domains'] }) {
   return (
     <section className="survey-result-section">
-      <ReportSectionHeading number="03" eyebrow="5 NHÓM NĂNG LỰC" title="Hồ sơ 5 nhóm năng lực" />
-      <p className="survey-section-lede">Điểm của từng nhóm được tổng hợp từ các câu hỏi trong Phần 1. Biểu đồ radar giúp nhìn nhanh hình thái tổng thể, trong khi thanh điểm cho biết giá trị cụ thể của từng nhóm năng lực.</p>
+      <ReportSectionHeading number="3." eyebrow="" title="Phân tích đối chuẩn" />
+      <p className="survey-section-lede">Phân tích dữ liệu của Anh/Chị, đối chuẩn và xác định doanh nghiệp đang ở đâu so với bối cảnh thị trường.</p>
       <div className="survey-domain-analysis-layout">
         <DomainRadar domains={domains} />
         <DomainBars domains={domains} />
@@ -321,7 +294,6 @@ function DomainAnalysisSection({ domains }: { domains: ScoreSet['domains'] }) {
     </section>
   )
 }
-
 function ScoreRow({ label, value }: { label: string; value: number }) {
   const safeValue = clampScore(value)
   return (
@@ -383,7 +355,7 @@ function DomainRadar({ domains }: { domains: ScoreSet['domains'] }) {
 
   return (
     <figure className="survey-radar-figure">
-      <figcaption>Hình thái 5 nhóm năng lực</figcaption>
+      <figcaption>5 nhóm năng lực<br /><small>Điểm từ 18 câu trả lời</small></figcaption>
       <svg
         aria-label="Biểu đồ radar 5 nhóm năng lực theo điểm số CWI"
         className="survey-radar"
@@ -434,30 +406,48 @@ function DomainBars({ domains }: { domains: ScoreSet['domains'] }) {
   )
 }
 
-function PrivateAnalysisSection({ answers, otherAnswers }: { answers: Answers; otherAnswers: Answers }) {
-  const items = [
-    { title: 'Cơ chế ra quyết định', signal: getAnswerDisplay(19, answers, otherAnswers) },
-    { title: 'Độ sẵn sàng mở rộng', signal: getAnswerDisplay(20, answers, otherAnswers) },
-    { title: 'Mức phụ thuộc vào CEO', signal: getAnswerDisplay(21, answers, otherAnswers) },
-    { title: 'Rào cản tăng trưởng', signal: getAnswerDisplay(22, answers, otherAnswers) },
-    { title: 'Bối cảnh doanh nghiệp', signal: 'Doanh thu: ' + getAnswerDisplay(23, answers, otherAnswers) + ' · Website: ' + getAnswerDisplay(24, answers, otherAnswers) },
-  ]
-
+function PrivateAnalysisSection() {
   return (
     <section className="survey-result-section">
-      <ReportSectionHeading number="05" eyebrow="BỐI CẢNH DOANH NGHIỆP" title="Các tín hiệu từ Phần 2" />
-      <p className="survey-section-lede">Tổng hợp các thông tin Anh/Chị đã cung cấp về cơ chế ra quyết định, khả năng mở rộng, mức độ phụ thuộc vào CEO và bối cảnh tăng trưởng.</p>
       <div className="survey-private-analysis-list">
-        {items.map((item, index) => (
-          <article key={item.title}>
-            <strong>{String(index + 1).padStart(2, '0')}</strong>
-            <div>
-              <span>TÍN HIỆU DOANH NGHIỆP</span>
-              <h3>{item.title}</h3>
-              <p>{item.signal}</p>
-            </div>
-          </article>
-        ))}
+        <article>
+          <strong>01</strong>
+          <div>
+            <span>5 nhóm năng lực</span>
+            <h3>Tổng hợp Phần 1</h3>
+          </div>
+        </article>
+        <article>
+          <strong>02</strong>
+          <div>
+            <span>5 trang phân tích riêng cho doanh nghiệp</span>
+            <p>Phân tích sâu hơn từ 6 câu PHẦN 2 - KHẢO SÁT ĐỊNH DANH, kèm kiến nghị và giải pháp phù hợp với bối cảnh doanh nghiệp.</p>
+          </div>
+        </article>
+        <article>
+          <strong>03</strong>
+          <div>
+            <span>Mức sẵn sàng mở rộng</span>
+            <h3>72/100</h3>
+            <p>Chỉ số minh họa cho khả năng scale của doanh nghiệp.</p>
+          </div>
+        </article>
+        <article>
+          <strong>04</strong>
+          <div>
+            <span>Rủi ro vận hành</span>
+            <h3>3</h3>
+            <p>Nhóm rủi ro ưu tiên được AI gắn cờ để xử lý sớm.</p>
+          </div>
+        </article>
+        <article>
+          <strong>05</strong>
+          <div>
+            <span>Khung hành động</span>
+            <h3>90</h3>
+            <p>Lộ trình minh họa trong 90 ngày để cải thiện năng lực thực thi.</p>
+          </div>
+        </article>
       </div>
     </section>
   )
@@ -530,20 +520,20 @@ export function RoundtableModal({ contact, error, onChange, onClose, onRegister,
         <div className="survey-modal-body">
           <div className="survey-form-grid">
             <label htmlFor="survey-roundtable-name"><span>Họ tên *</span><input autoComplete="name" id="survey-roundtable-name" onChange={(event) => onChange({ ...contact, name: event.currentTarget.value })} value={contact.name} /></label>
-            <label htmlFor="survey-roundtable-email"><span>Email công ty/cá nhân *</span><input autoComplete="email" id="survey-roundtable-email" onChange={(event) => onChange({ ...contact, email: event.currentTarget.value })} type="email" value={contact.email} /></label>
+            <label htmlFor="survey-roundtable-email"><span>Email công ty cá nhân *</span><input autoComplete="email" id="survey-roundtable-email" onChange={(event) => onChange({ ...contact, email: event.currentTarget.value })} type="email" value={contact.email} /></label>
           </div>
           {error ? <p className="survey-inline-error" role="alert">{error}</p> : null}
           {registered ? <p className="survey-success-message">✓ Anh/Chị đã đăng ký tham dự CEO Roundtable thành công.</p> : null}
           <div className="survey-modal-actions">
             {registered ? (
-              <button className="survey-primary-button" onClick={onClose} type="button">Đóng</button>
+              <button className="survey-primary-button" onClick={onClose} type="button">Tiếp tục xem báo cáo</button>
             ) : (
               <>
                 <button className="survey-primary-button" onClick={onRegister} type="button">
                   Đăng ký tham dự
                   <SurveyForwardArrow />
                 </button>
-                <button className="survey-outline-button" onClick={onClose} type="button">Hủy</button>
+                <button className="survey-outline-button" onClick={onClose} type="button">Bỏ qua & xem báo cáo</button>
               </>
             )}
           </div>

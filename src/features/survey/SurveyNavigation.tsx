@@ -1,5 +1,5 @@
 import { useEffect, useRef, type RefObject } from 'react'
-import { Check, Menu, X } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import type { SurveyQuestion } from './surveyData'
 
@@ -36,7 +36,7 @@ export function MobileQuestionNav({
         <small>{completedCount} hoàn tất</small>
         <button aria-label="Mở danh sách câu hỏi" onClick={onOpenNavigator} type="button">
           <Menu aria-hidden="true" size={17} />
-          <span>Danh sách</span>
+          <span>Câu hỏi</span>
         </button>
       </div>
       <div className="survey-mobile-question-nav-track" aria-hidden="true">
@@ -47,7 +47,6 @@ export function MobileQuestionNav({
 }
 
 export function QuestionDrawer({ activeQuestion, hasAnswer, onClose, onJump, open, questions, title }: SurveyNavigationProps & { onClose: () => void; open: boolean }) {
-  const closeButtonRef = useRef<HTMLButtonElement>(null)
   const activeItemRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -56,12 +55,11 @@ export function QuestionDrawer({ activeQuestion, hasAnswer, onClose, onJump, ope
   }, [activeQuestion, open])
 
   useEffect(() => {
-    if (!open) return
+    if (!open || window.matchMedia('(min-width: 768px)').matches) return
 
     const previousFocus = document.activeElement as HTMLElement | null
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    window.requestAnimationFrame(() => closeButtonRef.current?.focus())
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -107,9 +105,6 @@ export function QuestionDrawer({ activeQuestion, hasAnswer, onClose, onJump, ope
             <strong>{title}</strong>
             <small>{completed}/{questions.length} đã trả lời</small>
           </div>
-          <button aria-label="Đóng danh sách câu hỏi" onClick={onClose} ref={closeButtonRef} type="button">
-            <X aria-hidden="true" size={19} />
-          </button>
         </div>
         <QuestionList activeItemRef={activeItemRef} activeQuestion={activeQuestion} hasAnswer={hasAnswer} onJump={onJump} questions={questions} />
       </aside>
@@ -119,21 +114,22 @@ export function QuestionDrawer({ activeQuestion, hasAnswer, onClose, onJump, ope
 
 function QuestionList({ activeItemRef, activeQuestion, hasAnswer, onJump, questions }: Omit<SurveyNavigationProps, 'title'> & { activeItemRef?: RefObject<HTMLButtonElement | null> }) {
   return (
-    <div className="survey-question-list">
+    <div className="survey-question-list" role="list">
       {questions.map((question) => {
         const answered = hasAnswer?.(question) ?? false
+
         return (
           <button
             aria-current={activeQuestion === question.n ? 'step' : undefined}
-            className={cn(answered && 'is-answered', activeQuestion === question.n && 'is-active')}
+            aria-label={'Câu ' + question.n + ': ' + question.q}
+            className={cn('survey-question-dot-button', answered && 'is-answered', activeQuestion === question.n && 'is-active')}
             key={question.n}
-            ref={activeQuestion === question.n ? activeItemRef : undefined}
             onClick={() => onJump?.(question.n)}
+            ref={activeQuestion === question.n ? activeItemRef : undefined}
+            title={'Câu ' + question.n + ': ' + question.q}
             type="button"
           >
-            <span>{formatQuestionNumber(question.n)}</span>
-            <strong>{question.q}</strong>
-            {answered ? <Check aria-hidden="true" size={15} /> : <i aria-hidden="true" />}
+            <span className="survey-question-dot" aria-hidden="true">{formatQuestionNumber(question.n)}</span>
           </button>
         )
       })}

@@ -128,10 +128,11 @@ export const reportParts = [
 export const contactCopy = {
   thankYou:
     'Chúng tôi trân trọng cảm ơn Quý Anh/Chị đã nhận lời đồng hành với tư cách CEO Đồng kiến tạo của CEO Workforce Index 2026 và dành thời gian thực hiện khảo sát này. Vui lòng điền email ở ô bên dưới để nhận Báo cáo được gửi riêng đến Quý Anh/Chị.',
-  privacy: [
-    'Dữ liệu cá nhân được sử dụng nhằm tiếp nhận thông tin khảo sát và gửi thông tin khác liên quan đến hoạt động của Ban Tổ chức. Thông qua đó, Anh/Chị có thể nhận thông tin, tài liệu và hỗ trợ từ Ban Tổ Chức.',
-    'Thông tin riêng của doanh nghiệp là để dùng cho Báo cáo riêng của doanh nghiệp và không dùng để huấn luyện AI. Ban Tổ chức cam kết thu thập, sử dụng, lưu trữ, bảo vệ và xử lý dữ liệu cá nhân theo đúng quy định của pháp luật và Chính sách bảo vệ dữ liệu cá nhân hiện hành.',
-    'Bằng việc chọn "Đồng ý", Anh/Chị xác nhận đã đọc, hiểu và chấp thuận cho Ban Tổ chức dự án CEO Workforce Index thu thập, lưu trữ, sử dụng và xử lý dữ liệu cá nhân của Anh/Chị cho mục đích của sáng kiến cộng đồng này.',
+  anonymousPrivacy:
+    'Bằng việc chọn "Đồng ý", Anh/Chị chấp thuận cho Ban Điều hành dự án CEO Workforce Index thu thập, lưu trữ, xử lý dữ liệu cá nhân của Anh/Chị và gửi báo cáo khảo sát cho Anh/Chị',
+  privatePrivacy: [
+    'Dữ liệu cá nhân được sử dụng nhằm tiếp nhận thông tin khảo sát và gửi thông tin khác liên quan đến hoạt động của Ban Điều hành. Thông qua đó, Anh/Chị có thể nhận thông tin, tài liệu và hỗ trợ từ Ban Điều hành. Ban Điều hành cam kết thu thập, sử dụng, lưu trữ, bảo vệ và xử lý dữ liệu cá nhân theo đúng quy định của pháp luật và Chính sách bảo vệ dữ liệu cá nhân hiện hành.',
+    'Bằng việc chọn "Đồng ý", Anh/Chị xác nhận đã đọc, hiểu và chấp thuận cho Ban Điều hành dự án CEO Workforce Index thu thập, lưu trữ, xử lý dữ liệu cá nhân của Anh/Chị và gửi báo cáo khảo sát cho Anh/Chị',
   ],
 }
 

@@ -6,6 +6,7 @@ import type { SurveyQuestion } from './surveyData'
 type QuestionCardProps = {
   answer?: string
   error?: string
+  isMissing?: boolean
   onAnswer: (question: SurveyQuestion, value: string) => void
   onOtherAnswer: (question: SurveyQuestion, value: string) => void
   otherAnswer?: string
@@ -13,13 +14,12 @@ type QuestionCardProps = {
   question: SurveyQuestion
 }
 
-export function QuestionCard({ answer, error, onAnswer, onOtherAnswer, otherAnswer = '', part, question }: QuestionCardProps) {
+export function QuestionCard({ answer, error, isMissing = false, onAnswer, onOtherAnswer, otherAnswer = '', part, question }: QuestionCardProps) {
   const describedBy = error ? `survey-question-${question.n}-error` : undefined
 
   return (
-    <article className={cn('survey-question-card', `is-${question.type}`)} data-question={question.n} id={`survey-q-${question.n}`}>
-      <div className="survey-question-number" aria-hidden="true">{String(question.n).padStart(2, '0')}</div>
-      <div className="survey-question-kind">CÂU HỎI {question.type === 'likert' ? 'ĐÁNH GIÁ' : question.type === 'mcq' ? 'LỰA CHỌN' : 'THÔNG TIN'}</div>
+    <article className={cn(isMissing && 'is-missing', 'survey-question-card', `is-${question.type}`)} data-question={question.n} id={`survey-q-${question.n}`}>
+      <div className="survey-question-number">Câu {question.n}</div>
       <h1 className="survey-question-title" id={`survey-question-${question.n}`}>{question.q}</h1>
       <QuestionInput
         answer={answer}
@@ -48,11 +48,7 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, ot
   if (question.type === 'likert') {
     return (
       <fieldset aria-describedby={describedBy} aria-invalid={Boolean(error)} className="survey-question-fieldset">
-        <legend className="survey-question-hint">Chọn một mức độ phù hợp nhất</legend>
-        <div aria-hidden="true" className="survey-likert-legend">
-          <span>Không đồng ý</span>
-          <span>Hoàn toàn đồng ý</span>
-        </div>
+        <legend className="survey-question-hint">5 - hoàn toàn đồng ý, 1 - không đồng ý</legend>
         <div className="survey-likert-grid">
           {[1, 2, 3, 4, 5].map((value) => {
             const option = String(value)
@@ -80,7 +76,7 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, ot
   if (question.type === 'mcq') {
     return (
       <fieldset aria-describedby={describedBy} aria-invalid={Boolean(error)} className="survey-question-fieldset">
-        <legend className="survey-question-hint">{question.instruction || '*Lựa chọn 1 đáp án phù hợp nhất'}</legend>
+        <legend className="survey-question-hint">{question.instruction || '*lựa chọn 1 đáp án phù hợp nhất'}</legend>
         <div className="survey-options">
           {question.options.map((option, index) => {
             const id = `survey-p${part}-q${question.n}-o${index}`

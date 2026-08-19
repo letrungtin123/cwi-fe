@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Answers } from './surveyScoring'
 import { getSurveyScores, hasQuestionAnswer, OTHER_OPTION, validEmail } from './surveyScoring'
 import { partOneQuestions, partTwoQuestions, type SurveyQuestion } from './surveyData'
-import { SurveyHeader, type SurveyHeaderMeta } from './SurveyChrome'
+import { SurveyHeader } from './SurveyChrome'
 import { QuestionDrawer } from './SurveyNavigation'
 import { SurveyQuestionPage } from './SurveyQuestionPage'
 import {
@@ -21,33 +21,13 @@ type ConsentChoice = 'yes' | 'no' | ''
 
 const emptyContact: ContactState = { email: '', name: '' }
 
-function getHeaderMeta(screen: SurveyScreen, resultMode: ReportMode): SurveyHeaderMeta {
-  if (screen === 'part1') return { phase: 'Phần 1', state: 'Khảo sát khuyết danh' }
-  if (screen === 'part2') return { phase: 'Phần 2', state: 'Khảo sát định danh' }
-  if (screen === 'contact1') return { phase: 'Nhận báo cáo', state: 'Báo cáo khuyết danh' }
-  if (screen === 'contact2') return { phase: 'Nhận báo cáo', state: 'Báo cáo riêng tư' }
-  if (screen === 'loading') return { phase: 'Đang phân tích', state: resultMode === 'private' ? 'Phần 1 + Phần 2' : 'Phần 1' }
-  if (screen === 'result') return { phase: 'Kết quả', state: resultMode === 'private' ? 'Báo cáo riêng tư' : 'Báo cáo khuyết danh' }
-  return { phase: 'Khảo sát CWI', state: 'CEO Workforce Index 2026Q3' }
-}
-
-function firstUnansweredQuestion(questions: SurveyQuestion[], hasAnswer: (question: SurveyQuestion) => boolean) {
-  return questions.find((question) => !hasAnswer(question))
-}
-
 function countAnswers(questions: SurveyQuestion[], hasAnswer: (question: SurveyQuestion) => boolean) {
   return questions.reduce((count, question) => count + (hasAnswer(question) ? 1 : 0), 0)
 }
 
 function isContactValid(contact: ContactState) {
-  if (!contact.name.trim()) return 'Vui lòng nhập họ tên.'
-  if (!contact.email.trim()) return 'Vui lòng nhập email.'
-  if (!validEmail(contact.email.trim())) return 'Email chưa đúng định dạng.'
+  if (!contact.name.trim() || !validEmail(contact.email.trim())) return 'Vui lòng điền đầy đủ Họ tên và Email công ty cá nhân hợp lệ.'
   return ''
-}
-
-function getQuestionIndex(questions: SurveyQuestion[], questionNumber: number) {
-  return questions.findIndex((question) => question.n === questionNumber)
 }
 
 function scrollToTop() {
@@ -59,8 +39,10 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
   const [screen, setScreen] = useState<SurveyScreen>('intro')
   const [answers, setAnswers] = useState<Answers>({})
   const [otherAnswers, setOtherAnswers] = useState<Answers>({})
-  const [activeQuestion, setActiveQuestion] = useState(partOneQuestions[0].n)
+  const [activeQuestion, setActiveQuestion] = useState(partOneQuestions[0]?.n ?? 1)
+  const [drawerOpen, setDrawerOpen] = useState(() => window.matchMedia('(min-width: 768px)').matches)
   const [questionError, setQuestionError] = useState('')
+  const [missingQuestionNumbers, setMissingQuestionNumbers] = useState<number[]>([])
   const [formError, setFormError] = useState('')
   const [roundtableError, setRoundtableError] = useState('')
   const [contact, setContact] = useState<ContactState>(emptyContact)
@@ -68,7 +50,6 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
   const [consent, setConsent] = useState<ConsentChoice>('')
   const [reportMode, setReportMode] = useState<ReportMode>('part1')
   const [loadingStep, setLoadingStep] = useState(1)
-  const [drawerOpen, setDrawerOpen] = useState(false)
   const [roundtableOpen, setRoundtableOpen] = useState(false)
   const [roundtableRegistered, setRoundtableRegistered] = useState(false)
   const roundtableTriggerRef = useRef<HTMLButtonElement | null>(null)
@@ -83,13 +64,21 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
   const scores = useMemo(() => getSurveyScores(answers), [answers])
   const drawerQuestions = screen === 'part2' ? partTwoQuestions : partOneQuestions
   const canOpenDrawer = screen === 'part1' || screen === 'part2'
-  const headerMeta = getHeaderMeta(screen, reportMode)
 
+  useEffect(() => {
+    const desktopMedia = window.matchMedia('(min-width: 768px)')
+    const syncDrawerWithViewport = () => {
+      if (canOpenDrawer) setDrawerOpen(desktopMedia.matches)
+    }
+    desktopMedia.addEventListener('change', syncDrawerWithViewport)
+    return () => desktopMedia.removeEventListener('change', syncDrawerWithViewport)
+  }, [canOpenDrawer])
   const goToScreen = useCallback((nextScreen: SurveyScreen) => {
     setScreen(nextScreen)
     setQuestionError('')
     setFormError('')
-    setDrawerOpen(false)
+    setMissingQuestionNumbers([])
+    setDrawerOpen((nextScreen === 'part1' || nextScreen === 'part2') && window.matchMedia('(min-width: 768px)').matches)
     window.requestAnimationFrame(scrollToTop)
   }, [])
 
@@ -107,25 +96,29 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
     return () => timers.forEach((timer) => window.clearTimeout(timer))
   }, [goToScreen, screen])
 
-  const jumpToQuestion = useCallback((questionNumber: number) => {
+  const navigateToQuestion = useCallback((questionNumber: number) => {
     setActiveQuestion(questionNumber)
     setQuestionError('')
-    window.requestAnimationFrame(scrollToTop)
+    setMissingQuestionNumbers([])
+    window.requestAnimationFrame(() => {
+      const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+      document.getElementById('survey-q-' + questionNumber)?.scrollIntoView({ behavior, block: 'start' })
+    })
   }, [])
 
   const reviewPartOneAnswers = useCallback(() => {
-    setActiveQuestion(partOneQuestions[partOneQuestions.length - 1]?.n ?? 18)
+    setActiveQuestion(partOneQuestions[0]?.n ?? 1)
     goToScreen('part1')
   }, [goToScreen])
 
   const reviewPartTwoAnswers = useCallback(() => {
-    setActiveQuestion(partTwoQuestions[partTwoQuestions.length - 1]?.n ?? 24)
+    setActiveQuestion(partTwoQuestions[0]?.n ?? 19)
     goToScreen('part2')
   }, [goToScreen])
 
-
   const handleAnswer = useCallback((question: SurveyQuestion, value: string) => {
     setQuestionError('')
+    setMissingQuestionNumbers([])
     setAnswers((current) => ({ ...current, [question.n]: value }))
     if (value !== OTHER_OPTION) {
       setOtherAnswers((current) => {
@@ -139,57 +132,39 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
 
   const handleOtherAnswer = useCallback((question: SurveyQuestion, value: string) => {
     setQuestionError('')
+    setMissingQuestionNumbers([])
     setAnswers((current) => ({ ...current, [question.n]: OTHER_OPTION }))
     setOtherAnswers((current) => ({ ...current, [question.n]: value }))
   }, [])
 
   const continuePartOne = () => {
-    const currentIndex = Math.max(0, getQuestionIndex(partOneQuestions, activeQuestion))
-    const currentQuestion = partOneQuestions[currentIndex] ?? partOneQuestions[0]
-    if (!hasAnswer(currentQuestion)) {
-      setQuestionError('Vui lòng hoàn tất Câu ' + currentQuestion.n + ' trước khi tiếp tục.')
+    const missing = partOneQuestions.filter((question) => !hasAnswer(question)).map((question) => question.n)
+
+    if (missing.length) {
+      setMissingQuestionNumbers(missing)
+      setQuestionError('Vui lòng trả lời các câu sau trước khi tiếp tục: ' + missing.map((number) => 'Câu ' + number).join(', ') + '.')
       return
     }
 
-    if (currentIndex < partOneQuestions.length - 1) {
-      jumpToQuestion(partOneQuestions[currentIndex + 1].n)
-      return
-    }
-
-    const missingQuestion = firstUnansweredQuestion(partOneQuestions, hasAnswer)
-    if (missingQuestion) {
-      setQuestionError('Anh/Chị còn câu chưa hoàn tất trước khi chuyển sang Phần 2.')
-      jumpToQuestion(missingQuestion.n)
-      return
-    }
-
+    setMissingQuestionNumbers([])
     setActiveQuestion(partTwoQuestions[0]?.n ?? 19)
     goToScreen('part2')
   }
 
   const continuePartTwo = () => {
-    const currentIndex = Math.max(0, getQuestionIndex(partTwoQuestions, activeQuestion))
-    const currentQuestion = partTwoQuestions[currentIndex] ?? partTwoQuestions[0]
-    if (!hasAnswer(currentQuestion)) {
-      setQuestionError('Vui lòng hoàn tất Câu ' + currentQuestion.n + ' trước khi tiếp tục.')
+    const missing = partTwoQuestions.filter((question) => !hasAnswer(question)).map((question) => question.n)
+
+    if (missing.length) {
+      setMissingQuestionNumbers(missing)
+      setQuestionError('Vui lòng trả lời các câu sau trước khi tiếp tục: ' + missing.map((number) => 'Câu ' + number).join(', ') + '.')
       return
     }
 
-    if (currentIndex < partTwoQuestions.length - 1) {
-      jumpToQuestion(partTwoQuestions[currentIndex + 1].n)
-      return
-    }
-
-    const missingQuestion = firstUnansweredQuestion(partTwoQuestions, hasAnswer)
-    if (missingQuestion) {
-      setQuestionError('Anh/Chị đã bắt đầu Phần 2. Vui lòng hoàn tất Câu ' + missingQuestion.n + ', hoặc dùng nút nhận báo cáo Phần 1.')
-      jumpToQuestion(missingQuestion.n)
-      return
-    }
-
+    setMissingQuestionNumbers([])
     setReportMode('private')
     goToScreen('contact2')
   }
+
   const startReportLoading = () => {
     const validationError = isContactValid(contact)
     if (validationError) {
@@ -205,6 +180,21 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
     goToScreen('loading')
   }
 
+  const clearPartTwoAnswers = () => {
+    setAnswers((current) => {
+      const next = { ...current }
+      partTwoQuestions.forEach((question) => delete next[question.n])
+      return next
+    })
+    setOtherAnswers((current) => {
+      const next = { ...current }
+      partTwoQuestions.forEach((question) => delete next[question.n])
+      return next
+    })
+    setQuestionError('')
+    setMissingQuestionNumbers([])
+    setActiveQuestion(partTwoQuestions[0]?.n ?? 19)
+  }
   const skipPrivateReport = () => {
     setReportMode('part1')
     setConsent('')
@@ -246,15 +236,11 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
       return
     }
     if (screen === 'part1') {
-      const index = getQuestionIndex(partOneQuestions, activeQuestion)
-      if (index > 0) jumpToQuestion(partOneQuestions[index - 1].n)
-      else goToScreen('intro')
+      goToScreen('intro')
       return
     }
     if (screen === 'part2') {
-      const index = getQuestionIndex(partTwoQuestions, activeQuestion)
-      if (index > 0) jumpToQuestion(partTwoQuestions[index - 1].n)
-      else reviewPartOneAnswers()
+      reviewPartOneAnswers()
       return
     }
     if (screen === 'contact1') {
@@ -271,7 +257,6 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
       <SurveyHeader
         canGoBack={screen !== 'loading'}
         canOpenDrawer={canOpenDrawer}
-        meta={headerMeta}
         onBackHome={handleHeaderBack}
         onOpenDrawer={() => setDrawerOpen(true)}
       />
@@ -279,16 +264,13 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
         activeQuestion={activeQuestion}
         hasAnswer={hasAnswer}
         onClose={() => setDrawerOpen(false)}
-        onJump={(questionNumber) => {
-          setDrawerOpen(false)
-          jumpToQuestion(questionNumber)
-        }}
-        open={drawerOpen}
+        onJump={navigateToQuestion}
+        open={drawerOpen && canOpenDrawer}
         questions={drawerQuestions}
         title={screen === 'part2' ? 'Phần 2 · Khảo sát định danh' : 'Phần 1 · Khảo sát khuyết danh'}
       />
 
-      <div className="survey-shell">
+      <div className={'survey-shell' + (canOpenDrawer ? ' survey-shell--with-question-panel' : '')}>
         {screen === 'intro' ? (
           <IntroScreen
             onStart={() => {
@@ -300,55 +282,41 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
 
         {screen === 'part1' ? (
           <SurveyQuestionPage
-            activeQuestion={activeQuestion}
             answers={answers}
             completedCount={partOneCompleted}
             error={questionError}
-            intro="Phần 1 được xử lý ở chế độ khuyết danh. Anh/Chị vui lòng chọn mức độ phù hợp nhất với thực trạng doanh nghiệp."
+            intro="18 câu hỏi được hiển thị liên tục trên cùng một trang để Anh/Chị có thể đọc, trả lời và xem lại nhanh."
+            missingQuestionNumbers={missingQuestionNumbers}
             onAnswer={handleAnswer}
             onNext={continuePartOne}
-            onOpenNavigator={() => setDrawerOpen(true)}
             onOtherAnswer={handleOtherAnswer}
-            onPrevious={() => {
-              const index = getQuestionIndex(partOneQuestions, activeQuestion)
-              if (index > 0) jumpToQuestion(partOneQuestions[index - 1].n)
-              else goToScreen('intro')
-            }}
+            onPrevious={() => goToScreen('intro')}
             otherAnswers={otherAnswers}
             part={1}
-            primaryLabel="Tiếp tục sang Phần 2"
+            primaryLabel="Tiếp theo"
             questions={partOneQuestions}
-            subtitle="Đánh giá nền tảng năng lực quản lý, kế nhiệm, thực thi chiến lược và khả năng mở rộng."
-
+            subtitle="Hoàn thành 18 câu hỏi trước khi tiếp tục."
           />
         ) : null}
 
         {screen === 'part2' ? (
           <SurveyQuestionPage
-            activeQuestion={activeQuestion}
             answers={answers}
             completedCount={partTwoCompleted}
+            endNote="Nhấn “Xem kết quả” để nhận Báo cáo Khuyết danh Phần 1 hoặc Báo cáo toàn phần (Phần 1 + Phần 2), tùy theo phần khảo sát Anh/Chị đã hoàn thành."
             error={questionError}
-            intro="Phần 2 là phần định danh để tạo Báo cáo Riêng tư. Nếu không muốn cung cấp thêm dữ liệu, Anh/Chị có thể bấm xem báo cáo khi chưa chọn câu nào để nhận Báo cáo Phần 1."
+            intro="Các câu tiếp theo giúp hiểu sâu sắc về chính doanh nghiệp của Anh/Chị từ đó tăng độ chính xác khi phân tích vấn đề và khuyến nghị hành động trong Báo cáo Riêng tư."
+            missingQuestionNumbers={missingQuestionNumbers}
             onAnswer={handleAnswer}
-            onNext={continuePartTwo}
-            onOpenNavigator={() => setDrawerOpen(true)}
+            onNext={partTwoCompleted > 0 ? continuePartTwo : skipPrivateReport}
             onOtherAnswer={handleOtherAnswer}
-            onPrevious={() => {
-              const index = getQuestionIndex(partTwoQuestions, activeQuestion)
-              if (index > 0) jumpToQuestion(partTwoQuestions[index - 1].n)
-              else {
-                setActiveQuestion(partOneQuestions[partOneQuestions.length - 1]?.n ?? 18)
-                goToScreen('part1')
-              }
-            }}
-            onSecondary={skipPrivateReport}
+            onPrevious={reviewPartOneAnswers}
+            onSecondary={clearPartTwoAnswers}
             otherAnswers={otherAnswers}
             part={2}
-            primaryLabel="Xem kết quả khảo sát"
+            primaryLabel={partTwoCompleted > 0 ? 'Xem kết quả' : 'Xem kết quả Phần 1'}
             questions={partTwoQuestions}
-            subtitle="Bổ sung bối cảnh riêng về ra quyết định, mở rộng quy mô, rủi ro vận hành và doanh thu."
-
+            subtitle="Đây là phần có thông tin riêng và nhạy cảm, nếu Anh/Chị không muốn tham gia khảo sát Phần 2 này, vui lòng nhấn nút “Xem kết quả” bên dưới để nhận Báo cáo Khuyết danh từ Phần 1."
           />
         ) : null}
 
@@ -389,15 +357,13 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
           />
         ) : null}
 
-        {screen === 'loading' ? <LoadingScreen mode={reportMode} step={loadingStep} /> : null}
+        {screen === 'loading' ? <LoadingScreen step={loadingStep} /> : null}
 
         {screen === 'result' ? (
           <ResultScreen
-            answers={answers}
             mode={reportMode}
             onBackHome={backToLanding}
             onOpenRoundtable={openRoundtableFromResult}
-            otherAnswers={otherAnswers}
             scores={scores}
           />
         ) : null}
