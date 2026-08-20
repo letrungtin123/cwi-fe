@@ -250,10 +250,10 @@
 
 .spotlight-editorial-rule,
 .spotlight-info-rule {
+  display: block;
   width: 100%;
-  height: 1px;
+  height: auto;
   border: 0;
-  background: rgba(0, 0, 0, 0.55);
 }
 
 .spotlight-editorial-rule {

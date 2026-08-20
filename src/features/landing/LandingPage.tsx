@@ -5,6 +5,8 @@ import { cn } from '@/lib/cn'
 import { figmaAssets, type FigmaAssetKey } from './figmaAssets'
 import spotlightBackground from '@/assets/figma/bg-tieu-diem.png'
 import spotlightBackground2 from '@/assets/figma/bg-tieu-diem2.png'
+import spotlightLineLeft from '@/assets/figma/Line-panel-left.png'
+import spotlightLineRight from '@/assets/figma/Line-panel-right.png'
 import {
   advisors,
   associationLogos,
@@ -469,7 +471,7 @@ function SpotlightEditorial({ mobile = false }: { mobile?: boolean }) {
         <span>Q3/2026</span> Năng lực lãnh đạo
       </h2>
       <p className="spotlight-editorial-subtitle">Nâng cao năng lực lãnh đạo để mở rộng quy mô</p>
-      <div className="spotlight-editorial-rule" />
+      <img alt="" aria-hidden="true" className="spotlight-editorial-rule" src={spotlightLineLeft} />
       <div className="spotlight-editorial-meta">
         <strong>Teaser Report</strong>
         <p>Trích lược những phát hiện cốt lõi từ khảo sát CEO toàn cầu &amp; Việt Nam</p>
@@ -488,7 +490,7 @@ function SpotlightInfo({ desktop = false }: { desktop?: boolean }) {
       <div className="spotlight-info-content">
         <h3><span>Q3 2026</span> Năng lực lãnh đạo</h3>
         <p>Để đánh giá vị thế Hệ cộng lực của doanh nghiệp bạn so với hàng trăm tổ chức khác, tham gia khảo sát để nhận kết quả ngay</p>
-        <div className="spotlight-info-rule" />
+        <img alt="" aria-hidden="true" className="spotlight-info-rule" src={spotlightLineRight} />
         <h3><span>CEO Workforce Index</span></h3>
         <ul>
           <li>Ấn bản khởi đầu · Q3 2026 · Tóm lược điều hành</li>
