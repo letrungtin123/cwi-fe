@@ -1814,6 +1814,7 @@
   .mobile-roundtable-subtitle { margin-top: var(--m-space-3); font-size: var(--m-body-lg); line-height: 1.55; }
   .mobile-roundtable-content > p:not(.mobile-roundtable-subtitle) { margin-top: var(--m-space-4); font-size: var(--m-body); line-height: 1.6; }
   .mobile-roundtable-stats { margin-top: var(--m-space-6); }
+  .mobile-roundtable-button { display: flex; width: min(100%, 344px); min-height: 56px; align-items: center; justify-content: center; margin: var(--m-space-6) auto 0; padding-inline: var(--m-space-5); border-radius: var(--m-radius-pill) !important; font-size: var(--m-body); font-weight: 680; box-shadow: var(--m-shadow-cta) !important; }
   .mobile-roundtable-stats div { min-height: 128px; padding: var(--m-space-5) var(--m-space-3); }
   .mobile-roundtable-stats img { width: 44px; height: 44px; margin-bottom: var(--m-space-3); }
   .mobile-roundtable-stats span { margin-top: var(--m-space-1); font-size: var(--m-small); line-height: 1.45; }

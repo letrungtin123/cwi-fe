@@ -588,6 +588,9 @@ function ReportSection() {
       </div>
 
 
+      <RedButton action="survey" className="absolute left-[70px] top-[435px] h-[50px] w-[330px] text-[16px] font-medium">
+        Đăng kí tham gia
+      </RedButton>
       <div className="absolute left-[594px] top-[80px] h-[480px] w-[686px] rounded-[16px] border border-white/90 p-[9px]">
         <AssetImage alt="Roundtable session" asset="image124" className="h-full w-full rounded-[8px] object-cover" />
       </div>
@@ -1118,6 +1121,7 @@ function MobileLandingPage() {
               </div>
             ))}
           </div>
+          <RedButton action="survey" className="mobile-roundtable-button">Đăng kí tham gia</RedButton>
         </div>
         <div className="mobile-roundtable-photo-frame" data-reveal>
           <AssetImage alt="Roundtable session" asset="image124" className="mobile-roundtable-photo" />
