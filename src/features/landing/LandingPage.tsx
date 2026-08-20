@@ -607,8 +607,8 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     left: 0,
     top: 49,
     image: { frame: { left: -31, top: 28, width: 228, height: 328 }, objectCover: true },
-    title: { text: 'Chairwoman', left: 214.44, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, italic: true },
-    field: { text: 'Chuyển đổi số & Đổi mới Sáng tạo', left: 214.44, top: 251.78, width: 102.01, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    title: { text: 'Chủ tịch', left: 214.44, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
+    field: { text: 'Hội đồng Quản trị\nL&A Holding', left: 214.44, top: 251.78, width: 102.01, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
     name: { text: 'PHẠM THỊ MỸ LỆ', left: 214.14, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 500, uppercase: true, nowrap: true },
   },
   {
@@ -733,7 +733,7 @@ function AdvisorText({ spec }: { spec: AdvisorTextSpec }) {
   }
 
   return (
-    <p className={cn('absolute [word-break:break-word]', spec.alignRight && 'text-right', spec.italic && 'italic', spec.uppercase && 'uppercase', spec.nowrap && 'whitespace-nowrap')} style={style}>
+    <p className={cn('absolute whitespace-pre-line [word-break:break-word]', spec.alignRight && 'text-right', spec.italic && 'italic', spec.uppercase && 'uppercase', spec.nowrap && 'whitespace-nowrap')} style={style}>
       {spec.text}
     </p>
   )
@@ -1000,7 +1000,7 @@ function MobileSectionTitle({ children }: { children: ReactNode }) {
 
 function MobileAdvisorCard({ advisor, isActive }: { advisor: (typeof advisors)[number]; isActive: boolean }) {
   return (
-    <article className={cn('mobile-advisor-card', isActive && 'is-active')}>
+    <article className={cn('mobile-advisor-card', isActive && 'is-active', advisor.name === 'PHẠM THỊ MỸ LỆ' && 'is-primary-advisor')}>
       <AssetImage alt="" aria-hidden="true" asset={advisor.image} className="mobile-advisor-image" />
       <div className="mobile-advisor-blue" />
       <div className="mobile-advisor-copy">

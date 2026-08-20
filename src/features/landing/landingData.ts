@@ -55,8 +55,8 @@ export const advisors: Array<{
   {
     image: 'rectangle4311',
     name: 'PHẠM THỊ MỸ LỆ',
-    title: 'Chairwoman',
-    field: 'Chuyển đổi số & Đổi mới Sáng tạo',
+    title: 'Chủ tịch',
+    field: 'Hội đồng Quản trị\nL&A Holding',
   },
   {
     image: 'headshot138',

@@ -1417,6 +1417,10 @@
     transform: scale(1);
   }
 
+  .mobile-advisor-card.is-primary-advisor .mobile-advisor-copy em {
+    font-style: normal;
+  }
+
   .mobile-advisor-image {
     position: absolute;
     inset: 0;
@@ -1468,6 +1472,7 @@
   }
 
   .mobile-advisor-copy span {
+    white-space: pre-line;
     margin-top: 3px;
     font-size: 13px;
     line-height: 17px;
