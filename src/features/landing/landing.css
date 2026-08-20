@@ -1517,6 +1517,7 @@
   }
 
   .mobile-final-cta {
+    display: none;
     width: min(100%, 560px);
     margin: 0 auto;
     padding: 58px 22px 64px;
