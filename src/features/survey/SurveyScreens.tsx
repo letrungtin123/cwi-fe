@@ -3,7 +3,7 @@ import { Check, CheckCircle2, ChevronDown, CircleAlert, Download, LockKeyhole, X
 import { cn } from '@/lib/cn'
 import { contactCopy, introCopy, jobTitleOptions, reportParts, roundtableCopy } from './surveyData'
 import { marketBenchmarkData, type MarketBenchmarkData } from './surveyReportData'
-import { getAnswerDisplay, type Answers } from './surveyScoring'
+import { getAnswerDisplay, type Answers, validEmail } from './surveyScoring'
 import { SurveyBrandMark, SurveyEyebrow, SurveyForwardArrow } from './SurveyChrome'
 
 type ContactState = { email: string; name: string; jobTitle: string; jobTitleOther: string }
@@ -157,20 +157,23 @@ function JobTitleSelect({ onChange, value }: { onChange: (value: string) => void
 }
 type ContactScreenProps = {
   consent: ConsentChoice
+  dataCollectionConsent?: boolean
   contact: ContactState
   error?: string
   mode: 'part1' | 'private'
   onBack: () => void
   onConsentChange: (value: ConsentChoice) => void
+  onDataCollectionConsentChange?: (value: boolean) => void
   onContactChange: (next: ContactState) => void
   onSkipPrivate: () => void
   onSubmit: () => void
 }
 
-export function ContactScreen({ consent, contact, error, mode, onBack, onConsentChange, onContactChange, onSkipPrivate, onSubmit }: ContactScreenProps) {
+export function ContactScreen({ consent, contact, dataCollectionConsent = false, error, mode, onBack, onConsentChange, onDataCollectionConsentChange, onContactChange, onSkipPrivate, onSubmit }: ContactScreenProps) {
   const isPrivate = mode === 'private'
   const selectedTitle = contact.jobTitle.trim()
-  const isContactReady = Boolean(contact.name.trim() && contact.email.trim() && selectedTitle)
+  const isContactReady = Boolean(contact.name.trim() && validEmail(contact.email.trim()) && selectedTitle)
+  const isSubmitDisabled = !isContactReady || (!isPrivate && !dataCollectionConsent) || (isPrivate && consent === 'no')
   const privacyParagraphs = isPrivate ? contactCopy.privatePrivacy : [contactCopy.anonymousPrivacy]
 
   return (
@@ -203,6 +206,24 @@ export function ContactScreen({ consent, contact, error, mode, onBack, onConsent
             />
           </label>
         </div>
+        {!isPrivate ? (
+          <div className={cn('survey-data-consent', dataCollectionConsent && 'is-checked')}>
+            <input
+              aria-required="true"
+              checked={dataCollectionConsent}
+              className="survey-data-consent-input"
+              id="survey-data-consent"
+              onChange={(event) => onDataCollectionConsentChange?.(event.currentTarget.checked)}
+              type="checkbox"
+            />
+            <label htmlFor="survey-data-consent">
+              <span aria-hidden="true" className="survey-data-consent-box">
+                {dataCollectionConsent ? <Check aria-hidden="true" size={14} strokeWidth={2.5} /> : null}
+              </span>
+              <span className="survey-data-consent-copy">Đồng ý cho dự án CEO Workforce Index thu thập, lưu trữ, xử lý dữ liệu cá nhân và gửi báo cáo khảo sát</span>
+            </label>
+          </div>
+        ) : null}
         {!isContactReady && !error ? (
           <p className="survey-contact-required" role="status"><CircleAlert aria-hidden="true" size={15} /><span>*Vui lòng nhập thông tin trước khi tiếp tục</span></p>
         ) : null}
@@ -231,7 +252,7 @@ export function ContactScreen({ consent, contact, error, mode, onBack, onConsent
 
         {error ? <p className="survey-inline-error" role="alert">{error}</p> : null}
         <div className="survey-form-actions">
-          <button className="survey-primary-button" disabled={isPrivate && consent === 'no'} type="submit">
+          <button className="survey-primary-button" disabled={isSubmitDisabled} type="submit">
             {isPrivate ? '\u0047\u1eedi \u006b\u1ebft qu\u1ea3' : '\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1'}
             <SurveyForwardArrow />
           </button>

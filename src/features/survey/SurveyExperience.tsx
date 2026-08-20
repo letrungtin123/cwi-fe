@@ -52,6 +52,7 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
   const [contact, setContact] = useState<ContactState>(() => restoredSession?.contact ?? emptyContact)
   const [roundtableContact, setRoundtableContact] = useState<ContactState>(() => restoredSession?.roundtableContact ?? emptyContact)
   const [consent, setConsent] = useState<ConsentChoice>(() => restoredSession?.consent ?? '')
+  const [dataCollectionConsent, setDataCollectionConsent] = useState(() => restoredSession?.dataCollectionConsent ?? false)
   const [reportMode, setReportMode] = useState<ReportMode>(() => restoredSession?.reportMode ?? 'part1')
   const [loadingStep, setLoadingStep] = useState(() => restoredSession?.loadingStep ?? 1)
   const [roundtableOpen, setRoundtableOpen] = useState(() => restoredSession?.roundtableOpen ?? false)
@@ -86,6 +87,7 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
       activeQuestion,
       answers,
       consent,
+      dataCollectionConsent,
       contact,
       formError,
       loadingStep,
@@ -106,7 +108,7 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
       questionError,
       version: 1,
     })
-  }, [activeQuestion, answers, consent, contact, formError, loadingStep, missingQuestionNumbers, otherAnswers, partTwoPrivacyRefused, questionError, reportMode, roundtableContact, roundtableError, roundtableOpen, roundtableRegistered, screen, submittedAt, submittedSubmissionId, submissionError, submissionIdempotencyKey, submissionModalOpen])
+  }, [activeQuestion, answers, consent, contact, dataCollectionConsent, formError, loadingStep, missingQuestionNumbers, otherAnswers, partTwoPrivacyRefused, questionError, reportMode, roundtableContact, roundtableError, roundtableOpen, roundtableRegistered, screen, submittedAt, submittedSubmissionId, submissionError, submissionIdempotencyKey, submissionModalOpen])
 
   useEffect(() => {
     const desktopMedia = window.matchMedia('(min-width: 768px)')
@@ -230,6 +232,11 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
       const validationError = isContactValid(contact)
       if (validationError) {
         setFormError(validationError)
+        return
+      }
+
+      if (!dataCollectionConsent) {
+        setFormError('Vui lòng đồng ý cho dự án CEO Workforce Index xử lý dữ liệu trước khi gửi kết quả Phần 1.')
         return
       }
 
@@ -454,11 +461,17 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
         {screen === 'contact1' ? (
           <ContactScreen
             consent={consent}
+            dataCollectionConsent={dataCollectionConsent}
             contact={contact}
             error={formError}
             mode="part1"
             onBack={reviewPartOneAnswers}
             onConsentChange={setConsent}
+            onDataCollectionConsentChange={(value) => {
+              setDataCollectionConsent(value)
+              setSubmissionError('')
+              setFormError('')
+            }}
             onContactChange={(nextContact) => {
               setContact(nextContact)
               setSubmissionError('')

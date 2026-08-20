@@ -11,6 +11,7 @@ export type SurveySession = {
   activeQuestion: number
   answers: Answers
   consent: ConsentChoice
+  dataCollectionConsent: boolean
   contact: ContactState
   formError: string
   loadingStep: number
