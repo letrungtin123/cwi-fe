@@ -1,7 +1,7 @@
 .design-page-shell {
   --figma-scale: 1;
   --figma-header-scale: 1;
-  --figma-page-height: 4111px;
+  --figma-page-height: 3784px;
   min-height: var(--figma-page-height);
   overflow-x: hidden;
   background: #f4f5f7;
@@ -28,7 +28,7 @@
   top: 0;
   left: 0;
   width: 1440px;
-  height: 4742px;
+  height: 3784px;
   margin: 0;
   overflow: hidden;
   background: #fff;
@@ -172,6 +172,178 @@
   backdrop-filter: blur(20px);
 }
 
+.spotlight-section {
+  color: #020617;
+  font-family: var(--font-inter);
+}
+
+.spotlight-grid {
+  display: grid;
+  grid-template-columns: 710px 442px;
+  gap: 38px;
+  width: 1264px;
+  height: 472px;
+  margin: 30px auto 0;
+}
+
+.spotlight-editorial,
+.spotlight-info {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+}
+
+.spotlight-editorial {
+  display: flex;
+  flex-direction: column;
+  padding: 27px 32px 28px 40px;
+  background-color: #fff;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.spotlight-editorial-brand {
+  display: flex;
+  align-items: center;
+  min-height: 49px;
+  color: #000;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.spotlight-editorial-logo {
+  width: 108px;
+  height: 49px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.spotlight-editorial-divider {
+  width: 1px;
+  height: 46px;
+  margin: 0 17px;
+  background: rgba(0, 0, 0, 0.64);
+}
+
+.spotlight-editorial-title {
+  max-width: 660px;
+  margin: 45px 0 0;
+  color: #2fd3c4;
+  font-size: 38px;
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+
+.spotlight-editorial-title span {
+  white-space: nowrap;
+}
+
+.spotlight-editorial-subtitle {
+  margin: 3px 0 0;
+  color: #020617;
+  font-size: 23px;
+  font-weight: 400;
+  line-height: 29px;
+}
+
+.spotlight-editorial-rule,
+.spotlight-info-rule {
+  width: 100%;
+  height: 1px;
+  border: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.spotlight-editorial-rule {
+  margin: 17px 0 14px;
+}
+
+.spotlight-editorial-meta {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 0;
+  color: #0a0a0a;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.spotlight-editorial-meta strong {
+  font-weight: 650;
+}
+
+.spotlight-editorial-meta p {
+  max-width: 390px;
+  margin: 0;
+}
+
+.spotlight-info {
+  display: flex;
+  flex-direction: column;
+  padding: 32px 32px 0;
+  color: #fff;
+  background-color: #03275c;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.spotlight-info-content {
+  min-width: 0;
+}
+
+.spotlight-info h3 {
+  margin: 0;
+  color: #2fd3c4;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 26px;
+  letter-spacing: 0;
+}
+
+.spotlight-info h3 span {
+  color: #2fd3c4;
+}
+
+.spotlight-info p {
+  max-width: 360px;
+  margin: 7px 0 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.spotlight-info-rule {
+  margin: 28px 0 24px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.spotlight-info ul {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding: 0 0 0 22px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.spotlight-info li {
+  padding-left: 1px;
+}
+
+.spotlight-cta {
+  width: calc(100% - 36px);
+  min-height: 47px;
+  margin: auto 18px 24px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  box-shadow: 0 10px 24px rgba(233, 37, 43, 0.28);
+}
 .figma-chart-grid {
   background-image:
     linear-gradient(to right, rgba(20, 78, 175, 0.12) 1px, transparent 1px),
@@ -1330,7 +1502,7 @@
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-inline: contain;
     touch-action: pan-x;
-  }
+  }
 .mobile-logo-image {
     max-width: 100%;
     max-height: 66px;
@@ -2262,5 +2434,101 @@
   .mobile-logo-image {
     max-width: 100%;
     max-height: 58px;
+  }  .mobile-report-section {
+    padding-top: 40px;
+    padding-bottom: 48px;
   }
+
+  .spotlight-grid-mobile {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    width: 100%;
+    height: auto;
+    margin: 0;
+  }
+
+  .spotlight-editorial,
+  .spotlight-info {
+    border-radius: 24px;
+  }
+
+  .spotlight-editorial {
+    min-height: clamp(320px, 94vw, 430px);
+    padding: 24px;
+  }
+
+  .spotlight-editorial-brand {
+    min-height: 42px;
+    font-size: 14px;
+  }
+
+  .spotlight-editorial-logo {
+    width: 92px;
+    height: 42px;
+  }
+
+  .spotlight-editorial-divider {
+    height: 38px;
+    margin-inline: 12px;
+  }
+
+  .spotlight-editorial-title {
+    max-width: 100%;
+    margin-top: clamp(32px, 9vw, 52px);
+    font-size: clamp(30px, 8.5vw, 40px);
+    line-height: 1.06;
+  }
+
+  .spotlight-editorial-subtitle {
+    max-width: 340px;
+    margin-top: 6px;
+    font-size: clamp(18px, 5vw, 23px);
+    line-height: 1.25;
+  }
+
+  .spotlight-editorial-rule {
+    margin: 20px 0 14px;
+  }
+
+  .spotlight-editorial-meta {
+    grid-template-columns: 108px minmax(0, 1fr);
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  .spotlight-info {
+    min-height: 430px;
+    padding: 26px 24px 0;
+  }
+
+  .spotlight-info h3 {
+    font-size: 19px;
+    line-height: 25px;
+  }
+
+  .spotlight-info p {
+    max-width: none;
+    margin-top: 8px;
+    font-size: 15px;
+    line-height: 21px;
+  }
+
+  .spotlight-info-rule {
+    margin: 24px 0 22px;
+  }
+
+  .spotlight-info ul {
+    gap: 10px;
+    padding-left: 20px;
+    font-size: 15px;
+    line-height: 20px;
+  }
+
+  .spotlight-cta {
+    width: 100%;
+    min-height: 54px;
+    margin: auto 0 20px;
+    font-size: 15px;
+  }
+
 }

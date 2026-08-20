@@ -1,13 +1,15 @@
 import { LazyMotion, domAnimation, m, type Variants } from 'framer-motion'
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ImgHTMLAttributes, type ReactNode } from 'react'
+import { SquarePen } from 'lucide-react'
+import { useEffect, useRef, useState, type CSSProperties, type ImgHTMLAttributes, type ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 import { figmaAssets, type FigmaAssetKey } from './figmaAssets'
+import spotlightBackground from '@/assets/figma/bg-tieu-diem.png'
+import spotlightBackground2 from '@/assets/figma/bg-tieu-diem2.png'
 import {
   advisors,
   associationLogos,
   navItems,
   organizerLogos,
-  reportStats,
   roundtableStats,
 } from './landingData'
 import './landing.css'
@@ -50,92 +52,13 @@ const desktopHeroReveal: Variants = {
   },
 }
 const FIGMA_CANVAS_WIDTH = 1440
-const FIGMA_CANVAS_HEIGHT = 4111
+const FIGMA_CANVAS_HEIGHT = 3784
 const figmaScrollTargets: Record<(typeof navTargets)[number], number> = {
   '#top': 0,
   '#report': 874,
   '#report-card': 874,
-  '#roundtable': 1817,
-  '#footer': 3729,
-}
-
-function parseStatCount(value: string) {
-  const match = value.match(/^(.*?)(\d[\d.,]*)(.*)$/)
-  if (!match) return null
-
-  const target = Number(match[2].replace(/[^\d]/g, ''))
-  if (!Number.isFinite(target)) return null
-
-  return {
-    prefix: match[1],
-    suffix: match[3],
-    target,
-  }
-}
-
-function AnimatedStatValue({ value }: { value: string }) {
-  const parts = useMemo(() => parseStatCount(value), [value])
-  const [current, setCurrent] = useState(0)
-  const hasStartedRef = useRef(false)
-  const nodeRef = useRef<HTMLSpanElement>(null)
-
-  useEffect(() => {
-    if (!parts) return
-
-    const node = nodeRef.current
-    if (!node) return
-
-    let frame = 0
-    let startTimer = 0
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting || hasStartedRef.current) return
-
-        hasStartedRef.current = true
-        setCurrent(0)
-
-        startTimer = window.setTimeout(() => {
-          const duration = 1800
-          const startedAt = window.performance.now()
-
-          const animate = (now: number) => {
-            const progress = Math.min(1, (now - startedAt) / duration)
-            const eased = 1 - Math.pow(1 - progress, 3)
-            setCurrent(Math.round(parts.target * eased))
-
-            if (progress < 1) {
-              frame = window.requestAnimationFrame(animate)
-              return
-            }
-
-            setCurrent(parts.target)
-            observer.disconnect()
-          }
-
-          frame = window.requestAnimationFrame(animate)
-        }, 180)
-      },
-      { rootMargin: '0px 0px -22% 0px', threshold: 0.65 },
-    )
-
-    observer.observe(node)
-
-    return () => {
-      window.clearTimeout(startTimer)
-      window.cancelAnimationFrame(frame)
-      observer.disconnect()
-    }
-  }, [parts])
-
-  if (!parts) return <span>{value}</span>
-
-  return (
-    <span ref={nodeRef} aria-label={value}>
-      {parts.prefix}
-      {current}
-      {parts.suffix}
-    </span>
-  )
+  '#roundtable': 1490,
+  '#footer': 3402,
 }
 
 function getViewportScale() {
@@ -534,118 +457,73 @@ function HeroSection() {
   )
 }
 
-function ReportCard() {
+function SpotlightEditorial({ mobile = false }: { mobile?: boolean }) {
   return (
-    <article id="report-card" className="figma-report-card absolute left-[716px] top-0 h-[613px] w-[577px]">
-      <div className="absolute left-[14px] top-[14px] h-[398px] w-[550px] overflow-hidden rounded-[10px] bg-[#00132f]">
-        <AssetImage alt="" aria-hidden="true" asset="bgForm" className="absolute inset-0 h-full w-full object-cover" />
-        <h3 className="absolute left-[35px] top-[30px] w-[413px] text-[30px] font-medium leading-[35px] text-white">
-          Mở khóa báo cáo chẩn đoán năng lực lãnh đạo
-        </h3>
-        <p className="absolute left-[35px] top-[106px] w-[333px] text-[16px] font-normal leading-[19px] text-white">
-          Khám phá vị thế năng lực của doanh nghiệp bạn so với 100+ tổ chức khác.
-        </p>
-        <AssetImage alt="" aria-hidden="true" asset="group9304" className="absolute left-[291px] top-[38px] h-[242px] w-[46px]" />
-        <AssetImage alt="" aria-hidden="true" asset="group9302" className="absolute left-[469px] top-[106px] h-[16px] w-[16px]" />
-        <AssetImage alt="" aria-hidden="true" asset="frame619" className="absolute left-[34px] top-[353px] h-[29px] w-[23px]" />
-        
+    <article className="spotlight-editorial" style={{ backgroundImage: 'url(' + spotlightBackground + ')' }}>
+      <div className="spotlight-editorial-brand">
+        <AssetImage alt="CEO Workforce Index" asset="cwiLogo" className="spotlight-editorial-logo" loading="eager" />
+        <span aria-hidden="true" className="spotlight-editorial-divider" />
+        <span>Tiêu điểm quý</span>
       </div>
-      <RedButton action="unlock-report" className="absolute left-[42px] top-[442px] h-[47px] w-[491px] text-[16px] font-normal">
-        <AssetImage alt="" aria-hidden="true" asset="iconUnlock" className="h-[18px] w-[18px]" />
-        <span>Mở khóa báo cáo / Làm khảo sát</span>
-      </RedButton>
-      <button className="figma-button-outline figma-inter absolute left-[42px] top-[504px] h-[47px] w-[495px] rounded-[40px] text-[16px]" data-action="download-teaser" onClick={() => emitLandingAction('download-teaser')} type="button">
-        <AssetImage alt="" aria-hidden="true" asset="iconDownload" className="h-[16px] w-[16px]" />
-        <span>Tải báo cáo teaser miễn phí</span>
-      </button>
-      <div className="absolute left-0 top-[575px] flex w-full items-center justify-center gap-[10px] text-center text-[14px] leading-[17px] text-[#e1242a]">
-        <AssetImage alt="" aria-hidden="true" asset="frame585" className="h-[12px] w-[10px]" />
-        <p>
-          <strong className="font-medium">BẢO MẬT DỮ LIỆU</strong>: Vui lòng xác thực tài khoản Client để mở khóa báo cáo
-        </p>
+      <h2 className="spotlight-editorial-title" id={mobile ? 'mobile-report-title' : 'report-title'}>
+        <span>Q3/2026</span> Năng lực lãnh đạo
+      </h2>
+      <p className="spotlight-editorial-subtitle">Nâng cao năng lực lãnh đạo để mở rộng quy mô</p>
+      <div className="spotlight-editorial-rule" />
+      <div className="spotlight-editorial-meta">
+        <strong>Teaser Report</strong>
+        <p>Trích lược những phát hiện cốt lõi từ khảo sát CEO toàn cầu &amp; Việt Nam</p>
       </div>
     </article>
   )
 }
 
-function ReportChart() {
+function SpotlightInfo({ desktop = false }: { desktop?: boolean }) {
   return (
-    <div className="absolute left-[49px] top-[201px] h-[478px] w-[626px]">
-      <div className="absolute left-[48px] top-[33px] h-[376px] w-[553px] overflow-hidden">
-        <div className="figma-chart-grid absolute inset-0" />
-        <AssetImage alt="" aria-hidden="true" asset="rectangle4233" className="absolute inset-0 h-full w-full" />
-        <AssetImage alt="" aria-hidden="true" asset="vector153" className="absolute left-0 top-[68px] h-[310px] w-[524px]" />
-        <AssetImage alt="" aria-hidden="true" asset="vector154" className="absolute left-[1px] top-[68px] h-[310px] w-[523px]" />
-        {[0, 87, 174, 262, 349, 523].map((x, index) => (
-          <AssetImage alt="" aria-hidden="true" asset="ellipse2006" className="absolute h-[4px] w-[4px]" key={x} style={{ left: x - 2, top: [375.7, 279.9, 236.4, 243, 233.2, 66.8][index] }} />
-        ))}
+    <article
+      className="spotlight-info"
+      id={desktop ? 'report-card' : undefined}
+      style={{ backgroundImage: 'url(' + spotlightBackground2 + ')' }}
+    >
+      <div className="spotlight-info-content">
+        <h3><span>Q3 2026</span> Năng lực lãnh đạo</h3>
+        <p>Để đánh giá vị thế Hệ cộng lực của doanh nghiệp bạn so với hàng trăm tổ chức khác, tham gia khảo sát để nhận kết quả ngay</p>
+        <div className="spotlight-info-rule" />
+        <h3><span>CEO Workforce Index</span></h3>
+        <ul>
+          <li>Ấn bản khởi đầu · Q3 2026 · Tóm lược điều hành</li>
+          <li>15 trang ~ 6 phút đọc</li>
+          <li>Thực hiện bài đánh giá ngắn để biết doanh nghiệp mình đang ở đâu</li>
+        </ul>
       </div>
-      <p className="absolute left-0 top-0 w-[230px] text-[16px] font-normal leading-[26px] text-black">TỐC ĐỘ TĂNG TRƯỞNG</p>
-      <div className="absolute left-0 top-[55px] text-[14px] font-normal leading-[26px] text-black">
-        <span className="absolute left-0 top-0">100</span>
-        <span className="absolute left-0 top-[87px]">75</span>
-        <span className="absolute left-0 top-[174px]">50</span>
-        <span className="absolute left-0 top-[262px]">25</span>
-        <span className="absolute left-[10px] top-[347px]">0</span>
-      </div>
-      <div className="absolute left-0 top-0 text-[14px] font-normal leading-[26px] text-black">
-        <span className="absolute left-[105px] top-[434px]">Q3/2025</span>
-        <span className="absolute left-[197px] top-[434px]">Q4/2025</span>
-        <span className="absolute left-[289px] top-[434px]">Q1/2026</span>
-        <span className="absolute left-[379px] top-[434px]">Q2/2026</span>
-        <span className="absolute left-[470px] top-[434px] font-medium text-[#144eaf]">Q3/2026</span>
-        <span className="absolute left-[564px] top-[434px]">Q4/2026</span>
-      </div>
-      <div className="figma-chart-axis-x" aria-hidden="true" />
-      <div className="figma-chart-axis-y" aria-hidden="true" />
-      <AssetImage alt="" aria-hidden="true" asset="group9334" className="absolute left-[450px] top-[146px] h-[63.2px] w-[63.2px]" />
-    </div>
+      <RedButton action="survey" className="spotlight-cta">
+        <SquarePen aria-hidden="true" size={19} strokeWidth={1.8} />
+        <span>Bắt đầu khảo sát</span>
+      </RedButton>
+    </article>
   )
 }
 
 function ReportSection() {
   return (
-    <m.section id="report" className="absolute left-0 top-[874px] h-[890px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="report-title">
-      <h2 id="report-title" className="absolute left-[90px] top-0 text-[35px] font-medium leading-[40px] text-black">
-        Tiêu điểm quý <em className="italic text-[#3bd6c6]">3/2026</em>
-      </h2>
-      <p className="absolute left-[90px] top-[45px] w-[500px] text-[20px] font-normal leading-[20px] text-black">
-        Nâng cao năng lực lãnh đạo để mở rộng quy mô
-      </p>
-      <p className="absolute left-[90px] top-[80px] w-[500px] text-[16px] font-normal leading-[20px] text-black">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </p>
-      <ReportChart />
-      <ReportCard />
-      <div className="absolute left-[75px] top-[715px] h-[147px] w-[1295px]">
-        {[323.75, 647.5, 971.25].map((left) => (
-          <div className="absolute top-[32px] h-[104px] w-px bg-[#d9d9d9]" key={left} style={{ left }} />
-        ))}
-        {reportStats.map((stat, index) => {
-          const slots = [
-            { left: 0, width: 323.75 },
-            { left: 323.75, width: 323.75 },
-            { left: 647.5, width: 323.75 },
-            { left: 971.25, width: 323.75 },
-          ]
-          const slot = slots[index]
-
-          return (
-            <div className="absolute top-0 h-full text-center" key={stat.value} style={slot}>
-              <AssetImage alt="" aria-hidden="true" asset={stat.icon} className="absolute left-1/2 top-[26px] h-[46px] w-[60px] -translate-x-1/2 object-contain" />
-              <strong className="absolute left-0 top-[84px] w-full text-center text-[18px] font-medium leading-[22px] text-[#144eaf]"><AnimatedStatValue value={stat.value} /></strong>
-              <span className="absolute left-0 top-[108px] w-full text-center text-[14px] font-normal leading-[18px] text-black">{stat.label}</span>
-            </div>
-          )
-        })}
+    <m.section
+      id="report"
+      className="spotlight-section absolute left-0 top-[874px] h-[563px] w-full"
+      initial="hidden"
+      whileInView="show"
+      viewport={desktopMotionViewport}
+      variants={desktopSectionReveal}
+      aria-labelledby="report-title"
+    >
+      <div className="spotlight-grid">
+        <SpotlightEditorial />
+        <SpotlightInfo desktop />
       </div>
     </m.section>
   )
-}
-
-function RoundtableSection() {
+}function RoundtableSection() {
   return (
-    <m.section id="roundtable" className="absolute left-[40px] top-[1817px] h-[640px] w-[1360px] overflow-hidden rounded-[20px]" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="roundtable-title">
+    <m.section id="roundtable" className="absolute left-[40px] top-[1490px] h-[640px] w-[1360px] overflow-hidden rounded-[20px]" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="roundtable-title">
       <AssetImage alt="" aria-hidden="true" asset="bgCircleCeo" className="absolute inset-0 h-full w-full object-cover" />
 
       <div className="absolute left-[70px] top-[94px] w-[420px] text-white">
@@ -965,7 +843,7 @@ function FigmaLogoAsset({ spec }: { spec: FigmaLogoSpec }) {
 }
 function AdvisorsSection() {
   return (
-    <section className="absolute left-0 top-[2527px] h-[708px] w-full" aria-labelledby="advisors-title">
+    <section className="absolute left-0 top-[2200px] h-[708px] w-full" aria-labelledby="advisors-title">
       <AssetImage alt="" aria-hidden="true" asset="frame606" className="absolute left-[-162px] top-[24px] h-[728px] w-[895px] rotate-180 object-contain opacity-70" />
       <AssetImage alt="" aria-hidden="true" asset="frame605" className="absolute left-[1115px] top-[291px] h-[728px] w-[895px] rotate-180 object-contain opacity-70" />
       <m.div className="absolute left-0 top-0 h-[284px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal}>
@@ -1008,7 +886,7 @@ function AdvisorsSection() {
 
 function PartnersSection() {
   return (
-    <m.section className="absolute left-0 top-[3305px] h-[401px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="partners-title">
+    <m.section className="absolute left-0 top-[2978px] h-[401px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="partners-title">
       <FigmaSectionLabel
         as="h2"
         className="absolute left-0 top-0 h-[19px] w-full"
@@ -1057,7 +935,7 @@ function PartnersSection() {
 }
 function FooterSection() {
   return (
-    <m.footer id="footer" className="absolute left-[99px] top-[3729px] h-[382px] w-[1451px] text-black" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} data-node-id="94:276">
+    <m.footer id="footer" className="absolute left-[99px] top-[3402px] h-[382px] w-[1451px] text-black" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} data-node-id="94:276">
       <div className="absolute left-[1046px] top-0 flex h-[382px] w-[405px] items-center justify-center" data-node-id="94:277">
         <div className="flex-none -scale-y-100">
           <AssetImage alt="" aria-hidden="true" asset="image131" className="h-[382px] w-[405px] object-cover" />
@@ -1117,74 +995,6 @@ function MobileSectionTitle({ children }: { children: ReactNode }) {
       <span />
       <strong>{children}</strong>
       <span />
-    </div>
-  )
-}
-
-function MobileReportChart() {
-  const yLabels = [100, 75, 50, 25, 0]
-  const xLabels = ['Q3/2025', 'Q4/2025', 'Q1/2026', 'Q2/2026', 'Q3/2026', 'Q4/2026']
-
-  return (
-    <div className="mobile-chart-shell" data-reveal>
-      <div className="mobile-chart-heading">TỐC ĐỘ TĂNG TRƯỞNG</div>
-      <div className="mobile-chart-scroll" aria-label="Tốc độ tăng trưởng theo quý">
-        <div className="mobile-chart-inner">
-          <div className="mobile-chart-grid" />
-          <AssetImage alt="" aria-hidden="true" asset="vector154" className="mobile-chart-fill" />
-          <AssetImage alt="" aria-hidden="true" asset="vector153" className="mobile-chart-line" />
-          <AssetImage alt="" aria-hidden="true" asset="group9334" className="mobile-chart-focus" />
-          <div className="mobile-chart-y-labels" aria-hidden="true">
-            {yLabels.map((label) => <span key={label}>{label}</span>)}
-          </div>
-          <div className="mobile-chart-x-labels">
-            {xLabels.map((label) => <span className={label === 'Q3/2026' ? 'is-active' : undefined} key={label}>{label}</span>)}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function MobileUnlockCard() {
-  return (
-    <article className="mobile-unlock-card" data-mobile-target="#report-card" data-reveal>
-      <div className="mobile-unlock-visual">
-        <AssetImage alt="" aria-hidden="true" asset="bgForm" className="mobile-unlock-bg" />
-        <div className="mobile-unlock-copy">
-          <h3>Mở khóa báo cáo chẩn đoán năng lực lãnh đạo</h3>
-          <p>Khám phá vị thế năng lực của doanh nghiệp bạn so với 100+ tổ chức khác.</p>
-        </div>
-        <AssetImage alt="" aria-hidden="true" asset="frame619" className="mobile-unlock-lock" />
-      </div>
-      <RedButton action="unlock-report" className="mobile-action-button">
-        <AssetImage alt="" aria-hidden="true" asset="iconUnlock" className="h-[18px] w-[18px]" />
-        <span>Mở khóa báo cáo / Làm khảo sát</span>
-      </RedButton>
-      <button className="figma-button-outline figma-inter mobile-outline-button" data-action="download-teaser" onClick={() => emitLandingAction('download-teaser')} type="button">
-        <AssetImage alt="" aria-hidden="true" asset="iconDownload" className="h-[16px] w-[16px]" />
-        <span>Tải báo cáo teaser miễn phí</span>
-      </button>
-      <p className="mobile-security-note">
-        <AssetImage alt="" aria-hidden="true" asset="frame585" className="h-[12px] w-[10px]" />
-        <span><strong>BẢO MẬT DỮ LIỆU</strong>: Vui lòng xác thực tài khoản Client để mở khóa báo cáo</span>
-      </p>
-    </article>
-  )
-}
-
-function MobileStats() {
-  return (
-    <div className="mobile-stats-list" aria-label="Thông số nghiên cứu">
-      {reportStats.map((stat) => (
-        <div className="mobile-stat-row" data-reveal key={stat.value}>
-          <AssetImage alt="" aria-hidden="true" asset={stat.icon} className="mobile-stat-icon" />
-          <div>
-            <strong><AnimatedStatValue value={stat.value} /></strong>
-            <span>{stat.label}</span>
-          </div>
-        </div>
-      ))}
     </div>
   )
 }
@@ -1363,17 +1173,11 @@ function MobileLandingPage() {
       </section>
 
       <section className="mobile-section mobile-report-section" data-mobile-target="#report" aria-labelledby="mobile-report-title">
-        <div className="mobile-report-copy" data-reveal>
-          <span className="mobile-kicker">Q3 / 2026</span>
-          <h2 id="mobile-report-title">Tiêu điểm quý <em>3/2026</em></h2>
-          <p className="mobile-report-subtitle">Nâng cao năng lực lãnh đạo để mở rộng quy mô</p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <div className="spotlight-grid spotlight-grid-mobile" data-reveal>
+          <SpotlightEditorial mobile />
+          <SpotlightInfo />
         </div>
-        <MobileReportChart />
-        <MobileUnlockCard />
-        <MobileStats />
       </section>
-
       <section className="mobile-roundtable" data-mobile-target="#roundtable" aria-labelledby="mobile-roundtable-title">
         <AssetImage alt="" aria-hidden="true" asset="bgCircleCeo" className="mobile-roundtable-bg" />
         <div className="mobile-roundtable-content" data-reveal>
