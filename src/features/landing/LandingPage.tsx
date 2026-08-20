@@ -626,8 +626,8 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     left: 615,
     top: 49.27,
     image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65, roundedTopLeft: true }, objectCover: true },
-    title: { text: 'Giám đốc AI,', left: 214.44, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
-    field: { text: 'Vinsmart Future', left: 214.44, top: 251.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    title: { text: 'Giám đốc AI,', left: 214.44, top: 246.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
+    field: { text: 'Vinsmart Future', left: 214.44, top: 263.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
     name: { text: 'PHẠM TIẾN KHA', left: 214.14, top: 291.45, width: 138.44, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
@@ -635,8 +635,8 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     left: 861.35,
     top: 49.27,
     image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65, roundedTopLeft: true }, objectCover: true },
-    title: { text: 'TGĐ ctcp đầu tư tài', left: 214.44, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
-    field: { text: 'chính HOÀNG MINH', left: 214.44, top: 251.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    title: { text: 'TGĐ ctcp đầu tư tài', left: 214.44, top: 246.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
+    field: { text: 'chính HOÀNG MINH', left: 214.44, top: 263.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
     name: { text: 'ĐINH KIM NHUNG', left: 214.14, top: 291.45, width: 138.44, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
 ]

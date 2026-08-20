@@ -1422,6 +1422,10 @@
     font-style: normal;
   }
 
+  .mobile-advisor-card.is-featured-advisor .mobile-advisor-copy strong {
+    margin-top: 4px;
+  }
+
   .mobile-advisor-image {
     position: absolute;
     inset: 0;
