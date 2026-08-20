@@ -718,7 +718,6 @@ export function RoundtableModal({ contact, error, isSubmitting = false, onChange
 }
 
 const submissionCompleteCopy = {
-  close: '\u0110\u00f3ng',
   home: '\u0054\u0072\u0061\u006e\u0067 \u0063\u0068\u1ee7',
   eyebrow: 'KH\u1ea2O S\u00c1T \u0110\u00c3 HO\u00c0N T\u1ea4T',
   message: 'C\u1ea3m \u01a1n anh/ch\u1ecb \u0111\u00e3 ho\u00e0n th\u00e0nh kh\u1ea3o s\u00e1t. B\u00e1o c\u00e1o s\u1ebd \u0111\u01b0\u1ee3c h\u1ec7 th\u1ed1ng x\u1eed l\u00fd v\u00e0 g\u1eedi \u0111\u1ebfn email anh/ch\u1ecb trong \u00edt ph\u00fat n\u1eefa',
@@ -726,12 +725,11 @@ const submissionCompleteCopy = {
 }
 
 type SubmissionCompleteModalProps = {
-  onClose: () => void
   onHome: () => void
   open: boolean
 }
 
-export function SubmissionCompleteModal({ onClose, onHome, open }: SubmissionCompleteModalProps) {
+export function SubmissionCompleteModal({ onHome, open }: SubmissionCompleteModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
   const initialFocusRef = useRef<HTMLButtonElement>(null)
 
@@ -744,11 +742,6 @@ export function SubmissionCompleteModal({ onClose, onHome, open }: SubmissionCom
     window.requestAnimationFrame(() => initialFocusRef.current?.focus())
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        onClose()
-        return
-      }
       if (event.key !== 'Tab' || !modalRef.current) return
       const focusable = Array.from(modalRef.current.querySelectorAll<HTMLElement>('button, input, [href], [tabindex]:not([tabindex="-1"])'))
       if (!focusable.length) return
@@ -769,22 +762,21 @@ export function SubmissionCompleteModal({ onClose, onHome, open }: SubmissionCom
       document.body.style.overflow = previousOverflow
       window.requestAnimationFrame(() => previousFocus?.focus())
     }
-  }, [onClose, open])
+  }, [open])
 
   if (!open) return null
 
   return (
-    <div className="survey-modal-backdrop survey-submission-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }} role="presentation">
+    <div className="survey-modal-backdrop survey-submission-backdrop" role="presentation">
       <div aria-labelledby="survey-submission-title" aria-modal="true" className="survey-submission-modal" ref={modalRef} role="dialog">
         <div className="survey-submission-modal-content">
           <div className="survey-submission-modal-top">
             <div aria-hidden="true" className="survey-submission-modal-icon"><CheckCircle2 size={30} /></div>
-            <button aria-label={submissionCompleteCopy.close} className="survey-submission-modal-close" onClick={onClose} ref={initialFocusRef} type="button"><X aria-hidden="true" size={18} /></button>
           </div>
           <SurveyEyebrow>{submissionCompleteCopy.eyebrow}</SurveyEyebrow>
           <h2 id="survey-submission-title">{submissionCompleteCopy.title}</h2>
           <p>{submissionCompleteCopy.message}</p>
-          <button className="survey-primary-button survey-submission-modal-button" onClick={onHome} type="button">{submissionCompleteCopy.home}</button>
+          <button className="survey-primary-button survey-submission-modal-button" onClick={onHome} ref={initialFocusRef} type="button">{submissionCompleteCopy.home}</button>
         </div>
       </div>
     </div>

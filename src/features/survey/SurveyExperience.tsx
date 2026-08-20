@@ -537,7 +537,6 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
       />
 
       <SubmissionCompleteModal
-        onClose={() => setSubmissionModalOpen(false)}
         onHome={backToLanding}
         open={submissionModalOpen}
       />
