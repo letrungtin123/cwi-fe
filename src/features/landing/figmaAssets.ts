@@ -8,6 +8,7 @@ import brand65 from '@/assets/figma/brand-image-65.png'
 import brand67 from '@/assets/figma/brand-image-67.png'
 import brand68 from '@/assets/figma/brand-image-68.png'
 import cwiLogo from '@/assets/figma/cwi-logo.svg'
+import dinhKimNhung from '@/assets/figma/dinhkimnhung.png'
 import ellipse2006 from '@/assets/figma/ellipse-2006.svg'
 import footerLogo from '@/assets/figma/footer-logo.svg'
 import frame585 from '@/assets/figma/frame-585.svg'
@@ -24,12 +25,10 @@ import group9333 from '@/assets/figma/group-9333.svg'
 import group9334 from '@/assets/figma/group-9334.svg'
 import group9336 from '@/assets/figma/group-9336.svg'
 import headshot138 from '@/assets/figma/headshot-138.png'
-import headshot139 from '@/assets/figma/headshot-139.png'
 import headshot140 from '@/assets/figma/headshot-140.png'
 import headshot141 from '@/assets/figma/headshot-141.png'
 import headshot142 from '@/assets/figma/headshot-142.png'
 import headshot143 from '@/assets/figma/headshot-143.png'
-import headshot144 from '@/assets/figma/headshot-144.png'
 import iconDownload from '@/assets/figma/icon-download.svg'
 import iconLanguage from '@/assets/figma/icon-language.svg'
 import iconRound1 from '@/assets/figma/icon-round-1.svg'
@@ -71,8 +70,11 @@ import logo94 from '@/assets/figma/logo-image-94.png'
 import logo126 from '@/assets/figma/logo-image-126.png'
 import logo127 from '@/assets/figma/logo-image-127.png'
 import logoGroup204 from '@/assets/figma/logo-group-204.svg'
+import logoVietsuccess from '@/assets/figma/logo-vietsuccess.png'
+import logoZengerFolkman from '@/assets/figma/logo-zenger-folkman.png'
 import mercury from '@/assets/figma/mercury.png'
 import peterMillar from '@/assets/figma/peter-millar.png'
+import phamTienKha from '@/assets/figma/phamtienkha.png'
 import rectangle4233 from '@/assets/figma/rectangle-4233.svg'
 import rectangle4234 from '@/assets/figma/rectangle-4234.svg'
 import rectangle4235 from '@/assets/figma/rectangle-4235.svg'
@@ -98,6 +100,7 @@ export const figmaAssets = {
   brand67,
   brand68,
   cwiLogo,
+  dinhKimNhung,
   ellipse2006,
   footerLogo,
   frame585,
@@ -114,12 +117,10 @@ export const figmaAssets = {
   group9334,
   group9336,
   headshot138,
-  headshot139,
   headshot140,
   headshot141,
   headshot142,
   headshot143,
-  headshot144,
   iconDownload,
   iconLanguage,
   iconRound1,
@@ -161,8 +162,11 @@ export const figmaAssets = {
   logo126,
   logo127,
   logoGroup204,
+  logoVietsuccess,
+  logoZengerFolkman,
   mercury,
   peterMillar,
+  phamTienKha,
   rectangle4233,
   rectangle4234,
   rectangle4235,

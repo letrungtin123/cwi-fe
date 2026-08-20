@@ -12,6 +12,7 @@ import {
   associationLogos,
   navItems,
   organizerLogos,
+  partnerLogos,
   roundtableStats,
 } from './landingData'
 import './landing.css'
@@ -604,7 +605,7 @@ type AdvisorCardSpec = {
 const advisorCardSpecs: AdvisorCardSpec[] = [
   {
     advisor: advisors[0],
-    left: 0,
+    left: 122.3,
     top: 49,
     image: { frame: { left: -31, top: 28, width: 228, height: 328 }, objectCover: true },
     title: { text: 'Chủ tịch', left: 214.44, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
@@ -613,7 +614,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
   },
   {
     advisor: advisors[1],
-    left: 246.35,
+    left: 368.65,
     top: 49.27,
     image: { frame: { left: 0, top: 29.95, width: 232.35, height: 295.5 }, image: { left: '-35.21%', top: '-12.05%', width: '156.95%', height: '123.43%' } },
     title: { text: 'Chuyên gia', left: 217.87, top: 234.78, translateXFull: true, alignRight: true, color: '#fff', fontSize: 11, fontWeight: 300, italic: true, nowrap: true },
@@ -622,80 +623,26 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
   },
   {
     advisor: advisors[2],
-    left: 492.7,
+    left: 615,
     top: 49.27,
-    image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65, roundedTopLeft: true }, image: { left: '-26.82%', top: 0, width: '139.72%', height: '100%' } },
-    title: { text: 'Chuyên gia', left: 220.21, top: 233.16, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, italic: true },
-    field: { text: 'Chiến lược & Quản trị Tổ chức', left: 220.21, top: 251.78, width: 97.96, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
-    name: { text: 'TRƯƠNG BÌNH NGUYÊN', left: 78.53, top: 291.45, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
+    image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65, roundedTopLeft: true }, objectCover: true },
+    title: { text: 'Giám đốc AI,', left: 220.21, top: 233.16, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
+    field: { text: 'Vinsmart Future', left: 220.21, top: 251.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    name: { text: 'PHẠM TIẾN KHA', left: 220.21, top: 291.45, width: 138.44, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[3],
-    left: 739.06,
+    left: 861.35,
     top: 49.27,
-    image: { frame: { left: 0, top: 9.71, width: 232.35, height: 315.74 }, image: { left: '-36.7%', top: '-2.05%', width: '154.04%', height: '113.23%' } },
-    title: { text: 'Chuyên gia', left: 216.97, top: 236.4, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, italic: true },
-    field: { text: 'Quản trị Nhân sự Cao cấp', left: 216.97, top: 253.4, width: 100.39, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
-    name: { text: 'TRẦN MẠNH TƯỞNG', left: 86.63, top: 291.45, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
-  },
-  {
-    advisor: advisors[4],
-    left: 985.41,
-    top: 49,
-    image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65 }, image: { left: '-70.42%', top: '0.01%', width: '225.02%', height: '161.15%' } },
-    title: { text: 'Chuyên gia', left: 216.16, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, italic: true },
-    field: { text: 'Kinh tế & Hội nhập Quốc tế', left: 216.16, top: 251.78, width: 99.58, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
-    name: { text: 'LÊ THỊ THÚY VÂN', left: 104.44, top: 291.45, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
-  },
-  {
-    advisor: advisors[5],
-    left: 0,
-    top: 404,
-    image: { frame: { left: 0, top: 9.71, width: 202.4, height: 315.74 }, image: { left: '-23.6%', top: '2.82%', width: '147.2%', height: '94.36%' } },
-    title: { text: 'Chuyên gia', left: 211.3, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, italic: true },
-    field: { text: 'Chuyển đổi số & Đổi mới Sáng tạo', left: 211.3, top: 251.78, width: 102.01, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
-    name: { text: 'PHẠM XUÂN TÙNG', left: 90.67, top: 291.45, color: '#3bd6c6', fontSize: 13, fontWeight: 500, uppercase: true, nowrap: true },
-  },
-  {
-    advisor: advisors[6],
-    left: 246.35,
-    top: 404.27,
-    image: { frame: { left: -51.35, top: 27.73, width: 288, height: 307 }, image: { left: '-12.88%', top: '-11.89%', width: '132.97%', height: '111.89%' } },
-    title: { text: 'Chuyên gia', left: 217.87, top: 234.78, translateXFull: true, alignRight: true, color: '#fff', fontSize: 11, fontWeight: 300, italic: true, nowrap: true },
-    field: { text: 'Truyền thông & Thương hiệu', left: 217.78, top: 252.59, width: 117.39, translateXFull: true, alignRight: true, color: '#fff', fontSize: 11, fontWeight: 400 },
-    name: { text: 'TRẦN BẰNG VIỆT', left: 106.65, top: 291.45, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
-  },
-  {
-    advisor: advisors[7],
-    left: 492.7,
-    top: 404.27,
-    image: { frame: { left: -56.71, top: 17.73, width: 315, height: 308 }, objectCover: true },
-    title: { text: 'Chuyên gia', left: 220.21, top: 233.16, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, italic: true },
-    field: { text: 'Chiến lược & Quản trị Tổ chức', left: 220.21, top: 251.78, width: 97.96, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
-    name: { text: 'TRƯƠNG BÌNH NGUYÊN', left: 221.53, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
-  },
-  {
-    advisor: advisors[8],
-    left: 739.06,
-    top: 404.27,
-    image: { frame: { left: 0, top: 9.71, width: 232.35, height: 315.74 }, image: { left: '-36.7%', top: '-2.05%', width: '154.04%', height: '113.23%' } },
-    title: { text: 'Chuyên gia', left: 216.97, top: 236.4, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, italic: true },
-    field: { text: 'Quản trị Nhân sự Cao cấp', left: 216.97, top: 253.4, width: 100.39, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
-    name: { text: 'TRẦN MẠNH TƯỞNG', left: 218.63, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
-  },
-  {
-    advisor: advisors[9],
-    left: 985.41,
-    top: 404,
-    image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65 }, image: { left: '-70.42%', top: '0.01%', width: '225.02%', height: '161.15%' } },
-    title: { text: 'Chuyên gia', left: 216.16, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, italic: true },
-    field: { text: 'Kinh tế & Hội nhập Quốc tế', left: 216.16, top: 251.78, width: 99.58, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
-    name: { text: 'LÊ THỊ THÚY VÂN', left: 217.44, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
+    image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65, roundedTopLeft: true }, objectCover: true },
+    title: { text: 'TGĐ ctcp đầu tư tài', left: 220.21, top: 226.4, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
+    field: { text: 'chính HOÀNG MINH', left: 220.21, top: 255.4, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    name: { text: 'ĐINH KIM NHUNG', left: 220.21, top: 291.45, width: 138.44, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
 ]
 
-const visibleAdvisors = advisors.slice(0, 5)
-const visibleAdvisorCardSpecs = advisorCardSpecs.slice(0, 5)
+const visibleAdvisors = advisors.slice(0, 4)
+const visibleAdvisorCardSpecs = advisorCardSpecs.slice(0, 4)
 
 function toCssLength(value: number | string) {
   return typeof value === 'number' ? `${value}px` : value
@@ -775,68 +722,21 @@ const organizerLogoSpecs: FigmaLogoSpec[] = [
 ]
 
 const associationLogoSpecs: FigmaLogoSpec[] = [
-  {
-    alt: 'HAWEE',
-    asset: 'logo82',
-    crop: { height: '292.81%', left: 0, top: '-96.4%', width: '100%' },
-    height: 55,
-    left: 113,
-    top: 0,
-    width: 161.043,
-  },
-  {
-    alt: 'VSIP',
-    asset: 'logo90',
-    crop: { height: '154.8%', left: '-13.29%', top: '-27.4%', width: '126.59%' },
-    height: 37,
-    left: 318,
-    top: 9,
-    width: 97,
-  },
-  { alt: 'VNHR', asset: 'logo126', height: 35, left: 466, objectCover: true, top: 10, width: 104.864 },
-  { alt: 'VCCI', asset: 'logo92', height: 28, left: 629, objectCover: true, top: 14, width: 83 },
-  { alt: 'HanoiBA', asset: 'logo86', height: 55, left: 761, objectCover: true, top: 0, width: 145 },
-  {
-    alt: 'SHTP',
-    asset: 'logo94',
-    crop: { height: '221.37%', left: 0, top: '-60.69%', width: '100%' },
-    height: 48,
-    left: 949,
-    top: 4,
-    width: 106,
-  },
-  {
-    alt: 'THACO',
-    asset: 'logo54',
-    crop: { height: '239.83%', left: '-13.89%', top: '-69.92%', width: '127.78%' },
-    height: 32,
-    left: 0,
-    top: 100,
-    width: 139.636,
-  },
-  { alt: 'Yamaha', asset: 'logo59', height: 32, left: 208, objectCover: true, top: 101, width: 143.719 },
-  { alt: 'VietinBank', asset: 'logo58', height: 51, left: 419, objectCover: true, top: 82, width: 203.282 },
-  { alt: 'Eximbank', asset: 'logo57', height: 47, left: 691, objectCover: true, top: 84, width: 230.575 },
-  {
-    alt: 'QTSC',
-    asset: 'logo63',
-    crop: { height: '131.17%', left: '-2.99%', top: '-15.58%', width: '105.97%' },
-    height: 67,
-    left: 983,
-    top: 74,
-    width: 181,
-  },
+  { alt: 'VOCI', asset: 'logo92', height: 54, left: 502, top: 0, width: 160 },
 ]
 
-const primaryAssociationLogoSpecs = associationLogoSpecs.slice(0, 6)
-const partnerAssociationLogoSpecs = associationLogoSpecs.slice(6).map((spec) => ({ ...spec, top: spec.top - 74 }))
+const primaryAssociationLogoSpecs = associationLogoSpecs
+const partnerAssociationLogoSpecs: FigmaLogoSpec[] = [
+  { alt: 'Vietsuccess', asset: 'logoVietsuccess', height: 43, left: 247, top: 12, width: 300 },
+  { alt: 'Zenger Folkman', asset: 'logoZengerFolkman', height: 60, left: 647, top: 3, width: 270 },
+]
 
 function FigmaLogoAsset({ spec }: { spec: FigmaLogoSpec }) {
   const imageStyle: CSSProperties = spec.crop ? boxStyle(spec.crop) : { inset: 0, height: '100%', width: '100%' }
 
   return (
     <div className="absolute overflow-hidden pointer-events-none" style={boxStyle(spec)}>
-      <AssetImage alt={spec.alt} asset={spec.asset} className={cn('absolute', spec.objectCover && 'object-cover')} style={imageStyle} />
+      <AssetImage alt={spec.alt} asset={spec.asset} className={cn('absolute', spec.objectCover ? 'object-cover' : !spec.crop && 'object-contain')} style={imageStyle} />
     </div>
   )
 }
@@ -1000,7 +900,7 @@ function MobileSectionTitle({ children }: { children: ReactNode }) {
 
 function MobileAdvisorCard({ advisor, isActive }: { advisor: (typeof advisors)[number]; isActive: boolean }) {
   return (
-    <article className={cn('mobile-advisor-card', isActive && 'is-active', advisor.name === 'PHẠM THỊ MỸ LỆ' && 'is-primary-advisor')}>
+    <article className={cn('mobile-advisor-card', isActive && 'is-active', advisor.name === 'PHẠM THỊ MỸ LỆ' && 'is-primary-advisor', (advisor.name === 'PHẠM TIẾN KHA' || advisor.name === 'ĐINH KIM NHUNG') && 'is-featured-advisor')}>
       <AssetImage alt="" aria-hidden="true" asset={advisor.image} className="mobile-advisor-image" />
       <div className="mobile-advisor-blue" />
       <div className="mobile-advisor-copy">
@@ -1145,8 +1045,8 @@ function MobileLogoRail({
 }
 
 function MobileLandingPage() {
-  const mobileAssociationLogos = associationLogos.slice(0, 6)
-  const mobilePartnerLogos = associationLogos.slice(6)
+  const mobileAssociationLogos = associationLogos
+  const mobilePartnerLogos = partnerLogos
 
   return (
     <main className="mobile-landing">

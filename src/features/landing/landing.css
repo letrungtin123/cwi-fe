@@ -1417,7 +1417,8 @@
     transform: scale(1);
   }
 
-  .mobile-advisor-card.is-primary-advisor .mobile-advisor-copy em {
+  .mobile-advisor-card.is-primary-advisor .mobile-advisor-copy em,
+  .mobile-advisor-card.is-featured-advisor .mobile-advisor-copy em {
     font-style: normal;
   }
 

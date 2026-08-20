@@ -65,16 +65,16 @@ export const advisors: Array<{
     field: 'Truyền thông & Thương hiệu',
   },
   {
-    image: 'headshot139',
-    name: 'TRƯƠNG BÌNH NGUYÊN',
-    title: 'Chuyên gia',
-    field: 'Chiến lược & Quản trị Tổ chức',
+    image: 'phamTienKha',
+    name: 'PHẠM TIẾN KHA',
+    title: 'Giám đốc AI,',
+    field: 'Vinsmart Future',
   },
   {
-    image: 'headshot140',
-    name: 'TRẦN MẠNH TƯỞNG',
-    title: 'Chuyên gia',
-    field: 'Quản trị Nhân sự Cao cấp',
+    image: 'dinhKimNhung',
+    name: 'ĐINH KIM NHUNG',
+    title: 'TGĐ ctcp đầu tư tài',
+    field: 'chính HOÀNG MINH',
   },
   {
     image: 'headshot141',
@@ -93,12 +93,6 @@ export const advisors: Array<{
     name: 'TRẦN BẰNG VIỆT',
     title: 'Chuyên gia',
     field: 'Truyền thông & Thương hiệu',
-  },
-  {
-    image: 'headshot144',
-    name: 'TRƯƠNG BÌNH NGUYÊN',
-    title: 'Chuyên gia',
-    field: 'Chiến lược & Quản trị Tổ chức',
   },
   {
     image: 'headshot140',
@@ -130,17 +124,7 @@ export const associationLogos: Array<{
   className: string
   alt: string
 }> = [
-  { asset: 'logo82', className: 'h-[55px] w-[161px]', alt: 'Association logo 1' },
-  { asset: 'logo90', className: 'h-[37px] w-[97px]', alt: 'Association logo 2' },
-  { asset: 'logo126', className: 'h-[35px] w-[105px]', alt: 'Association logo 3' },
-  { asset: 'logo92', className: 'h-[28px] w-[83px]', alt: 'Association logo 4' },
-  { asset: 'logo86', className: 'h-[55px] w-[145px]', alt: 'Association logo 5' },
-  { asset: 'logo94', className: 'h-[48px] w-[106px]', alt: 'Association logo 6' },
-  { asset: 'logo54', className: 'h-[32px] w-[140px]', alt: 'Association logo 7' },
-  { asset: 'logo59', className: 'h-[32px] w-[144px]', alt: 'Association logo 8' },
-  { asset: 'logo58', className: 'h-[51px] w-[203px]', alt: 'Association logo 9' },
-  { asset: 'logo57', className: 'h-[47px] w-[231px]', alt: 'Association logo 10' },
-  { asset: 'logo63', className: 'h-[67px] w-[181px]', alt: 'Association logo 11' },
+  { asset: 'logo92', className: 'h-[54px] w-[160px]', alt: 'VOCI' },
 ]
 
 export const partnerLogos: Array<{
@@ -148,14 +132,6 @@ export const partnerLogos: Array<{
   className: string
   alt: string
 }> = [
-  { asset: 'borgs', className: 'h-[30px] w-[100px]', alt: 'Borgs' },
-  { asset: 'peterMillar', className: 'h-[30px] w-[187px]', alt: 'Peter Millar' },
-  { asset: 'brand67', className: 'h-[84px] w-[130px]', alt: 'Partner logo 67' },
-  { asset: 'brand68', className: 'h-[68px] w-[91px]', alt: 'Partner logo 68' },
-  { asset: 'brand65', className: 'h-[79px] w-[83px]', alt: 'Partner logo 65' },
-  { asset: 'aliceOlivia', className: 'h-[54px] w-[207px]', alt: 'Alice Olivia' },
-  { asset: 'vidaxl', className: 'h-[60px] w-[120px]', alt: 'VidaXL' },
-  { asset: 'sallyskoufis', className: 'h-[58px] w-[201px]', alt: 'Sally Skoufis' },
-  { asset: 'furnitureChoice', className: 'h-[71px] w-[71px]', alt: 'Furniture Choice' },
-  { asset: 'mercury', className: 'h-[40px] w-[169px]', alt: 'Mercury' },
+  { asset: 'logoVietsuccess', className: 'h-[43px] w-[300px]', alt: 'Vietsuccess' },
+  { asset: 'logoZengerFolkman', className: 'h-[60px] w-[270px]', alt: 'Zenger Folkman' },
 ]
