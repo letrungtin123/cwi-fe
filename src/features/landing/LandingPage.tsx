@@ -986,7 +986,7 @@ function MobileAdvisorCarousel() {
   )
 }
 
-type MobileLogoRailVariant = 'organizer' | 'marquee' | 'marqueeReverse'
+type MobileLogoRailVariant = 'organizer' | 'static' | 'marquee' | 'marqueeReverse'
 
 function MobileLogoRail({
   logos,
@@ -999,7 +999,8 @@ function MobileLogoRail({
 
   useEffect(() => {
     const node = railRef.current
-    if (!node || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    const shouldAnimate = variant === "marquee" || variant === "marqueeReverse"
+    if (!node || !shouldAnimate || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
 
     let frame = 0
     let last = performance.now()
@@ -1050,7 +1051,9 @@ function MobileLogoRail({
       node.removeEventListener("pointercancel", resume)
       node.removeEventListener("wheel", pause)
     }
-  }, [logos.length])
+  }, [logos.length, variant])
+
+  const isMarquee = variant === "marquee" || variant === "marqueeReverse"
 
   return (
     <div ref={railRef} className={cn("mobile-logo-rail", "is-" + variant)}>
@@ -1060,7 +1063,7 @@ function MobileLogoRail({
             <AssetImage alt={logo.alt} asset={logo.asset} className="mobile-logo-image" />
           </div>
         ))}
-        {logos.map((logo) => (
+        {isMarquee && logos.map((logo) => (
           <div aria-hidden="true" className="mobile-logo-item" key={logo.asset + "-" + logo.alt + "-duplicate"}>
             <AssetImage alt="" asset={logo.asset} className="mobile-logo-image" />
           </div>
@@ -1151,9 +1154,9 @@ function MobileLandingPage() {
         <MobileSectionTitle>Đơn vị Đồng tổ chức</MobileSectionTitle>
         <MobileLogoRail logos={organizerLogos} variant="organizer" />
         <MobileSectionTitle>Hiệp hội</MobileSectionTitle>
-        <MobileLogoRail logos={mobileAssociationLogos} />
+        <MobileLogoRail logos={mobileAssociationLogos} variant="static" />
         <MobileSectionTitle>Đối tác</MobileSectionTitle>
-        <MobileLogoRail logos={mobilePartnerLogos} />
+        <MobileLogoRail logos={mobilePartnerLogos} variant="static" />
       </section>
 
       <section className="mobile-final-cta" data-reveal>

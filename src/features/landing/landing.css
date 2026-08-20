@@ -1851,6 +1851,8 @@
   .mobile-logo-rail.is-organizer { margin-inline: 0; overflow: visible; }
   .mobile-logo-rail.is-organizer .mobile-logo-track { display: grid; width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--m-space-5); animation: none; }
   .mobile-logo-rail.is-organizer .mobile-logo-item { min-width: 0; min-height: 72px; padding-inline: 0; }
+  .mobile-logo-rail.is-static .mobile-logo-track { display: grid; width: 100%; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--m-space-5); animation: none; transform: none; }
+  .mobile-logo-rail.is-static .mobile-logo-item { min-width: 0; padding-inline: 0; }
   .mobile-logo-image { max-width: 100%; max-height: var(--m-space-8); }
   @keyframes mobile-logo-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   @keyframes mobile-logo-marquee-reverse { from { transform: translateX(-50%); } to { transform: translateX(0); } }
