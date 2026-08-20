@@ -23,6 +23,9 @@ export type SurveySession = {
   roundtableError: string
   roundtableOpen: boolean
   roundtableRegistered: boolean
+  roundtableRegisteredAt: string
+  roundtableRegistrationId: string
+  roundtableRegistrationIdempotencyKey: string
   screen: SurveyScreen
   submittedAt: string
   submittedSubmissionId: string

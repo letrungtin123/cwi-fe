@@ -13,7 +13,7 @@ import {
   RoundtableModal,
   SubmissionCompleteModal,
 } from './SurveyScreens'
-import { createSurveySubmissionIdempotencyKey, submitSurveySubmission } from './surveyApi'
+import { createRoundtableRegistrationIdempotencyKey, createSurveySubmissionIdempotencyKey, submitRoundtableRegistration, submitSurveySubmission } from './surveyApi'
 import { buildSurveySubmissionPayload } from './surveySubmissionPayload'
 import './survey.css'
 
@@ -31,6 +31,23 @@ function isContactValid(contact: ContactState) {
     return 'Vui lòng điền đầy đủ Họ tên, Email công ty cá nhân hợp lệ và Chức vụ.'
   }
   return ''
+}
+
+function normalizeContactPosition(contact: ContactState) {
+  const position = contact.jobTitle === 'Khác' && contact.jobTitleOther.trim() ? contact.jobTitleOther : contact.jobTitle
+  return position.trim()
+}
+
+function buildClientMeta(action: string) {
+  return {
+    action,
+    app: 'source4',
+    language: navigator.language,
+    path: window.location.pathname,
+    referrer: document.referrer || null,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    userAgent: navigator.userAgent,
+  }
 }
 
 function scrollToTop() {
@@ -56,14 +73,18 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
   const [reportMode, setReportMode] = useState<ReportMode>(() => restoredSession?.reportMode ?? 'part1')
   const [loadingStep, setLoadingStep] = useState(() => restoredSession?.loadingStep ?? 1)
   const [roundtableOpen, setRoundtableOpen] = useState(() => restoredSession?.roundtableOpen ?? false)
-  const [roundtableRegistered, setRoundtableRegistered] = useState(() => restoredSession?.roundtableRegistered ?? false)
+  const [roundtableRegistered, setRoundtableRegistered] = useState(() => Boolean(restoredSession?.roundtableRegistrationId))
+  const [roundtableRegistrationId, setRoundtableRegistrationId] = useState(() => restoredSession?.roundtableRegistrationId ?? '')
+  const [roundtableRegisteredAt, setRoundtableRegisteredAt] = useState(() => restoredSession?.roundtableRegisteredAt ?? '')
   const [submissionModalOpen, setSubmissionModalOpen] = useState(() => restoredSession?.submissionModalOpen ?? false)
   const [partTwoPrivacyRefused, setPartTwoPrivacyRefused] = useState(() => restoredSession?.partTwoPrivacyRefused ?? false)
   const [submissionIdempotencyKey] = useState(() => restoredSession?.submissionIdempotencyKey ?? createSurveySubmissionIdempotencyKey())
+  const [roundtableRegistrationIdempotencyKey] = useState(() => restoredSession?.roundtableRegistrationIdempotencyKey ?? createRoundtableRegistrationIdempotencyKey())
   const [submissionError, setSubmissionError] = useState(() => restoredSession?.submissionError ?? '')
   const [submittedSubmissionId, setSubmittedSubmissionId] = useState(() => restoredSession?.submittedSubmissionId ?? '')
   const [submittedAt, setSubmittedAt] = useState(() => restoredSession?.submittedAt ?? '')
   const [submitting, setSubmitting] = useState(false)
+  const [roundtableSubmitting, setRoundtableSubmitting] = useState(false)
   const roundtableTriggerRef = useRef<HTMLButtonElement | null>(null)
 
   const hasAnswer = useCallback(
@@ -99,6 +120,9 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
       roundtableError,
       roundtableOpen,
       roundtableRegistered,
+      roundtableRegisteredAt,
+      roundtableRegistrationId,
+      roundtableRegistrationIdempotencyKey,
       screen,
       submittedAt,
       submittedSubmissionId,
@@ -108,7 +132,7 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
       questionError,
       version: 1,
     })
-  }, [activeQuestion, answers, consent, contact, dataCollectionConsent, formError, loadingStep, missingQuestionNumbers, otherAnswers, partTwoPrivacyRefused, questionError, reportMode, roundtableContact, roundtableError, roundtableOpen, roundtableRegistered, screen, submittedAt, submittedSubmissionId, submissionError, submissionIdempotencyKey, submissionModalOpen])
+  }, [activeQuestion, answers, consent, contact, dataCollectionConsent, formError, loadingStep, missingQuestionNumbers, otherAnswers, partTwoPrivacyRefused, questionError, reportMode, roundtableContact, roundtableError, roundtableOpen, roundtableRegistered, roundtableRegisteredAt, roundtableRegistrationId, roundtableRegistrationIdempotencyKey, screen, submittedAt, submittedSubmissionId, submissionError, submissionIdempotencyKey, submissionModalOpen])
 
   useEffect(() => {
     const desktopMedia = window.matchMedia('(min-width: 768px)')
@@ -242,7 +266,7 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
 
       setReportMode('part1')
       setRoundtableContact(contact)
-      setRoundtableRegistered(false)
+      setRoundtableRegistered(Boolean(roundtableRegistrationId))
       setRoundtableError('')
       setRoundtableOpen(true)
       return
@@ -267,7 +291,7 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
     setReportMode('private')
     setPartTwoPrivacyRefused(false)
     setRoundtableContact(contact)
-    setRoundtableRegistered(false)
+    setRoundtableRegistered(Boolean(roundtableRegistrationId))
     setRoundtableError('')
     setSubmissionError('')
     setRoundtableOpen(true)
@@ -302,21 +326,42 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
     goToScreen('contact1')
   }
 
-  const registerRoundtable = () => {
+  const registerRoundtable = async () => {
+    if (roundtableSubmitting) return
     if (!roundtableContact.name.trim() || !validEmail(roundtableContact.email.trim())) {
       setRoundtableError('Vui lòng điền Họ tên và Email hợp lệ để đăng ký CEO Roundtable.')
       return
     }
 
+    setRoundtableSubmitting(true)
     setRoundtableError('')
     setSubmissionError('')
-    setRoundtableRegistered(true)
+
+    try {
+      const result = await submitRoundtableRegistration(
+        {
+          clientMeta: buildClientMeta('roundtable_registration'),
+          email: roundtableContact.email.trim().toLowerCase(),
+          fullName: roundtableContact.name.trim().replace(/\s+/g, ' '),
+          position: normalizeContactPosition(roundtableContact) || normalizeContactPosition(contact) || undefined,
+          surveySubmissionIdempotencyKey: submissionIdempotencyKey,
+        },
+        roundtableRegistrationIdempotencyKey,
+      )
+      setRoundtableRegistrationId(result.registrationId)
+      setRoundtableRegisteredAt(result.registeredAt)
+      setRoundtableRegistered(true)
+    } catch (error) {
+      setRoundtableError(error instanceof Error ? error.message : 'Không thể đăng ký CEO Roundtable. Vui lòng thử lại.')
+    } finally {
+      setRoundtableSubmitting(false)
+    }
   }
 
   const openRoundtableFromResult = (trigger: HTMLButtonElement) => {
     roundtableTriggerRef.current = trigger
     setRoundtableContact(contact)
-    setRoundtableRegistered(false)
+    setRoundtableRegistered(Boolean(roundtableRegistrationId))
     setRoundtableError('')
     setSubmissionError('')
     setRoundtableOpen(true)
@@ -348,6 +393,7 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
         reportMode,
         roundtableContact,
         roundtableRegistered,
+        roundtableRegistrationId,
       })
       const result = await submitSurveySubmission(payload, submissionIdempotencyKey)
       setSubmittedSubmissionId(result.submissionId)
@@ -522,6 +568,7 @@ export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
       <RoundtableModal
         contact={roundtableContact}
         error={roundtableError || submissionError}
+        isRegistering={roundtableSubmitting}
         isSubmitting={submitting}
         onChange={(nextContact) => {
           setRoundtableContact(nextContact)

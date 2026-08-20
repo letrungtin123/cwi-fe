@@ -625,6 +625,7 @@ function PrivateAnalysisSection({ answers, otherAnswers }: { answers: Answers; o
 type RoundtableModalProps = {
   contact: ContactState
   error?: string
+  isRegistering?: boolean
   isSubmitting?: boolean
   onChange: (next: ContactState) => void
   onClose: () => void
@@ -635,7 +636,7 @@ type RoundtableModalProps = {
   registered: boolean
 }
 
-export function RoundtableModal({ contact, error, isSubmitting = false, onChange, onClose, onContinue, onRegister, onSkip, open, registered }: RoundtableModalProps) {
+export function RoundtableModal({ contact, error, isRegistering = false, isSubmitting = false, onChange, onClose, onContinue, onRegister, onSkip, open, registered }: RoundtableModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
   const initialFocusRef = useRef<HTMLButtonElement>(null)
 
@@ -693,21 +694,21 @@ export function RoundtableModal({ contact, error, isSubmitting = false, onChange
         </div>
         <div className="survey-modal-body">
           <div className="survey-form-grid">
-            <label htmlFor="survey-roundtable-name"><span>Họ tên *</span><input autoComplete="name" id="survey-roundtable-name" onChange={(event) => onChange({ ...contact, name: event.currentTarget.value })} value={contact.name} /></label>
-            <label htmlFor="survey-roundtable-email"><span>Email công ty cá nhân *</span><input autoComplete="email" id="survey-roundtable-email" onChange={(event) => onChange({ ...contact, email: event.currentTarget.value })} inputMode="email" type="text" value={contact.email} /></label>
+            <label htmlFor="survey-roundtable-name"><span>Họ tên *</span><input autoComplete="name" disabled={registered || isRegistering || isSubmitting} id="survey-roundtable-name" onChange={(event) => onChange({ ...contact, name: event.currentTarget.value })} value={contact.name} /></label>
+            <label htmlFor="survey-roundtable-email"><span>Email công ty cá nhân *</span><input autoComplete="email" disabled={registered || isRegistering || isSubmitting} id="survey-roundtable-email" onChange={(event) => onChange({ ...contact, email: event.currentTarget.value })} inputMode="email" type="text" value={contact.email} /></label>
           </div>
           {error ? <p className="survey-inline-error" role="alert">{error}</p> : null}
           {registered ? <p className="survey-success-message">✓ Anh/Chị đã đăng ký tham dự CEO Roundtable thành công.</p> : null}
           <div className="survey-modal-actions">
             {registered ? (
-              <button className="survey-primary-button" disabled={isSubmitting} onClick={onContinue} type="button">{isSubmitting ? 'Đang gửi kết quả...' : '\u0054\u0069\u1ebfp \u0074\u1ee5c \u0067\u1eedi \u006b\u1ebft \u0071\u0075\u1ea3'}</button>
+              <button className="survey-primary-button" disabled={isRegistering || isSubmitting} onClick={onContinue} type="button">{isSubmitting ? 'Đang gửi kết quả...' : '\u0054\u0069\u1ebfp \u0074\u1ee5c \u0067\u1eedi \u006b\u1ebft \u0071\u0075\u1ea3'}</button>
             ) : (
               <>
-                <button className="survey-primary-button" disabled={isSubmitting} onClick={onRegister} type="button">
-                  Đăng ký tham dự
-                  <SurveyForwardArrow />
+                <button className="survey-primary-button" disabled={isRegistering || isSubmitting} onClick={onRegister} type="button">
+                  {isRegistering ? 'Đang đăng ký...' : 'Đăng ký tham dự'}
+                  {isRegistering ? null : <SurveyForwardArrow />}
                 </button>
-                <button className="survey-outline-button" disabled={isSubmitting} onClick={onSkip} type="button">{isSubmitting ? 'Đang gửi kết quả...' : '\u0042\u1ecf \u0071\u0075\u0061 & \u0067\u1eedi \u006b\u1ebft \u0071\u0075\u1ea3'}</button>
+                <button className="survey-outline-button" disabled={isRegistering || isSubmitting} onClick={onSkip} type="button">{isSubmitting ? 'Đang gửi kết quả...' : '\u0042\u1ecf \u0071\u0075\u0061 & \u0067\u1eedi \u006b\u1ebft \u0071\u0075\u1ea3'}</button>
               </>
             )}
           </div>
@@ -720,7 +721,7 @@ export function RoundtableModal({ contact, error, isSubmitting = false, onChange
 const submissionCompleteCopy = {
   home: '\u0054\u0072\u0061\u006e\u0067 \u0063\u0068\u1ee7',
   eyebrow: 'KH\u1ea2O S\u00c1T \u0110\u00c3 HO\u00c0N T\u1ea4T',
-  message: 'C\u1ea3m \u01a1n anh/ch\u1ecb \u0111\u00e3 ho\u00e0n th\u00e0nh kh\u1ea3o s\u00e1t. B\u00e1o c\u00e1o s\u1ebd \u0111\u01b0\u1ee3c h\u1ec7 th\u1ed1ng x\u1eed l\u00fd v\u00e0 g\u1eedi \u0111\u1ebfn email anh/ch\u1ecb trong \u00edt ph\u00fat n\u1eefa',
+  message: 'C\u1ea3m \u01a1n anh/ch\u1ecb \u0111\u00e3 ho\u00e0n th\u00e0nh kh\u1ea3o s\u00e1t. B\u00e1o c\u00e1o s\u1ebd \u0111\u01b0\u1ee3c h\u1ec7 th\u1ed1ng x\u1eed l\u00fd v\u00e0 g\u1eedi \u0111\u1ebfn email anh/ch\u1ecb',
   title: 'C\u1ea3m \u01a1n anh/ch\u1ecb',
 }
 
@@ -774,7 +775,10 @@ export function SubmissionCompleteModal({ onHome, open }: SubmissionCompleteModa
             <div aria-hidden="true" className="survey-submission-modal-icon"><CheckCircle2 size={30} /></div>
           </div>
           <SurveyEyebrow>{submissionCompleteCopy.eyebrow}</SurveyEyebrow>
-          <h2 id="survey-submission-title">{submissionCompleteCopy.title}</h2>
+          <div aria-hidden="true" className="survey-submission-modal-logo-title">
+            <SurveyBrandMark decorative variant="intro" />
+          </div>
+          <h2 className="survey-sr-only" id="survey-submission-title">{submissionCompleteCopy.title}</h2>
           <p>{submissionCompleteCopy.message}</p>
           <button className="survey-primary-button survey-submission-modal-button" onClick={onHome} ref={initialFocusRef} type="button">{submissionCompleteCopy.home}</button>
         </div>

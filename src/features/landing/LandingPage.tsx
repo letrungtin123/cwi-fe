@@ -19,7 +19,7 @@ import './landing.css'
 
 type LandingAction = 'login' | 'survey' | 'unlock-report' | 'download-teaser'
 
-const navTargets = ['#top', '#report', '#report-card', '#roundtable', '#footer'] as const
+const navTargets = ['#top', '#report', '#report-card', '#roundtable', '#about-cwi'] as const
 const legalLinks = [
   { href: "/privacy-policy", label: "Chính sách bảo mật" },
   { href: "/terms-of-operation", label: "Quy chế hoạt động" },
@@ -61,7 +61,7 @@ const figmaScrollTargets: Record<(typeof navTargets)[number], number> = {
   '#report': 874,
   '#report-card': 874,
   '#roundtable': 1490,
-  '#footer': 3402,
+  '#about-cwi': 2200,
 }
 
 function getViewportScale() {
@@ -110,7 +110,7 @@ function scrollToFigmaTarget(href: (typeof navTargets)[number], scale: number) {
   const target = document.querySelector<HTMLElement>(href)
   window.history.replaceState(null, '', href)
 
-  if (href === '#report' && target) {
+  if (target && (href === '#report' || href === '#roundtable' || href === '#about-cwi')) {
     scrollElementToCenter(target)
     return
   }
@@ -126,7 +126,7 @@ function scrollToMobileTarget(href: (typeof navTargets)[number]) {
 
   window.history.replaceState(null, '', href)
 
-  if (href === '#report') {
+  if (href === '#report' || href === '#roundtable' || href === '#about-cwi') {
     scrollElementToCenter(target)
     return
   }
@@ -768,7 +768,7 @@ function FigmaLogoAsset({ spec }: { spec: FigmaLogoSpec }) {
 }
 function AdvisorsSection() {
   return (
-    <section className="absolute left-0 top-[2200px] h-[708px] w-full" aria-labelledby="advisors-title">
+    <section id="about-cwi" className="absolute left-0 top-[2200px] h-[708px] w-full" aria-labelledby="advisors-title">
       <AssetImage alt="" aria-hidden="true" asset="frame606" className="absolute left-[-162px] top-[24px] h-[728px] w-[895px] rotate-180 object-contain opacity-70" />
       <AssetImage alt="" aria-hidden="true" asset="frame605" className="absolute left-[1115px] top-[291px] h-[728px] w-[895px] rotate-180 object-contain opacity-70" />
       <m.div className="absolute left-0 top-0 h-[284px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal}>
@@ -845,10 +845,10 @@ function PartnersSection() {
         as="h3"
         className="absolute left-0 top-[290px] h-[19px] w-full"
         label="Đối tác"
-        leftLine={{ asset: 'line27', left: 434, width: 202 }}
-        rightLine={{ asset: 'line30', left: 804, width: 202, flip: true }}
-        textLeft={659}
-        textWidth={118}
+        leftLine={{ asset: 'line27', left: 464, width: 202 }}
+        rightLine={{ asset: 'line30', left: 774, width: 202, flip: true }}
+        textLeft={689}
+        textWidth={64}
       />
       <div className="absolute left-[136px] top-[334px] h-[67px] w-[1164px]">
         {partnerAssociationLogoSpecs.map((spec) => (
@@ -1128,7 +1128,7 @@ function MobileLandingPage() {
         </div>
       </section>
 
-      <section className="mobile-section mobile-advisors-section" aria-labelledby="mobile-advisors-title">
+      <section className="mobile-section mobile-advisors-section" data-mobile-target="#about-cwi" aria-labelledby="mobile-advisors-title">
         <div data-reveal>
           <h2 id="mobile-advisors-title">Thước đo sức khỏe <em>hệ năng lực</em><br />cho Ban giám đốc</h2>
           <div className="mobile-advisors-copy">

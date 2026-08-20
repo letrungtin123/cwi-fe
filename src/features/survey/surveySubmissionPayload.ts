@@ -23,6 +23,8 @@ export type SurveySubmissionPayload = {
   roundtableRegistration?: {
     email: string
     fullName: string
+    id?: string
+    position?: string
     registered: true
   }
   statusNote: string
@@ -38,6 +40,7 @@ type BuildSurveySubmissionPayloadInput = {
   reportMode: ReportMode
   roundtableContact: ContactState
   roundtableRegistered: boolean
+  roundtableRegistrationId: string
 }
 
 const statusNotes: Record<SubmissionStatus, string> = {
@@ -123,8 +126,9 @@ export function buildSurveySubmissionPayload(input: BuildSurveySubmissionPayload
     throw new Error('Vui lòng điền đầy đủ Họ tên, Email và Chức vụ trước khi gửi kết quả.')
   }
 
-  const roundtableName = input.roundtableContact.name.trim() || participant.fullName
+  const roundtableName = input.roundtableContact.name.trim().replace(/\s+/g, ' ') || participant.fullName
   const roundtableEmail = input.roundtableContact.email.trim().toLowerCase() || participant.email
+  const roundtablePosition = normalizePosition(input.roundtableContact) || participant.position
 
   return {
     answers: requiredQuestions.map((question) => buildAnswer(question, input.answers, input.otherAnswers)),
@@ -142,6 +146,8 @@ export function buildSurveySubmissionPayload(input: BuildSurveySubmissionPayload
       ? {
           email: roundtableEmail,
           fullName: roundtableName,
+          id: input.roundtableRegistrationId || undefined,
+          position: roundtablePosition || undefined,
           registered: true,
         }
       : undefined,

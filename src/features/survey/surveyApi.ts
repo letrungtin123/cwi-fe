@@ -9,6 +9,21 @@ export type SurveySubmitResult = {
   submittedAt: string
 }
 
+export type RoundtableRegistrationPayload = {
+  clientMeta: Record<string, unknown>
+  email: string
+  fullName: string
+  position?: string
+  surveySubmissionIdempotencyKey: string
+}
+
+export type RoundtableRegistrationResult = {
+  deduplicated: boolean
+  linkedSubmissionId: string | null
+  registrationId: string
+  registeredAt: string
+}
+
 type ApiSuccess<T> = {
   data: T
 }
@@ -33,17 +48,50 @@ export class SurveyApiError extends Error {
   }
 }
 
-export function createSurveySubmissionIdempotencyKey() {
-  if (crypto.randomUUID) return `source4:${crypto.randomUUID()}`
+function createClientIdempotencyKey(prefix: string) {
+  if (crypto.randomUUID) return `${prefix}:${crypto.randomUUID()}`
   const random = Array.from(crypto.getRandomValues(new Uint8Array(16)), (value) => value.toString(16).padStart(2, '0')).join('')
-  return `source4:${Date.now()}:${random}`
+  return `${prefix}:${Date.now()}:${random}`
 }
 
-function getFriendlyError(status: number, _code: string, message: string) {
-  if (status === 422) return 'Một số câu trả lời chưa đúng định dạng. Vui lòng kiểm tra lại thông tin và gửi lại.'
+export function createSurveySubmissionIdempotencyKey() {
+  return createClientIdempotencyKey('source4')
+}
+
+export function createRoundtableRegistrationIdempotencyKey() {
+  return createClientIdempotencyKey('source4-roundtable')
+}
+
+function getFriendlyError(status: number, code: string, message: string) {
+  if (status === 422) return 'Một số thông tin chưa đúng định dạng. Vui lòng kiểm tra lại và gửi lại.'
+  if (status === 409 && code.startsWith('roundtable')) return 'Đăng ký CEO Roundtable này đã được ghi nhận trước đó.'
   if (status === 409) return 'Kết quả này đã được ghi nhận trước đó.'
   if (status >= 500) return 'Hệ thống đang bận, vui lòng thử gửi lại sau ít phút.'
-  return message || 'Không thể gửi kết quả khảo sát lúc này.'
+  return message || 'Không thể gửi dữ liệu lúc này.'
+}
+
+async function parseApiResponse<T>(response: Response): Promise<T> {
+  const body = (await response.json().catch(() => null)) as ApiSuccess<T> | ApiFailure | null
+
+  if (!response.ok) {
+    const error = body && 'error' in body ? body.error : undefined
+    const code = error?.code ?? 'request_failed'
+    throw new SurveyApiError(response.status, code, getFriendlyError(response.status, code, error?.message ?? ''))
+  }
+
+  if (!body || !('data' in body)) {
+    throw new SurveyApiError(response.status, 'invalid_response', 'Phản hồi từ hệ thống không hợp lệ.')
+  }
+
+  return body.data
+}
+
+function toNetworkError(error: unknown) {
+  if (error instanceof SurveyApiError) return error
+  if (error instanceof DOMException && error.name === 'AbortError') {
+    return new SurveyApiError(408, 'submit_timeout', 'Gửi dữ liệu quá thời gian chờ. Vui lòng thử lại.')
+  }
+  return new SurveyApiError(0, 'network_error', 'Không kết nối được hệ thống lưu dữ liệu. Vui lòng kiểm tra kết nối và thử lại.')
 }
 
 export async function submitSurveySubmission(payload: SurveySubmissionPayload, idempotencyKey: string): Promise<SurveySubmitResult> {
@@ -62,25 +110,33 @@ export async function submitSurveySubmission(payload: SurveySubmissionPayload, i
       signal: controller.signal,
     })
 
-    const body = (await response.json().catch(() => null)) as ApiSuccess<SurveySubmitResult> | ApiFailure | null
-
-    if (!response.ok) {
-      const error = body && 'error' in body ? body.error : undefined
-      const code = error?.code ?? 'submit_failed'
-      throw new SurveyApiError(response.status, code, getFriendlyError(response.status, code, error?.message ?? ''))
-    }
-
-    if (!body || !('data' in body)) {
-      throw new SurveyApiError(response.status, 'invalid_response', 'Phản hồi từ hệ thống không hợp lệ.')
-    }
-
-    return body.data
+    return await parseApiResponse<SurveySubmitResult>(response)
   } catch (error) {
-    if (error instanceof SurveyApiError) throw error
-    if (error instanceof DOMException && error.name === 'AbortError') {
-      throw new SurveyApiError(408, 'submit_timeout', 'Gửi kết quả quá thời gian chờ. Vui lòng thử lại.')
-    }
-    throw new SurveyApiError(0, 'network_error', 'Không kết nối được hệ thống lưu kết quả. Vui lòng kiểm tra kết nối và thử lại.')
+    throw toNetworkError(error)
+  } finally {
+    window.clearTimeout(timeoutId)
+  }
+}
+
+export async function submitRoundtableRegistration(payload: RoundtableRegistrationPayload, idempotencyKey: string): Promise<RoundtableRegistrationResult> {
+  const controller = new AbortController()
+  const timeoutId = window.setTimeout(() => controller.abort(), Number.isFinite(submitTimeoutMs) ? submitTimeoutMs : 15000)
+
+  try {
+    const response = await fetch(`${apiBaseUrl}/api/v1/roundtable-registrations`, {
+      body: JSON.stringify({ ...payload, idempotencyKey }),
+      headers: {
+        'content-type': 'application/json',
+        'idempotency-key': idempotencyKey,
+        'x-cwi-source': 'source4',
+      },
+      method: 'POST',
+      signal: controller.signal,
+    })
+
+    return await parseApiResponse<RoundtableRegistrationResult>(response)
+  } catch (error) {
+    throw toNetworkError(error)
   } finally {
     window.clearTimeout(timeoutId)
   }

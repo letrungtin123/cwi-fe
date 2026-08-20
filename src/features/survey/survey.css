@@ -47,6 +47,17 @@
 }
 .survey-page h1, .survey-page h2, .survey-page h3, .survey-page p { margin: 0; }
 .survey-page ul { margin: 0; padding: 0; }
+.survey-sr-only {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
 .survey-shell { width: min(100% - 48px, var(--survey-content)); margin: 0 auto; padding: 56px 0 80px; }
 .survey-eyebrow {
   align-items: center;
@@ -1711,6 +1722,16 @@
   margin-top: 14px;
 }
 
+.survey-submission-modal-logo-title {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+.survey-submission-modal-logo-title .survey-brand-mark {
+  max-width: 178px;
+}
+
 .survey-submission-modal p {
   color: var(--survey-ink-secondary);
   font-size: 16px;
@@ -1742,6 +1763,7 @@
   .survey-submission-modal h2 {
     font-size: 28px;
   }
+
 
   .survey-submission-modal p {
     font-size: 15px;
@@ -1895,3 +1917,4 @@
     padding: 32px 22px 28px;
   }
 }
+
