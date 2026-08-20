@@ -1842,6 +1842,7 @@
   .mobile-carousel-meta i::after { position: absolute; inset: 0 auto 0 0; width: var(--mobile-carousel-progress); background: #144eaf; content: ''; transition: width 180ms ease; }
 
   .mobile-partners-section { padding-block: var(--m-space-8) var(--m-space-9); }
+  .mobile-partners-section .mobile-section-title { gap: var(--m-space-2); }
   .mobile-logo-rail { display: block; gap: 0; margin-inline: calc(var(--m-page-x) * -1); margin-bottom: var(--m-space-6); padding: 0; overflow: hidden; overflow-x: visible; scroll-snap-type: none; touch-action: auto; }
   .mobile-logo-track { display: flex; width: max-content; align-items: center; gap: var(--m-space-6); animation: mobile-logo-marquee 32s linear infinite; }
   .mobile-logo-rail.is-marqueeReverse .mobile-logo-track { animation: mobile-logo-marquee-reverse 36s linear infinite; }
