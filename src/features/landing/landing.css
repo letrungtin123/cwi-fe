@@ -297,7 +297,7 @@
   margin: 0;
   color: #2fd3c4;
   font-size: 20px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 26px;
   letter-spacing: 0;
 }
@@ -323,6 +323,7 @@
 .spotlight-info ul {
   display: grid;
   gap: 9px;
+  list-style: disc;
   margin: 0;
   padding: 0 0 0 22px;
   color: rgba(255, 255, 255, 0.9);
@@ -335,9 +336,9 @@
 }
 
 .spotlight-cta {
-  width: calc(100% - 36px);
+  width: calc(100% + 26px);
   min-height: 47px;
-  margin: auto 18px 24px;
+  margin: auto -13px 24px;
   border-radius: 999px;
   font-size: 16px;
   font-weight: 400;
@@ -2525,9 +2526,9 @@
   }
 
   .spotlight-cta {
-    width: 100%;
+    width: calc(100% + 28px);
     min-height: 54px;
-    margin: auto 0 20px;
+    margin: auto -14px 20px;
     font-size: 15px;
   }
 
