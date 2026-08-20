@@ -617,27 +617,27 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     left: 368.65,
     top: 49.27,
     image: { frame: { left: 0, top: 29.95, width: 232.35, height: 295.5 }, image: { left: '-35.21%', top: '-12.05%', width: '156.95%', height: '123.43%' } },
-    title: { text: 'Chuyên gia', left: 217.87, top: 234.78, translateXFull: true, alignRight: true, color: '#fff', fontSize: 11, fontWeight: 300, italic: true, nowrap: true },
-    field: { text: 'Truyền thông & Thương hiệu', left: 217.78, top: 252.59, width: 117.39, translateXFull: true, alignRight: true, color: '#fff', fontSize: 11, fontWeight: 400 },
-    name: { text: 'TRƯƠNG CHÍ DŨNG', left: 93.1, top: 291.45, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
+    title: { text: 'Giám đốc', left: 214.44, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, nowrap: true },
+    field: { text: 'Nghiên cứu & Phát\ntriển Le & Associates', left: 214.44, top: 251.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    name: { text: 'TRƯƠNG CHÍ DŨNG', left: 214.14, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[2],
     left: 615,
     top: 49.27,
     image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65, roundedTopLeft: true }, objectCover: true },
-    title: { text: 'Giám đốc AI,', left: 220.21, top: 233.16, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
-    field: { text: 'Vinsmart Future', left: 220.21, top: 251.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
-    name: { text: 'PHẠM TIẾN KHA', left: 220.21, top: 291.45, width: 138.44, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
+    title: { text: 'Giám đốc AI,', left: 214.44, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
+    field: { text: 'Vinsmart Future', left: 214.44, top: 251.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    name: { text: 'PHẠM TIẾN KHA', left: 214.14, top: 291.45, width: 138.44, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
     advisor: advisors[3],
     left: 861.35,
     top: 49.27,
     image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65, roundedTopLeft: true }, objectCover: true },
-    title: { text: 'TGĐ ctcp đầu tư tài', left: 220.21, top: 226.4, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
-    field: { text: 'chính HOÀNG MINH', left: 220.21, top: 255.4, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
-    name: { text: 'ĐINH KIM NHUNG', left: 220.21, top: 291.45, width: 138.44, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
+    title: { text: 'TGĐ ctcp đầu tư tài', left: 214.44, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
+    field: { text: 'chính HOÀNG MINH', left: 214.44, top: 251.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    name: { text: 'ĐINH KIM NHUNG', left: 214.14, top: 291.45, width: 138.44, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
 ]
 
@@ -900,7 +900,7 @@ function MobileSectionTitle({ children }: { children: ReactNode }) {
 
 function MobileAdvisorCard({ advisor, isActive }: { advisor: (typeof advisors)[number]; isActive: boolean }) {
   return (
-    <article className={cn('mobile-advisor-card', isActive && 'is-active', advisor.name === 'PHẠM THỊ MỸ LỆ' && 'is-primary-advisor', (advisor.name === 'PHẠM TIẾN KHA' || advisor.name === 'ĐINH KIM NHUNG') && 'is-featured-advisor')}>
+    <article className={cn('mobile-advisor-card', isActive && 'is-active', advisor.name === 'PHẠM THỊ MỸ LỆ' && 'is-primary-advisor', (advisor.name === 'TRƯƠNG CHÍ DŨNG' || advisor.name === 'PHẠM TIẾN KHA' || advisor.name === 'ĐINH KIM NHUNG') && 'is-featured-advisor')}>
       <AssetImage alt="" aria-hidden="true" asset={advisor.image} className="mobile-advisor-image" />
       <div className="mobile-advisor-blue" />
       <div className="mobile-advisor-copy">

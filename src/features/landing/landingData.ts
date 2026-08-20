@@ -61,8 +61,8 @@ export const advisors: Array<{
   {
     image: 'headshot138',
     name: 'TRƯƠNG CHÍ DŨNG',
-    title: 'Chuyên gia',
-    field: 'Truyền thông & Thương hiệu',
+    title: 'Giám đốc',
+    field: 'Nghiên cứu & Phát\ntriển Le & Associates',
   },
   {
     image: 'phamTienKha',
