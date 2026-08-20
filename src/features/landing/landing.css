@@ -331,6 +331,10 @@
   line-height: 20px;
 }
 
+.spotlight-info h3 + ul {
+  margin-top: 10px;
+}
+
 .spotlight-info li {
   padding-left: 1px;
 }
