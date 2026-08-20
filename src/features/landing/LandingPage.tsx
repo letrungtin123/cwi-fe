@@ -1041,7 +1041,7 @@ function PartnersSection() {
       <FigmaSectionLabel
         as="h3"
         className="absolute left-0 top-[290px] h-[19px] w-full"
-        label="Công ty đối tác"
+        label="Đối tác"
         leftLine={{ asset: 'line27', left: 434, width: 202 }}
         rightLine={{ asset: 'line30', left: 804, width: 202, flip: true }}
         textLeft={659}
@@ -1423,7 +1423,7 @@ function MobileLandingPage() {
         <MobileLogoRail logos={organizerLogos} variant="organizer" />
         <MobileSectionTitle>Hiệp hội</MobileSectionTitle>
         <MobileLogoRail logos={mobileAssociationLogos} />
-        <MobileSectionTitle>Công ty đối tác</MobileSectionTitle>
+        <MobileSectionTitle>Đối tác</MobileSectionTitle>
         <MobileLogoRail logos={mobilePartnerLogos} />
       </section>
 
