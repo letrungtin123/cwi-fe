@@ -97,22 +97,45 @@ function useFigmaViewportScale() {
   return scale
 }
 
+function scrollElementToCenter(target: HTMLElement) {
+  const viewportHeight = window.visualViewport?.height ?? window.innerHeight
+  const rect = target.getBoundingClientRect()
+  const rawTop = window.scrollY + rect.top - (viewportHeight - rect.height) / 2
+  const maxTop = Math.max(0, document.documentElement.scrollHeight - viewportHeight)
+  const top = Math.max(0, Math.min(maxTop, rawTop))
+  window.scrollTo({ behavior: 'smooth', top: Math.round(top) })
+}
+
 function scrollToFigmaTarget(href: (typeof navTargets)[number], scale: number) {
-  const targetTop = figmaScrollTargets[href] * scale
+  const target = document.querySelector<HTMLElement>(href)
   window.history.replaceState(null, '', href)
+
+  if (href === '#report' && target) {
+    scrollElementToCenter(target)
+    return
+  }
+
+  const targetTop = figmaScrollTargets[href] * scale
   window.scrollTo({ behavior: 'smooth', top: Math.round(targetTop) })
 }
 
 function scrollToMobileTarget(href: (typeof navTargets)[number]) {
-  const selector = `[data-mobile-target="${href}"]`
+  const selector = '[data-mobile-target=' + JSON.stringify(href) + ']'
   const target = document.querySelector<HTMLElement>(selector)
   if (!target) return
 
+  window.history.replaceState(null, '', href)
+
+  if (href === '#report') {
+    scrollElementToCenter(target)
+    return
+  }
+
   const offset = 88
   const top = target.getBoundingClientRect().top + window.scrollY - offset
-  window.history.replaceState(null, '', href)
   window.scrollTo({ behavior: 'smooth', top: Math.max(0, Math.round(top)) })
 }
+
 function emitLandingAction(action: LandingAction) {
   window.dispatchEvent(new CustomEvent('cwi:landing-action', { detail: { action } }))
 }
