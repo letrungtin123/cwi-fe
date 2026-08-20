@@ -16,7 +16,7 @@ import {
 } from './landingData'
 import './landing.css'
 
-type LandingAction = 'login' | 'survey' | 'unlock-report' | 'download-teaser' | 'roundtable-apply'
+type LandingAction = 'login' | 'survey' | 'unlock-report' | 'download-teaser'
 
 const navTargets = ['#top', '#report', '#report-card', '#roundtable', '#footer'] as const
 const legalLinks = [
@@ -563,9 +563,6 @@ function ReportSection() {
         })}
       </div>
 
-      <RedButton action="roundtable-apply" className="absolute left-[70px] top-[435px] h-[50px] w-[330px] text-[16px] font-medium">
-        Đăng Ký Xét Duyệt Tham Gia
-      </RedButton>
 
       <div className="absolute left-[594px] top-[80px] h-[480px] w-[686px] rounded-[16px] border border-white/90 p-[9px]">
         <AssetImage alt="Roundtable session" asset="image124" className="h-full w-full rounded-[8px] object-cover" />
@@ -1198,7 +1195,6 @@ function MobileLandingPage() {
               </div>
             ))}
           </div>
-          <RedButton action="roundtable-apply" className="mobile-roundtable-button">Đăng Ký Xét Duyệt Tham Gia</RedButton>
         </div>
         <div className="mobile-roundtable-photo-frame" data-reveal>
           <AssetImage alt="Roundtable session" asset="image124" className="mobile-roundtable-photo" />

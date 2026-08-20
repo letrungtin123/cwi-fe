@@ -858,7 +858,6 @@
 
   .mobile-hero-button,
   .mobile-action-button,
-  .mobile-roundtable-button,
   .mobile-sticky-button {
     width: min(100%, 344px);
     min-height: 56px;
@@ -1731,7 +1730,6 @@
 
   .mobile-hero-button,
   .mobile-action-button,
-  .mobile-roundtable-button,
   .mobile-sticky-button {
     min-height: 56px;
     gap: var(--m-space-3);
@@ -1809,7 +1807,6 @@
   .mobile-roundtable-stats div { min-height: 128px; padding: var(--m-space-5) var(--m-space-3); }
   .mobile-roundtable-stats img { width: 44px; height: 44px; margin-bottom: var(--m-space-3); }
   .mobile-roundtable-stats span { margin-top: var(--m-space-1); font-size: var(--m-small); line-height: 1.45; }
-  .mobile-roundtable-button { margin-top: var(--m-space-6); }
   .mobile-roundtable-photo-frame { margin-top: var(--m-space-7); padding: 0; border-radius: var(--m-radius-lg); animation: mobile-image-settle 800ms var(--m-ease) both; }
   .mobile-roundtable-photo { display: block; aspect-ratio: 1.08; border-radius: 0; transform: none; }
 
@@ -2349,14 +2346,6 @@
     width: 100%;
   }
 
-  .mobile-roundtable-button {
-    display: flex;
-    width: min(100%, 344px);
-    align-self: center;
-    margin-right: auto;
-    margin-left: auto;
-    justify-content: center;
-  }
 }
 
 
