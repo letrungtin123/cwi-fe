@@ -482,7 +482,7 @@ function HeroSection() {
         </span>
       </h1>
       <p className="figma-hero-body-copy absolute left-[370px] top-[449px] w-[700px] text-center">
-        Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - tự động hoá - hệ sinh thái) của doanh nghiệp bạn với hàng trăm doanh nghiệp khác.
+        Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - tự động hoá - hệ sinh thái) của doanh nghiệp bạn với thị trường, hiểu nguyên nhân và nhận khuyến nghị hành động.
       </p>
       <RedButton action="survey" className="figma-hero-survey-button absolute left-[564px] top-[539px] h-[60px] w-[313px] text-[22px] font-medium">
         <span>Thực hiện khảo sát</span>
@@ -1371,7 +1371,7 @@ function MobileLandingPage() {
             <span><span>Hệ cộng lực mạnh</span></span>
             <span className="mobile-heading-cluster"><span><em>Doanh nghiệp</em> vươn tầm</span></span>
           </h1>
-          <p className="mobile-hero-copy">Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - tự động hoá - hệ sinh thái) của doanh nghiệp bạn với hàng trăm doanh nghiệp khác.</p>
+          <p className="mobile-hero-copy">Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - tự động hoá - hệ sinh thái) của doanh nghiệp bạn với thị trường, hiểu nguyên nhân và nhận khuyến nghị hành động.</p>
           <RedButton action="survey" className="mobile-hero-button">
             <span>Thực hiện khảo sát</span>
             <AssetImage alt="" aria-hidden="true" asset="arrow1" className="mobile-button-arrow h-[15px] w-[17px]" loading="eager" />
