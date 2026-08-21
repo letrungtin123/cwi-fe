@@ -7,9 +7,15 @@ import spotlightBackground from '@/assets/figma/bg-tieu-diem.png'
 import spotlightBackground2 from '@/assets/figma/bg-tieu-diem2.png'
 import spotlightLineLeft from '@/assets/figma/Line-panel-left.png'
 import spotlightLineRight from '@/assets/figma/Line-panel-right.png'
+import leftPanelBackground from '@/assets/figma/left-panel-bg.png'
+import advisorCardIcon from '@/assets/figma/ban-co-van-chuyen-mon.png'
+import coordinationCardIcon from '@/assets/figma/kha-nang-phoi-hop.png'
+import decisionCardIcon from '@/assets/figma/khoang-trong-ra-quyet-dinh.png'
+import directionCardIcon from '@/assets/figma/giai-phap-dinh-huong.png'
+import workforceCardIcon from '@/assets/figma/he-cong-luc.png'
 import {
-  advisors,
   associationLogos,
+  advisors,
   navItems,
   organizerLogos,
   partnerLogos,
@@ -55,7 +61,7 @@ const desktopHeroReveal: Variants = {
   },
 }
 const FIGMA_CANVAS_WIDTH = 1440
-const FIGMA_CANVAS_HEIGHT = 3784
+const FIGMA_CANVAS_HEIGHT = 4246
 const figmaScrollTargets: Record<(typeof navTargets)[number], number> = {
   '#top': 0,
   '#report': 874,
@@ -597,6 +603,167 @@ function ReportSection() {
     </m.section>
   )
 }
+type AboutCwiIconName = 'advisors' | 'decision' | 'workforce' | 'coordination' | 'direction'
+
+const aboutCwiIcons = {
+  advisors: advisorCardIcon,
+  decision: decisionCardIcon,
+  workforce: workforceCardIcon,
+  coordination: coordinationCardIcon,
+  direction: directionCardIcon,
+} as const
+
+type AboutCwiCardBlock =
+  | { type: 'paragraph'; text: string; muted?: boolean }
+  | { type: 'bullets'; items: string[]; strong?: boolean }
+  | { type: 'labels'; items: string[] }
+  | { type: 'formula'; items: string[] }
+
+type AboutCwiCardData = {
+  icon: AboutCwiIconName
+  title: string
+  blocks: AboutCwiCardBlock[]
+}
+
+const aboutCwiCards: AboutCwiCardData[] = [
+  {
+    icon: 'advisors',
+    title: 'Ban cố vấn chuyên môn',
+    blocks: [
+      {
+        type: 'paragraph',
+        text: 'Suốt hàng chục năm qua, các thành viên Ban Cố vấn chuyên môn của CEO Workforce Index đã đồng hành cùng hàng nghìn doanh nghiệp trong và ngoài nước giải quyết những bài toán then chốt về con người, năng lực lãnh đạo và hiệu quả tổ chức.',
+      },
+      {
+        type: 'paragraph',
+        text: 'Kinh nghiệm của Ban Cố vấn được tích lũy qua nhiều vai trò — từ điều hành doanh nghiệp, quản trị nhân lực, tư vấn tổ chức đến nghiên cứu và phát triển lãnh đạo.',
+      },
+    ],
+  },
+  {
+    icon: 'decision',
+    title: 'Khoảng trống ra quyết định của CEO',
+    blocks: [
+      {
+        type: 'paragraph',
+        text: 'Từ thực tiễn đó, Ban Cố vấn nhận thấy một khoảng trống quan trọng trong quá trình ra quyết định của CEO, lãnh đạo thường có nhiều dữ liệu về:',
+      },
+      { type: 'labels', items: ['Tài chính', 'Thị trường', 'Khách hàng'] },
+      {
+        type: 'paragraph',
+        text: 'Nhưng lại thiếu thông tin có hệ thống để đánh giá liệu tổ chức có đủ năng lực thực thi chiến lược tăng trưởng hay không.',
+      },
+    ],
+  },
+  {
+    icon: 'workforce',
+    title: 'Hệ cộng lực',
+    blocks: [
+      {
+        type: 'paragraph',
+        text: 'Khoảng trống này ngày càng lớn khi năng lực tạo ra giá trị của doanh nghiệp không còn chỉ đến từ con người, một phần đến từ:',
+      },
+      {
+        type: 'bullets',
+        strong: true,
+        items: ['AI, dữ liệu và tự động hóa', 'Đối tác, cộng đồng chuyên gia và các hệ sinh thái bên ngoài'],
+      },
+      {
+        type: 'paragraph',
+        text: 'Điều CEO cần quản trị không còn thuần là quy mô nhân sự, mà là chất lượng của Hệ cộng lực — toàn bộ con người, AI, công nghệ, dữ liệu và các nguồn lực được doanh nghiệp tổ chức, kết nối và vận hành để cùng tạo ra giá trị.',
+      },
+    ],
+  },
+  {
+    icon: 'coordination',
+    title: 'Khả năng phối hợp',
+    blocks: [
+      {
+        type: 'paragraph',
+        text: 'Điều quan trọng không nằm ở từng thành phần riêng lẻ, mà ở khả năng phối hợp giữa các thành phần đó, một doanh nghiệp có thể sở hữu:',
+      },
+      { type: 'formula', items: ['Nhân sự giỏi', 'Công nghệ hiện đại', 'Nguồn dữ liệu lớn'] },
+      {
+        type: 'paragraph',
+        muted: true,
+        text: 'nhưng vẫn không tạo ra kết quả nếu các nguồn lực này vận hành rời rạc hoặc không gắn với ưu tiên chiến lược.',
+      },
+    ],
+  },
+  {
+    icon: 'direction',
+    title: 'Giải pháp / Định hướng',
+    blocks: [
+      {
+        type: 'paragraph',
+        text: 'CEO Workforce Index ra đời từ trăn trở ấy — một la bàn tri thức và đối chuẩn về Hệ cộng lực vận hành doanh nghiệp hiệu quả dành cho CEO và lãnh đạo cấp cao.',
+      },
+      {
+        type: 'paragraph',
+        text: 'Thông qua dữ liệu được phân tích chuyên sâu với sự hỗ trợ của AI, dự án giúp lãnh đạo đo lường mức độ sẵn sàng của tổ chức, nhận diện khoảng cách giữa mục tiêu tăng trưởng và năng lực thực thi, từ đó xác định những ưu tiên cần phát triển để tổ chức tạo ra giá trị bền vững hơn.',
+      },
+    ],
+  },
+]
+
+function AboutCwiCard({ card }: { card: AboutCwiCardData }) {
+  const Icon = aboutCwiIcons[card.icon]
+
+  return (
+    <article className={cn('about-cwi-card', `about-cwi-card--${card.icon}`)}>
+      <div className="about-cwi-card-header">
+        <img alt="" aria-hidden="true" className="about-cwi-card-icon" draggable={false} src={Icon} />
+        <h3>{card.title}</h3>
+      </div>
+      <div className="about-cwi-card-body">
+        {card.blocks.map((block, index) => {
+          if (block.type === 'paragraph') {
+            return (
+              <p className={cn('about-cwi-card-paragraph', block.muted && 'is-muted')} key={`paragraph-${index}`}>
+                {block.text}
+              </p>
+            )
+          }
+
+          if (block.type === 'bullets') {
+            return (
+              <ul className={cn('about-cwi-card-bullets', block.strong && 'is-strong')} key={`bullets-${index}`}>
+                {block.items.map((item) => <li key={item}>{item}</li>)}
+              </ul>
+            )
+          }
+
+          if (block.type === 'labels') {
+            return (
+              <ul className="about-cwi-card-labels" key={`labels-${index}`}>
+                {block.items.map((item) => <li key={item}>{item}</li>)}
+              </ul>
+            )
+          }
+
+          return (
+            <div className="about-cwi-card-formula" key={`formula-${index}`}>
+              {block.items.map((item) => <span key={item}>{item}</span>)}
+            </div>
+          )
+        })}
+      </div>
+    </article>
+  )
+}
+
+function AboutCwiTitle({ id, className }: { id?: string; className?: string }) {
+  return (
+    <h2 className={cn('about-cwi-title', className)} id={id}>
+      <em>CEO Workforce Index</em> là thước đo
+      <br />
+      Hệ cộng lực vận hành doanh nghiệp
+      <br />
+      hiệu quả
+    </h2>
+  )
+}
+
 type AdvisorTextSpec = {
   alignRight?: boolean
   color: string
@@ -670,19 +837,6 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
 const visibleAdvisors = advisors.slice(0, 4)
 const visibleAdvisorCardSpecs = advisorCardSpecs.slice(0, 4)
 
-function toCssLength(value: number | string) {
-  return typeof value === 'number' ? `${value}px` : value
-}
-
-function boxStyle(box: { left: number | string; top: number | string; width: number | string; height: number | string }): CSSProperties {
-  return {
-    height: toCssLength(box.height),
-    left: toCssLength(box.left),
-    top: toCssLength(box.top),
-    width: toCssLength(box.width),
-  }
-}
-
 function AdvisorImage({ advisor, spec }: { advisor: (typeof advisors)[number]; spec: AdvisorImageSpec }) {
   const imageStyle: CSSProperties = spec.image ? boxStyle(spec.image) : { inset: 0, height: '100%', width: '100%' }
 
@@ -696,13 +850,13 @@ function AdvisorImage({ advisor, spec }: { advisor: (typeof advisors)[number]; s
 function AdvisorText({ spec }: { spec: AdvisorTextSpec }) {
   const style: CSSProperties = {
     color: spec.color,
-    fontSize: `${spec.fontSize}px`,
+    fontSize: spec.fontSize + 'px',
     fontWeight: spec.fontWeight,
-    left: `${spec.left}px`,
+    left: spec.left + 'px',
     lineHeight: 'normal',
-    top: `${spec.top}px`,
+    top: spec.top + 'px',
     transform: spec.translateXFull ? 'translateX(-100%)' : undefined,
-    width: spec.width ? `${spec.width}px` : undefined,
+    width: spec.width ? spec.width + 'px' : undefined,
   }
 
   return (
@@ -722,6 +876,18 @@ function AdvisorCard({ spec }: { spec: AdvisorCardSpec }) {
       <AdvisorText spec={spec.name} />
     </article>
   )
+}
+function toCssLength(value: number | string) {
+  return typeof value === 'number' ? `${value}px` : value
+}
+
+function boxStyle(box: { left: number | string; top: number | string; width: number | string; height: number | string }): CSSProperties {
+  return {
+    height: toCssLength(box.height),
+    left: toCssLength(box.left),
+    top: toCssLength(box.top),
+    width: toCssLength(box.width),
+  }
 }
 
 type FigmaLogoSpec = {
@@ -768,50 +934,45 @@ function FigmaLogoAsset({ spec }: { spec: FigmaLogoSpec }) {
 }
 function AdvisorsSection() {
   return (
-    <section id="about-cwi" className="absolute left-0 top-[2200px] h-[708px] w-full" aria-labelledby="advisors-title">
-      <AssetImage alt="" aria-hidden="true" asset="frame606" className="absolute left-[-162px] top-[24px] h-[728px] w-[895px] rotate-180 object-contain opacity-70" />
-      <AssetImage alt="" aria-hidden="true" asset="frame605" className="absolute left-[1115px] top-[291px] h-[728px] w-[895px] rotate-180 object-contain opacity-70" />
-      <m.div className="absolute left-0 top-0 h-[284px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal}>
-        <h2 id="advisors-title" className="absolute left-[94px] top-0 w-[560px] text-[35px] font-medium leading-[40px] text-black">
-          Thước đo sức khỏe <em className="whitespace-nowrap italic text-[#3bd6c6]">hệ năng lực</em>
-          <br />
-          cho Ban giám đốc
-        </h2>
-        <div className="absolute left-[699px] top-0 w-[566px] text-[16px] font-normal leading-[20px] text-black">
-          <p>
-            Gần 25 năm qua, bà Phạm Thị Mỹ Lệ cùng cộng sự đã đồng hành với hàng trăm doanh nghiệp giải quyết bài toán về con người, năng lực lãnh đạo và hiệu quả tổ chức.
-          </p>
-          <p className="mt-[20px]">
-            Từ thực tiễn đó, bà nhận thấy lãnh đạo có nhiều dữ liệu về thị trường và khách hàng, nhưng lại thiếu thông tin để đánh giá mức độ sẵn sàng của đội ngũ thực thi chiến lược tăng trưởng.
-          </p>
-          <p className="mt-[20px] font-medium">CEO Workforce Index ra đời</p>
-          <ul className="mt-[8px] list-disc pl-[22px]">
-            <li>Một hệ tri thức và đối chuẩn năng lực điều hành tổ chức dành cho CEO.</li>
-            <li>Dữ liệu được phân tích chuyên sâu bởi AI.</li>
-            <li>Giúp lãnh đạo nhận diện và thu hẹp khoảng cách giữa mục tiêu tăng trưởng và năng lực thực thi của đội ngũ.</li>
-          </ul>
+    <section id="about-cwi" className="about-cwi-section absolute left-0 top-[2200px] h-[708px] w-full" aria-labelledby="advisors-title">
+      <m.div className="about-cwi-layout" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal}>
+        <div className="about-cwi-left-panel">
+          <AboutCwiTitle id="advisors-title" />
+          <img alt="Cuộc họp lãnh đạo doanh nghiệp" className="about-cwi-left-image" draggable={false} loading="lazy" src={leftPanelBackground} />
         </div>
-      </m.div>
-      <m.div className="absolute left-[112px] top-[334px] h-[374px] w-[1216px]" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal}>
-        <FigmaSectionLabel
-          className="absolute left-0 top-0 h-[19px] w-full"
-          label="Hội đồng Cố vấn chuyên môn"
-          leftLine={{ asset: 'line21', left: 279, width: 202 }}
-          rightLine={{ asset: 'line30', left: 735, width: 202, flip: true }}
-          textLeft={495}
-          textWidth={226}
-        />
-        {visibleAdvisorCardSpecs.map((spec) => (
-          <AdvisorCard key={`${spec.advisor.name}-${spec.left}-${spec.top}`} spec={spec} />
-        ))}
+        <div aria-label="Nội dung về CEO Workforce Index" className="about-cwi-card-viewport">
+          <div className="about-cwi-card-stack">
+            {aboutCwiCards.map((card) => <AboutCwiCard card={card} key={card.title} />)}
+          </div>
+        </div>
       </m.div>
     </section>
   )
 }
 
+function AdvisorPeopleSection() {
+  return (
+    <m.section className="about-cwi-people-section absolute left-0 top-[2978px] h-[390px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-label="Ban tổ chức">
+      <div className="absolute left-[112px] top-0 h-[374px] w-[1216px]">
+        <FigmaSectionLabel
+          as="h2"
+          className="absolute left-0 top-0 h-[19px] w-full"
+          label="Ban tổ chức"
+          leftLine={{ asset: 'line21', left: 340, width: 202 }}
+          rightLine={{ asset: 'line30', left: 674, width: 202, flip: true }}
+          textLeft={495}
+          textWidth={226}
+        />
+        {visibleAdvisorCardSpecs.map((spec) => (
+          <AdvisorCard key={spec.advisor.name + '-' + spec.left + '-' + spec.top} spec={spec} />
+        ))}
+      </div>
+    </m.section>
+  )
+}
 function PartnersSection() {
   return (
-    <m.section className="absolute left-0 top-[2978px] h-[401px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="partners-title">
+    <m.section className="absolute left-0 top-[3400px] h-[401px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="partners-title">
       <FigmaSectionLabel
         as="h2"
         className="absolute left-0 top-0 h-[19px] w-full"
@@ -860,7 +1021,7 @@ function PartnersSection() {
 }
 function FooterSection() {
   return (
-    <m.footer id="footer" className="absolute left-[99px] top-[3402px] h-[382px] w-[1451px] text-black" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} data-node-id="94:276">
+    <m.footer id="footer" className="absolute left-[99px] top-[3864px] h-[382px] w-[1451px] text-black" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} data-node-id="94:276">
       <div className="absolute left-[1046px] top-0 flex h-[382px] w-[405px] items-center justify-center" data-node-id="94:277">
         <div className="flex-none -scale-y-100">
           <AssetImage alt="" aria-hidden="true" asset="image131" className="h-[382px] w-[405px] object-cover" />
@@ -916,7 +1077,7 @@ function MobileAdvisorCarousel() {
   const [activeIndex, setActiveIndex] = useState(0)
   const scrollRef = useRef<HTMLDivElement>(null)
   const progressStyle = {
-    '--mobile-carousel-progress': `${((activeIndex + 1) / visibleAdvisors.length) * 100}%`,
+    '--mobile-carousel-progress': ((activeIndex + 1) / visibleAdvisors.length) * 100 + '%',
   } as CSSProperties
 
   useEffect(() => {
@@ -947,9 +1108,9 @@ function MobileAdvisorCarousel() {
 
   return (
     <div className="mobile-advisor-carousel" data-reveal>
-      <div className="mobile-advisor-scroll" aria-label="Hội đồng Cố vấn chuyên môn" ref={scrollRef}>
+      <div className="mobile-advisor-scroll" aria-label="Ban tổ chức" ref={scrollRef}>
         {visibleAdvisors.map((advisor, index) => (
-          <MobileAdvisorCard advisor={advisor} isActive={activeIndex === index} key={`${advisor.name}-${index}`} />
+          <MobileAdvisorCard advisor={advisor} isActive={activeIndex === index} key={advisor.name + '-' + index} />
         ))}
       </div>
       <div className="mobile-carousel-meta" aria-live="polite">
@@ -959,7 +1120,6 @@ function MobileAdvisorCarousel() {
     </div>
   )
 }
-
 type MobileLogoRailVariant = 'organizer' | 'static' | 'marquee' | 'marqueeReverse'
 
 function MobileLogoRail({
@@ -1103,24 +1263,17 @@ function MobileLandingPage() {
         </div>
       </section>
 
-      <section className="mobile-section mobile-advisors-section" data-mobile-target="#about-cwi" aria-labelledby="mobile-advisors-title">
-        <div data-reveal>
-          <h2 id="mobile-advisors-title">Thước đo sức khỏe <em>hệ năng lực</em><br />cho Ban giám đốc</h2>
-          <div className="mobile-advisors-copy">
-            <p>Gần 25 năm qua, bà Phạm Thị Mỹ Lệ cùng cộng sự đã đồng hành với hàng trăm doanh nghiệp giải quyết bài toán về con người, năng lực lãnh đạo và hiệu quả tổ chức.</p>
-            <p>Từ thực tiễn đó, bà nhận thấy lãnh đạo có nhiều dữ liệu về thị trường và khách hàng, nhưng lại thiếu thông tin để đánh giá mức độ sẵn sàng của đội ngũ thực thi chiến lược tăng trưởng.</p>
-            <p><strong>CEO Workforce Index ra đời</strong></p>
-            <ol className="mobile-story-points">
-              <li>Một hệ tri thức và đối chuẩn năng lực điều hành tổ chức dành cho CEO.</li>
-              <li>Dữ liệu được phân tích chuyên sâu bởi AI.</li>
-              <li>Giúp lãnh đạo nhận diện và thu hẹp khoảng cách giữa mục tiêu tăng trưởng và năng lực thực thi của đội ngũ.</li>
-            </ol>
-          </div>
+      <section className="mobile-section mobile-advisors-section about-cwi-mobile-section" data-mobile-target="#about-cwi" aria-labelledby="mobile-advisors-title">
+        <div className="about-cwi-mobile-intro" data-reveal>
+          <AboutCwiTitle className="about-cwi-mobile-title" id="mobile-advisors-title" />
+          <img alt="Cuộc họp lãnh đạo doanh nghiệp" className="about-cwi-mobile-image" draggable={false} loading="lazy" src={leftPanelBackground} />
         </div>
-        <MobileSectionTitle>Hội đồng Cố vấn chuyên môn</MobileSectionTitle>
+        <div className="about-cwi-mobile-cards" data-reveal>
+          {aboutCwiCards.map((card) => <AboutCwiCard card={card} key={card.title} />)}
+        </div>
+        <MobileSectionTitle>Ban tổ chức</MobileSectionTitle>
         <MobileAdvisorCarousel />
       </section>
-
       <section className="mobile-section mobile-partners-section" aria-labelledby="mobile-partners-title">
         <h2 id="mobile-partners-title" className="sr-only">Đối tác</h2>
         <MobileSectionTitle>Đơn vị Đồng tổ chức</MobileSectionTitle>
@@ -1173,6 +1326,7 @@ export function LandingPage() {
               <ReportSection />
               <RoundtableSection />
               <AdvisorsSection />
+              <AdvisorPeopleSection />
               <PartnersSection />
               <FooterSection />
             </main>

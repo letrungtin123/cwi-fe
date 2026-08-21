@@ -1,7 +1,7 @@
 .design-page-shell {
   --figma-scale: 1;
   --figma-header-scale: 1;
-  --figma-page-height: 3784px;
+  --figma-page-height: 4246px;
   min-height: var(--figma-page-height);
   overflow-x: hidden;
   background: #f4f5f7;
@@ -28,7 +28,7 @@
   top: 0;
   left: 0;
   width: 1440px;
-  height: 3784px;
+  height: 4246px;
   margin: 0;
   overflow: hidden;
   background: #fff;
@@ -2632,5 +2632,311 @@
     margin-right: auto !important;
     margin-left: auto !important;
     text-align: center;
+  }
+}
+
+/* About CWI: two-column editorial layout with a contained desktop card scroller. */
+.about-cwi-layout {
+  position: absolute;
+  top: 31px;
+  left: 88px;
+  display: grid;
+  width: 1286px;
+  height: 636px;
+  grid-template-columns: 596px minmax(0, 618px);
+  gap: 72px;
+}
+
+.about-cwi-left-panel {
+  min-width: 0;
+}
+
+.about-cwi-title {
+  margin: 0;
+  color: #020617;
+  font-size: 35px;
+  font-weight: 500;
+  line-height: 40px;
+  letter-spacing: 0;
+}
+
+.about-cwi-title em {
+  color: #35d2c3;
+  font-style: italic;
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'clig' 0;
+}
+
+.about-cwi-left-image {
+  display: block;
+  width: 596px;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 2380 / 1624;
+  margin-top: 78px;
+  object-fit: cover;
+}
+
+.about-cwi-card-viewport {
+  height: 620px;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0 4px 0 0;
+  overscroll-behavior: contain;
+  scrollbar-color: transparent transparent;
+  scrollbar-width: thin;
+}
+
+.about-cwi-card-viewport:hover {
+  scrollbar-color: rgba(20, 78, 175, 0.38) transparent;
+}
+
+.about-cwi-card-viewport::-webkit-scrollbar {
+  width: 6px;
+}
+
+.about-cwi-card-viewport::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.about-cwi-card-viewport::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 999px;
+}
+
+.about-cwi-card-viewport:hover::-webkit-scrollbar-thumb {
+  background: rgba(20, 78, 175, 0.38);
+}
+
+.about-cwi-card-stack {
+  display: grid;
+  gap: 30px;
+}
+
+.about-cwi-card {
+  box-sizing: border-box;
+  min-height: 288px;
+  padding: 32px 34px 30px;
+  overflow: hidden;
+  border-radius: 36px;
+  color: #020617;
+  background: linear-gradient(112deg, #cbdcff 0%, #e9f7fb 100%);
+}
+
+.about-cwi-card-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-height: 48px;
+}
+
+.about-cwi-card-icon {
+  display: block;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.about-cwi-card-header h3 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 30px;
+}
+
+.about-cwi-card-body {
+  display: grid;
+  gap: 18px;
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.about-cwi-card-body p,
+.about-cwi-card-body ul {
+  margin: 0;
+}
+
+.about-cwi-card-paragraph.is-muted {
+  color: rgba(2, 6, 23, 0.72);
+}
+
+.about-cwi-card-bullets,
+.about-cwi-card-labels {
+  padding: 0;
+  list-style: none;
+}
+
+.about-cwi-card-bullets {
+  display: grid;
+  gap: 4px;
+}
+
+.about-cwi-card-bullets li {
+  position: relative;
+  padding-left: 16px;
+}
+
+.about-cwi-card-bullets li::before,
+.about-cwi-card-labels li::before {
+  position: absolute;
+  left: 0;
+  content: '•';
+}
+
+.about-cwi-card-bullets.is-strong {
+  font-weight: 700;
+}
+
+.about-cwi-card-labels {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.about-cwi-card-labels li {
+  position: relative;
+  padding-left: 12px;
+}
+
+.about-cwi-card-labels li::before {
+  left: 0;
+}
+
+.about-cwi-card-formula {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  line-height: 22px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.about-cwi-card-formula span + span::before {
+  margin: 0 18px;
+  content: '+';
+  font-weight: 500;
+}
+
+.about-cwi-mobile-section {
+  padding-bottom: 32px;
+}
+
+.about-cwi-mobile-intro {
+  width: 100%;
+}
+
+.about-cwi-mobile-image,
+.about-cwi-mobile-cards {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .about-cwi-mobile-section {
+    padding-top: 64px;
+  }
+
+  .mobile-advisors-section .about-cwi-mobile-title {
+    font-size: clamp(32px, 9vw, 42px);
+    line-height: 1.08;
+  }
+
+  .about-cwi-mobile-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2380 / 1624;
+    margin-top: 36px;
+    object-fit: cover;
+  }
+
+  .about-cwi-mobile-cards {
+    display: grid;
+    gap: 24px;
+    margin-top: 48px;
+  }
+
+  .about-cwi-mobile-cards .about-cwi-card {
+    min-height: 0;
+    padding: 28px 24px 30px;
+    border-radius: 24px;
+  }
+
+  .about-cwi-mobile-cards .about-cwi-card-header {
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .about-cwi-mobile-cards .about-cwi-card-icon {
+    flex-basis: 42px;
+    width: 42px;
+    height: 42px;
+  }
+
+  .about-cwi-mobile-cards .about-cwi-card-header h3 {
+    font-size: 22px;
+    line-height: 28px;
+  }
+
+  .about-cwi-mobile-cards .about-cwi-card-body {
+    gap: 16px;
+    margin-top: 20px;
+    font-size: 15px;
+    line-height: 21px;
+  }
+
+  .about-cwi-mobile-cards .about-cwi-card-formula {
+    flex-wrap: wrap;
+    gap: 4px 0;
+    white-space: normal;
+  }
+
+  .about-cwi-mobile-cards .about-cwi-card-formula span + span::before {
+    margin: 0 12px;
+  }
+
+  .about-cwi-mobile-cards .about-cwi-card-labels {
+    gap: 8px;
+    font-size: 14px;
+  }
+
+  .about-cwi-mobile-cards .about-cwi-card-bullets li {
+    padding-left: 14px;
+  }
+}
+
+@media (max-width: 390px) {
+  .about-cwi-mobile-cards .about-cwi-card {
+    padding-inline: 20px;
+  }
+
+  .about-cwi-mobile-cards .about-cwi-card-header h3 {
+    font-size: 20px;
+    line-height: 25px;
+  }
+
+  .about-cwi-mobile-cards .about-cwi-card-labels {
+    gap: 4px;
+    font-size: 13px;
+  }
+}
+
+@media (min-width: 901px) {
+  .about-cwi-left-panel .about-cwi-title {
+    padding-left: 10px;
+  }
+
+  .about-cwi-left-image {
+    margin-top: 72px;
+  }
+
+  .about-cwi-card-viewport {
+    margin-top: 18px;
   }
 }
