@@ -6,6 +6,7 @@
     "scripts": {
         "dev": "vite --host 127.0.0.1 --port 5670 --strictPort",
         "build": "tsc -b && vite build",
+        "generate:survey-qr": "node scripts/generate-survey-qr.mjs",
         "lint": "oxlint",
         "preview": "vite preview --host 127.0.0.1 --port 5670 --strictPort",
         "preview:pm2": "vite preview --host 0.0.0.0 --port 5275"
@@ -28,6 +29,7 @@
         "@types/react-dom": "^19.2.3",
         "@vitejs/plugin-react": "^6.0.4",
         "oxlint": "^1.75.0",
+        "qrcode": "^1.5.4",
         "typescript": "~6.0.2",
         "vite": "^8.2.0"
     }

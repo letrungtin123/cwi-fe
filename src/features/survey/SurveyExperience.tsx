@@ -55,8 +55,14 @@ function scrollToTop() {
   window.scrollTo({ behavior, top: 0 })
 }
 
-export function SurveyExperience({ onBackHome }: { onBackHome: () => void }) {
-  const [restoredSession] = useState<SurveySession | null>(() => readSurveySession())
+export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHome: () => void; startFresh?: boolean }) {
+  const [restoredSession] = useState<SurveySession | null>(() => {
+    if (startFresh) {
+      clearSurveySession()
+      return null
+    }
+    return readSurveySession()
+  })
   const [screen, setScreen] = useState<SurveyScreen>(() => restoredSession?.screen ?? 'intro')
   const [answers, setAnswers] = useState<Answers>(() => restoredSession?.answers ?? {})
   const [otherAnswers, setOtherAnswers] = useState<Answers>(() => restoredSession?.otherAnswers ?? {})

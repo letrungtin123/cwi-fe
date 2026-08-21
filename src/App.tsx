@@ -8,10 +8,16 @@ import { clearSurveySession, hasSurveySession } from '@/features/survey/surveyPe
 type AppMode = 'landing' | 'survey' | 'privacy' | 'terms'
 type LandingActionEvent = CustomEvent<{ action?: string }>
 
+function isFreshSurveyEntry() {
+  if (typeof window === 'undefined') return false
+  return window.location.pathname === '/survey' && new URLSearchParams(window.location.search).get('entry') === 'qr'
+}
+
 function getInitialMode(): AppMode {
   if (typeof window === 'undefined') return 'landing'
   if (window.location.pathname === '/privacy-policy') return 'privacy'
   if (window.location.pathname === '/terms-of-operation') return 'terms'
+  if (window.location.pathname === '/survey') return 'survey'
   if (hasSurveySession()) return 'survey'
   return 'landing'
 }
@@ -52,6 +58,7 @@ function App() {
   if (mode === 'survey') {
     return (
       <SurveyExperience
+        startFresh={isFreshSurveyEntry()}
         onBackHome={() => {
           clearSurveySession()
           setMode('landing')
