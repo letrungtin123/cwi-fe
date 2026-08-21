@@ -17,8 +17,10 @@ import {
   associationLogos,
   advisors,
   navItems,
+  knowledgePartnerLogos,
+  mediaPartnerLogos,
+  operationalPartnerLogos,
   organizerLogos,
-  partnerLogos,
   reportStats,
   roundtableStats,
 } from './landingData'
@@ -62,7 +64,7 @@ const desktopHeroReveal: Variants = {
   },
 }
 const FIGMA_CANVAS_WIDTH = 1440
-const FIGMA_CANVAS_HEIGHT = 4466
+const FIGMA_CANVAS_HEIGHT = 4758
 const figmaScrollTargets: Record<(typeof navTargets)[number], number> = {
   '#top': 0,
   '#report': 874,
@@ -916,8 +918,8 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     left: 737.73,
     top: 49.27,
     image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65, roundedTopLeft: true }, objectCover: true },
-    title: { text: 'Tổng giám đốc', left: 214.44, top: 235.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
-    field: { text: 'Công ty CP Đầu tư\ntài chính Hoàng Minh', left: 214.44, top: 252.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    title: { text: 'Giám đốc nhân sự', left: 214.44, top: 252.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
+    field: { text: 'Nafoods Group', left: 214.44, top: 269.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
     name: { text: 'ĐINH KIM NHUNG', left: 214.14, top: 291.45, width: 138.44, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
@@ -1003,23 +1005,27 @@ type FigmaLogoSpec = {
   width: number
 }
 
-const organizerLogoSpecs: FigmaLogoSpec[] = [
-  { alt: 'Le & Associates', asset: 'logo127', height: 60, left: 0, objectCover: true, top: 0, width: 209 },
-  { alt: 'Skale', asset: 'logo53Vectorized', height: 31.5, left: 261.11, top: 14.01, width: 117.409 },
-  { alt: 'KingBee', asset: 'logo80', height: 35.079, left: 443.67, objectCover: true, top: 18.31, width: 150.209 },
-  { alt: 'Nesso', asset: 'logoGroup204', height: 40.863, left: 661.31, top: 13.91, width: 133.383 },
-]
-
 const associationLogoSpecs: FigmaLogoSpec[] = [
   { alt: 'VOCI', asset: 'logo92', height: 54, left: 502, top: 0, width: 160 },
 ]
 
-const primaryAssociationLogoSpecs = associationLogoSpecs
-const partnerAssociationLogoSpecs: FigmaLogoSpec[] = [
-  { alt: 'Vietsuccess', asset: 'logoVietsuccess', height: 43, left: 247, top: 12, width: 300 },
-  { alt: 'Zenger Folkman', asset: 'logoZengerFolkman', height: 60, left: 647, top: 3, width: 270 },
+const knowledgePartnerLogoSpecs: FigmaLogoSpec[] = [
+  { alt: 'Zenger Folkman', asset: 'logoZengerFolkman', height: 60, left: 293, top: 0, width: 270 },
+  { alt: 'Le & Associates', asset: 'logo127', height: 60, left: 663, top: 0, width: 209 },
 ]
 
+const mediaPartnerLogoSpecs: FigmaLogoSpec[] = [
+  { alt: 'Vietsuccess', asset: 'logoVietsuccess', height: 43, left: 432, top: 12, width: 300 },
+]
+
+const operationalPartnerLogoSpecs: FigmaLogoSpec[] = [
+  { alt: 'KingBee', asset: 'logo80', height: 35.079, left: 390, top: 18.31, width: 150.209 },
+  { alt: 'Nesso', asset: 'logoGroup204', height: 40.863, left: 630, top: 13.91, width: 133.383 },
+]
+
+const organizerLogoSpecs: FigmaLogoSpec[] = [
+  { alt: 'Đơn vị tổ chức', asset: 'logo53Vectorized', height: 31.5, left: 523, top: 14.01, width: 117.409 },
+]
 function FigmaLogoAsset({ spec }: { spec: FigmaLogoSpec }) {
   const imageStyle: CSSProperties = spec.crop ? boxStyle(spec.crop) : { inset: 0, height: '100%', width: '100%' }
 
@@ -1069,56 +1075,86 @@ function AdvisorPeopleSection() {
 }
 function PartnersSection() {
   return (
-    <m.section className="absolute left-0 top-[3620px] h-[401px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="partners-title">
+    <m.section className="absolute left-0 top-[3620px] h-[693px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="partners-title">
       <FigmaSectionLabel
         as="h2"
         className="absolute left-0 top-0 h-[19px] w-full"
-        label="Đơn vị Đồng tổ chức"
-        leftLine={{ asset: 'line24', left: 397, width: 219 }}
-        rightLine={{ asset: 'line26', left: 823, width: 219, flip: true }}
-        textLeft={641}
-        textWidth={157}
-      />
-      <div className="absolute left-[310px] top-[33px] h-[60px] w-[795px]">
-        {organizerLogoSpecs.map((spec) => (
-          <FigmaLogoAsset key={`organizer-a-${spec.asset}`} spec={spec} />
-        ))}
-      </div>
-
-      <FigmaSectionLabel
-        as="h3"
-        className="absolute left-0 top-[143px] h-[19px] w-full"
         label="Đơn vị bảo trợ"
         leftLine={{ asset: 'line27', left: 438, width: 202 }}
         rightLine={{ asset: 'line30', left: 802, width: 202, flip: true }}
         textLeft={663}
         textWidth={116}
       />
-      <div className="absolute left-[136px] top-[190px] h-[55px] w-[1164px]">
-        {primaryAssociationLogoSpecs.map((spec) => (
+      <div className="absolute left-[136px] top-[33px] h-[60px] w-[1164px]">
+        {associationLogoSpecs.map((spec) => (
           <FigmaLogoAsset key={`association-${spec.asset}`} spec={spec} />
         ))}
       </div>
+
+      <FigmaSectionLabel
+        as="h3"
+        className="absolute left-0 top-[145px] h-[19px] w-full"
+        label="Đối tác tri thức"
+        leftLine={{ asset: 'line27', left: 425, width: 200 }}
+        rightLine={{ asset: 'line30', left: 815, width: 200, flip: true }}
+        textLeft={650}
+        textWidth={140}
+      />
+      <div className="absolute left-[136px] top-[178px] h-[60px] w-[1164px]">
+        {knowledgePartnerLogoSpecs.map((spec) => (
+          <FigmaLogoAsset key={`knowledge-${spec.asset}`} spec={spec} />
+        ))}
+      </div>
+
       <FigmaSectionLabel
         as="h3"
         className="absolute left-0 top-[290px] h-[19px] w-full"
-        label="Đối tác"
-        leftLine={{ asset: 'line27', left: 464, width: 202 }}
-        rightLine={{ asset: 'line30', left: 774, width: 202, flip: true }}
-        textLeft={689}
-        textWidth={64}
+        label="Đối tác truyền thông"
+        leftLine={{ asset: 'line27', left: 400, width: 210 }}
+        rightLine={{ asset: 'line30', left: 830, width: 210, flip: true }}
+        textLeft={630}
+        textWidth={180}
       />
-      <div className="absolute left-[136px] top-[334px] h-[67px] w-[1164px]">
-        {partnerAssociationLogoSpecs.map((spec) => (
-          <FigmaLogoAsset key={`partner-association-${spec.asset}`} spec={spec} />
+      <div className="absolute left-[136px] top-[323px] h-[60px] w-[1164px]">
+        {mediaPartnerLogoSpecs.map((spec) => (
+          <FigmaLogoAsset key={`media-${spec.asset}`} spec={spec} />
+        ))}
+      </div>
+
+      <FigmaSectionLabel
+        as="h3"
+        className="absolute left-0 top-[435px] h-[19px] w-full"
+        label="Đối tác vận hành"
+        leftLine={{ asset: 'line27', left: 420, width: 205 }}
+        rightLine={{ asset: 'line30', left: 815, width: 205, flip: true }}
+        textLeft={650}
+        textWidth={140}
+      />
+      <div className="absolute left-[136px] top-[468px] h-[60px] w-[1164px]">
+        {operationalPartnerLogoSpecs.map((spec) => (
+          <FigmaLogoAsset key={`operational-${spec.asset}`} spec={spec} />
+        ))}
+      </div>
+
+      <FigmaSectionLabel
+        as="h3"
+        className="absolute left-0 top-[580px] h-[19px] w-full"
+        label="Đơn vị tổ chức"
+        leftLine={{ asset: 'line27', left: 438, width: 202 }}
+        rightLine={{ asset: 'line30', left: 802, width: 202, flip: true }}
+        textLeft={663}
+        textWidth={116}
+      />
+      <div className="absolute left-[136px] top-[613px] h-[60px] w-[1164px]">
+        {organizerLogoSpecs.map((spec) => (
+          <FigmaLogoAsset key={`organizer-${spec.asset}`} spec={spec} />
         ))}
       </div>
     </m.section>
   )
-}
-function FooterSection() {
+}function FooterSection() {
   return (
-    <m.footer id="footer" className="absolute left-[99px] top-[4084px] h-[382px] w-[1451px] text-black" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} data-node-id="94:276">
+    <m.footer id="footer" className="absolute left-[99px] top-[4376px] h-[382px] w-[1451px] text-black" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} data-node-id="94:276">
       <div className="absolute left-[1046px] top-0 flex h-[382px] w-[405px] items-center justify-center" data-node-id="94:277">
         <div className="flex-none -scale-y-100">
           <AssetImage alt="" aria-hidden="true" asset="image131" className="h-[382px] w-[405px] object-cover" />
@@ -1321,8 +1357,6 @@ function MobileLogoRail({
 }
 
 function MobileLandingPage() {
-  const mobileAssociationLogos = associationLogos
-  const mobilePartnerLogos = partnerLogos
 
   return (
     <main className="mobile-landing">
@@ -1390,12 +1424,16 @@ function MobileLandingPage() {
       </section>
       <section className="mobile-section mobile-partners-section" aria-labelledby="mobile-partners-title">
         <h2 id="mobile-partners-title" className="sr-only">Đối tác</h2>
-        <MobileSectionTitle>Đơn vị Đồng tổ chức</MobileSectionTitle>
-        <MobileLogoRail logos={organizerLogos} variant="organizer" />
         <MobileSectionTitle>Đơn vị bảo trợ</MobileSectionTitle>
-        <MobileLogoRail logos={mobileAssociationLogos} variant="static" />
-        <MobileSectionTitle>Đối tác</MobileSectionTitle>
-        <MobileLogoRail logos={mobilePartnerLogos} variant="static" />
+        <MobileLogoRail logos={associationLogos} variant="static" />
+        <MobileSectionTitle>Đối tác tri thức</MobileSectionTitle>
+        <MobileLogoRail logos={knowledgePartnerLogos} variant="static" />
+        <MobileSectionTitle>Đối tác truyền thông</MobileSectionTitle>
+        <MobileLogoRail logos={mediaPartnerLogos} variant="static" />
+        <MobileSectionTitle>Đối tác vận hành</MobileSectionTitle>
+        <MobileLogoRail logos={operationalPartnerLogos} variant="static" />
+        <MobileSectionTitle>Đơn vị tổ chức</MobileSectionTitle>
+        <MobileLogoRail logos={organizerLogos} variant="static" />
       </section>
 
       <section className="mobile-final-cta" data-reveal>

@@ -68,8 +68,8 @@ export const advisors: Array<{
   {
     image: 'dinhKimNhung',
     name: 'ĐINH KIM NHUNG',
-    title: 'Tổng giám đốc',
-    field: 'Công ty CP Đầu tư\ntài chính Hoàng Minh',
+    title: 'Giám đốc nhân sự',
+    field: 'Nafoods Group',
   },
   {
     image: 'tranQuocKhanh',
@@ -114,10 +114,7 @@ export const organizerLogos: Array<{
   className: string
   alt: string
 }> = [
-  { asset: 'logo127', className: 'h-[60px] w-[209px]', alt: 'Organizer logo 1' },
-  { asset: 'logo53Vectorized', className: 'h-[32px] w-[118px]', alt: 'Organizer logo 2' },
-  { asset: 'logo80', className: 'h-[35px] w-[150px]', alt: 'Organizer logo 3' },
-  { asset: 'logoGroup204', className: 'h-[41px] w-[134px]', alt: 'Organizer logo 4' },
+  { asset: 'logo53Vectorized', className: 'h-[32px] w-[118px]', alt: 'Đơn vị tổ chức' },
 ]
 
 export const associationLogos: Array<{
@@ -125,14 +122,31 @@ export const associationLogos: Array<{
   className: string
   alt: string
 }> = [
-  { asset: 'logo92', className: 'h-[54px] w-[160px]', alt: 'VOCI' },
+  { asset: 'logo92', className: 'h-[54px] w-[160px]', alt: 'Đơn vị bảo trợ' },
 ]
 
-export const partnerLogos: Array<{
+export const knowledgePartnerLogos: Array<{
+  asset: FigmaAssetKey
+  className: string
+  alt: string
+}> = [
+  { asset: 'logoZengerFolkman', className: 'h-[60px] w-[270px]', alt: 'Zenger Folkman' },
+  { asset: 'logo127', className: 'h-[60px] w-[209px]', alt: 'Le & Associates' },
+]
+
+export const mediaPartnerLogos: Array<{
   asset: FigmaAssetKey
   className: string
   alt: string
 }> = [
   { asset: 'logoVietsuccess', className: 'h-[43px] w-[300px]', alt: 'Vietsuccess' },
-  { asset: 'logoZengerFolkman', className: 'h-[60px] w-[270px]', alt: 'Zenger Folkman' },
+]
+
+export const operationalPartnerLogos: Array<{
+  asset: FigmaAssetKey
+  className: string
+  alt: string
+}> = [
+  { asset: 'logo80', className: 'h-[35px] w-[150px]', alt: 'KingBee' },
+  { asset: 'logoGroup204', className: 'h-[41px] w-[134px]', alt: 'Nesso' },
 ]
