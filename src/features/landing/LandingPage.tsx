@@ -867,50 +867,24 @@ function FooterSection() {
         </div>
       </div>
 
-      <AssetImage alt="CEO Workforce Index" asset="footerLogo" className="absolute left-[34px] top-[120px] h-[139.302px] w-[301.024px]" data-node-id="94:285" />
+      <AssetImage alt="CEO Workforce Index" asset="footerLogo" className="absolute left-[252px] top-[81px] h-[139.302px] w-[301.024px]" data-node-id="94:285" />
+      <span aria-hidden="true" className="absolute left-[620px] top-[67px] h-[148px] border-l border-dashed border-black/20" />
 
-      <h3 className="absolute left-[475px] top-[111.172px] h-[25px] w-[222px] text-[19px] font-semibold uppercase leading-[25px]" data-node-id="94:283">
-        CHÍNH SÁCH BẢO MẬT
-      </h3>
-      <div className="absolute left-[475px] top-[154.172px] h-[123px] w-[339px] text-[14px] font-normal leading-[18px]" data-node-id="94:279">
-        <p>
-          Mọi dữ liệu doanh nghiệp nhập vào hệ thống AI đều
-          <br />
-          được mã hóa đầu cuối theo tiêu chuẩn bảo mật
-          <br />
-          quốc tế <strong className="font-medium text-[#144eaf]">ISO/IEC 27001.</strong>
-        </p>
-        <p style={{ marginTop: 20 }}>
-          Chúng tôi cam kết không chia sẻ dữ liệu cho bên
-          <br />
-          thứ ba dưới bất kỳ hình thức nào.
-        </p>
-      </div>
-
-      <h3 className="absolute left-[850px] top-[111.172px] h-[25px] w-[319px] text-[19px] font-semibold uppercase leading-[25px]" data-node-id="94:284">
-        THÔNG TIN LIÊN HỆ ĐẶC QUYỀN
-      </h3>
-      <p className="absolute left-[850px] top-[151.172px] h-[27px] w-[420px] whitespace-nowrap text-[14px] font-normal leading-[26px]" data-node-id="94:280">
-        <strong className="font-medium">Hotline VIP (24/7):</strong> 0909 123 456
-      </p>
-      <p className="absolute left-[850px] top-[178.172px] h-[26px] w-[420px] whitespace-nowrap text-[14px] font-normal leading-[26px]" data-node-id="94:281">
-        <strong className="font-medium">Email Ban điều hành CWI:</strong> cwi@xyz.com
-      </p>
-      <p className="absolute left-[850px] top-[204.172px] h-[27px] w-[420px] whitespace-nowrap text-[14px] font-normal leading-[26px]" data-node-id="94:282">
-        <strong className="font-medium">Trụ sở:</strong> 36 Mạc Đĩnh Chi, Phường Tân Định, TP. HCM
-      </p>
-
-      <nav aria-label="Thông tin pháp lý" className="absolute left-[322px] top-[303px] flex h-[20px] w-[598px] items-center justify-center gap-[24px] text-center text-[14px] leading-[20px]">
+      <nav aria-label="Thông tin pháp lý" className="absolute left-[659px] top-[96px] flex flex-col items-start text-[19px] leading-[34px]">
         {legalLinks.map((link) => (
-          <a className="figma-inter cursor-pointer text-[#144eaf] underline decoration-[#144eaf] underline-offset-[3px] transition-colors hover:text-[#0d3b87] focus-visible:rounded-[2px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#144eaf]" href={link.href} key={link.href}>
+          <a className="font-semibold uppercase transition-colors hover:text-[#144eaf] focus-visible:rounded-[2px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#144eaf]" href={link.href} key={link.href}>
             {link.label}
           </a>
         ))}
+        <p className="whitespace-nowrap">
+          <strong className="font-semibold uppercase">LIÊN HỆ:</strong> contact@ceo-workforce-index.com
+        </p>
       </nav>
-      <p className="absolute left-[322px] top-[338px] h-[20px] w-[598px] whitespace-nowrap text-center text-[14px] font-normal leading-[20px]" data-node-id="94:278">
-        Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về các <strong className="font-medium">Đơn vị đồng tổ chức và Đối tác.</strong>
+
+      <p className="absolute left-[322px] top-[303px] h-[20px] w-[598px] whitespace-nowrap text-center text-[14px] font-normal leading-[20px]" data-node-id="94:278">
+        Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về SKALE
       </p>
-      <AssetImage alt="" aria-hidden="true" asset="line22" className="absolute left-0 top-[51.5px] h-px w-[1240px]" data-node-id="94:316" />
+      <AssetImage alt="" aria-hidden="true" asset="line22" className="absolute left-0 top-[14px] h-px w-[1240px]" data-node-id="94:316" />
     </m.footer>
   )
 }
@@ -1168,23 +1142,13 @@ function MobileLandingPage() {
       <footer className="mobile-footer" data-mobile-target="#footer">
         <AssetImage alt="" aria-hidden="true" asset="image131" className="mobile-footer-pattern" />
         <AssetImage alt="CEO Workforce Index" asset="footerLogo" className="mobile-footer-logo" />
-        <div>
-          <h3>CHÍNH SÁCH BẢO MẬT</h3>
-          <p>Mọi dữ liệu doanh nghiệp nhập vào hệ thống AI đều được mã hóa đầu cuối theo tiêu chuẩn bảo mật quốc tế <strong>ISO/IEC 27001.</strong></p>
-          <p>Chúng tôi cam kết không chia sẻ dữ liệu cho bên thứ ba dưới bất kỳ hình thức nào.</p>
-        </div>
-        <div>
-          <h3>THÔNG TIN LIÊN HỆ ĐẶC QUYỀN</h3>
-          <p><strong>Hotline VIP (24/7):</strong> 0909 123 456</p>
-          <p><strong>Email Ban điều hành CWI:</strong> cwi@xyz.com</p>
-          <p><strong>Trụ sở:</strong> 36 Mạc Đĩnh Chi, Phường Tân Định, TP. HCM</p>
-        </div>
         <nav aria-label="Thông tin pháp lý" className="mobile-footer-legal">
           {legalLinks.map((link) => (
             <a href={link.href} key={link.href}>{link.label}</a>
           ))}
         </nav>
-        <p className="mobile-copyright">Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về các <strong>Đơn vị đồng tổ chức và Đối tác.</strong></p>
+        <p className="mobile-footer-contact"><strong>LIÊN HỆ:</strong> contact@ceo-workforce-index.com</p>
+        <p className="mobile-copyright">Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về SKALE</p>
       </footer>
     </main>
   )

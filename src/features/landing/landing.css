@@ -1573,8 +1573,14 @@
   }
 
   .mobile-footer-logo {
-    width: 246px;
+    width: min(100%, 301px);
     height: auto;
+  }
+
+  .mobile-footer-contact {
+    margin: 0;
+    font-size: 15px;
+    line-height: 23px;
   }
 
   .mobile-footer h3 {
@@ -1862,6 +1868,12 @@
 
   .mobile-footer { display: block; width: 100%; max-width: 560px; padding: var(--m-space-8) var(--m-page-x) calc(var(--m-space-9) + env(safe-area-inset-bottom)); }
   .mobile-footer-logo { margin-bottom: var(--m-space-7); }
+  .mobile-footer-contact {
+    margin: 0;
+    font-size: 15px;
+    line-height: 23px;
+  }
+
   .mobile-footer h3 { margin-bottom: var(--m-space-3); font-size: var(--m-body-lg); line-height: 1.45; }
   .mobile-footer p { margin: 0; font-size: var(--m-body); line-height: 1.6; }
   .mobile-footer p + p { margin-top: var(--m-space-3); }
@@ -2540,4 +2552,85 @@
     font-size: 15px;
   }
 
+}
+
+/* Final mobile footer layout override. */
+@media (max-width: 900px) {
+  .mobile-footer {
+    display: grid;
+    align-content: start;
+    justify-items: stretch;
+    width: calc(100% - 32px);
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 40px 20px 64px;
+    gap: 0;
+  }
+
+  .mobile-footer-logo {
+    display: block;
+    width: min(100%, 301px);
+    height: auto;
+    margin: 0 auto 30px;
+  }
+
+  .mobile-footer-legal {
+    width: 100%;
+    margin: 0;
+    padding: 16px 0 0;
+    border-top: 1px solid rgba(20, 78, 175, 0.18);
+    gap: 8px 24px;
+  }
+
+  .mobile-footer-legal a {
+    white-space: nowrap;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .mobile-footer-contact {
+    margin: 10px 0 0;
+    text-align: center;
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  .mobile-copyright {
+    width: 100%;
+    max-width: none;
+    margin: 48px 0 0 !important;
+    padding: 0;
+    overflow: hidden;
+    text-align: left;
+    white-space: nowrap;
+    font-size: 10px !important;
+    line-height: 18px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .mobile-footer {
+    width: 100%;
+    padding-inline: 20px;
+  }
+
+  .mobile-footer-legal {
+    gap: 8px 16px;
+  }
+
+  .mobile-footer-contact {
+    font-size: 12px;
+  }
+
+  .mobile-copyright {
+    margin-top: 40px !important;
+  }
+}
+/* Final mobile footer centering override. */
+@media (max-width: 900px) {
+  .mobile-footer .mobile-copyright {
+    margin-right: auto !important;
+    margin-left: auto !important;
+    text-align: center;
+  }
 }
