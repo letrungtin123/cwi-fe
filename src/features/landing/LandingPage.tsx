@@ -469,7 +469,7 @@ function HeroSection() {
       <div className="figma-hero-gradient absolute left-[-1px] top-0 h-[940px] w-[1442px]" />
       <AssetImage alt="" aria-hidden="true" asset="rectangle4329" className="absolute left-0 top-[763px] h-[156px] w-[1440px] object-cover" loading="eager" />
       <Sparkles />
-      <p className="absolute left-[495px] top-[220px] w-[451px] text-center text-[16px] font-medium uppercase leading-[19px] text-[#13e6d0]">
+      <p className="absolute left-[440px] top-[220px] w-[560px] whitespace-nowrap text-center text-[16px] font-medium uppercase leading-[19px] text-[#13e6d0]">
         LA BÀN ĐỊNH HƯỚNG NĂNG LỰC VẬN HÀNH CỦA TỔ CHỨC
       </p>
       <h1 id="hero-title" className="absolute left-[236px] top-[254px] w-[968px] text-center text-[81px] font-medium leading-[90px] text-white">
@@ -478,8 +478,8 @@ function HeroSection() {
           <em className="figma-text-gradient font-semibold italic">Doanh nghiệp</em> vươn tầm
         </span>
       </h1>
-      <p className="figma-hero-body-copy absolute left-[448px] top-[449px] w-[543px] text-center">
-        Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - công nghệ - hệ sinh thái) của doanh nghiệp bạn với hàng trăm doanh nghiệp khác.
+      <p className="figma-hero-body-copy absolute left-[370px] top-[449px] w-[700px] text-center">
+        Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - tự động hoá - hệ sinh thái) của doanh nghiệp bạn với hàng trăm doanh nghiệp khác.
       </p>
       <RedButton action="survey" className="figma-hero-survey-button absolute left-[564px] top-[539px] h-[60px] w-[313px] text-[22px] font-medium">
         <span>Thực hiện khảo sát</span>
@@ -518,15 +518,15 @@ function SpotlightInfo({ desktop = false }: { desktop?: boolean }) {
       style={{ backgroundImage: 'url(' + spotlightBackground2 + ')' }}
     >
       <div className="spotlight-info-content">
-        <h3><span>Q3 2026</span> Năng lực lãnh đạo</h3>
-        <p>Để đánh giá vị thế Hệ cộng lực của doanh nghiệp bạn so với hàng trăm tổ chức khác, tham gia khảo sát để nhận kết quả ngay</p>
+        <h3><span>Báo cáo CEO Workforce Index Q3 2026</span></h3>
         <img alt="" aria-hidden="true" className="spotlight-info-rule" src={spotlightLineRight} />
-        <h3><span>CEO Workforce Index</span></h3>
+        <p>Giúp hiểu sâu, phân tích và có hành động ngay trong 90 ngày để tăng cường &quot;hệ cộng lực&quot;.</p>
         <ul>
-          <li>Ấn bản khởi đầu · Q3 2026 · Tóm lược điều hành</li>
-          <li>15 trang ~ 6 phút đọc</li>
-          <li>Thực hiện bài đánh giá ngắn để biết doanh nghiệp mình đang ở đâu</li>
+          <li>Đối chuẩn thị trường để biết doanh nghiệp mình đang ở đâu</li>
+          <li>Nhận diện những khoảng trống cần lưu ý</li>
+          <li>Khuyến nghị hành động phù hợp cho doanh nghiệp</li>
         </ul>
+        <p>Hoàn thành nhanh chóng trong 7 phút.</p>
       </div>
       <RedButton action="survey" className="spotlight-cta">
         <SquarePen aria-hidden="true" size={19} strokeWidth={1.8} />
@@ -1224,7 +1224,7 @@ function MobileLandingPage() {
             <span><span>Hệ cộng lực mạnh</span></span>
             <span className="mobile-heading-cluster"><span><em>Doanh nghiệp</em> vươn tầm</span></span>
           </h1>
-          <p className="mobile-hero-copy">Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - công nghệ - hệ sinh thái) của doanh nghiệp bạn với hàng trăm doanh nghiệp khác.</p>
+          <p className="mobile-hero-copy">Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - tự động hoá - hệ sinh thái) của doanh nghiệp bạn với hàng trăm doanh nghiệp khác.</p>
           <RedButton action="survey" className="mobile-hero-button">
             <span>Thực hiện khảo sát</span>
             <AssetImage alt="" aria-hidden="true" asset="arrow1" className="mobile-button-arrow h-[15px] w-[17px]" loading="eager" />

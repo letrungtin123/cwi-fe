@@ -296,9 +296,9 @@
 .spotlight-info h3 {
   margin: 0;
   color: #2fd3c4;
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 400;
-  line-height: 26px;
+  line-height: 27px;
   letter-spacing: 0;
 }
 
@@ -310,9 +310,9 @@
   max-width: 360px;
   margin: 7px 0 0;
   color: rgba(255, 255, 255, 0.92);
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 400;
-  line-height: 20px;
+  line-height: 21px;
 }
 
 .spotlight-info-rule {
@@ -327,8 +327,8 @@
   margin: 0;
   padding: 0 0 0 22px;
   color: rgba(255, 255, 255, 0.9);
-  font-size: 16px;
-  line-height: 20px;
+  font-size: 17px;
+  line-height: 21px;
 }
 
 .spotlight-info h3 + ul {
@@ -2648,7 +2648,10 @@
 }
 
 .about-cwi-left-panel {
+  display: flex;
   min-width: 0;
+  height: 638px;
+  flex-direction: column;
 }
 
 .about-cwi-title {
@@ -2669,10 +2672,12 @@
 
 .about-cwi-left-image {
   display: block;
+  flex: 1 1 auto;
   width: 596px;
   max-width: 100%;
+  min-height: 0;
   height: auto;
-  aspect-ratio: 2380 / 1624;
+  aspect-ratio: auto;
   margin-top: 78px;
   object-fit: cover;
 }
