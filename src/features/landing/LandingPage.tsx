@@ -464,16 +464,16 @@ function HeroSection() {
       <AssetImage alt="" aria-hidden="true" asset="rectangle4329" className="absolute left-0 top-[763px] h-[156px] w-[1440px] object-cover" loading="eager" />
       <Sparkles />
       <p className="absolute left-[495px] top-[220px] w-[451px] text-center text-[16px] font-medium uppercase leading-[19px] text-[#13e6d0]">
-        Nền Tảng Tri Thức dành cho Lãnh Đạo Cấp Cao
+        LA BÀN ĐỊNH HƯỚNG NĂNG LỰC VẬN HÀNH CỦA TỔ CHỨC
       </p>
       <h1 id="hero-title" className="absolute left-[236px] top-[254px] w-[968px] text-center text-[81px] font-medium leading-[90px] text-white">
-        <span className="block">Hệ năng lực tốt hơn</span>
+        <span className="block">Hệ cộng lực mạnh</span>
         <span className="block">
-          <em className="figma-text-gradient font-semibold italic">Doanh nghiệp</em> mạnh hơn
+          <em className="figma-text-gradient font-semibold italic">Doanh nghiệp</em> vươn tầm
         </span>
       </h1>
       <p className="figma-hero-body-copy absolute left-[448px] top-[449px] w-[543px] text-center">
-        Tham gia khảo sát của CEO Workforce Index để đối chuẩn năng lực đội ngũ của doanh nghiệp bạn với hàng trăm doanh nghiệp khác
+        Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - công nghệ - hệ sinh thái) của doanh nghiệp bạn với hàng trăm doanh nghiệp khác.
       </p>
       <RedButton action="survey" className="figma-hero-survey-button absolute left-[564px] top-[539px] h-[60px] w-[313px] text-[22px] font-medium">
         <span>Thực hiện khảo sát</span>
@@ -1085,14 +1085,12 @@ function MobileLandingPage() {
         <AssetImage alt="" aria-hidden="true" asset="group9301" className="mobile-spark mobile-spark-1" loading="eager" />
         <AssetImage alt="" aria-hidden="true" asset="group9303" className="mobile-spark mobile-spark-2" loading="eager" />
         <div className="mobile-hero-content" data-reveal>
-          <p className="mobile-eyebrow">NỀN TẢNG TRI THỨC DÀNH CHO LÃNH ĐẠO CẤP CAO</p>
+          <p className="mobile-eyebrow">LA BÀN ĐỊNH HƯỚNG NĂNG LỰC VẬN HÀNH CỦA TỔ CHỨC</p>
           <h1 id="mobile-hero-title">
-            <span><span>Hệ năng lực</span></span>
-            <span><span>tốt hơn</span></span>
-            <span className="mobile-heading-cluster"><span><em>Doanh nghiệp</em></span></span>
-            <span><span>mạnh hơn</span></span>
+            <span><span>Hệ cộng lực mạnh</span></span>
+            <span className="mobile-heading-cluster"><span><em>Doanh nghiệp</em> vươn tầm</span></span>
           </h1>
-          <p className="mobile-hero-copy">Tham gia khảo sát của CEO Workforce Index để đối chuẩn năng lực đội ngũ của doanh nghiệp bạn với hàng trăm doanh nghiệp khác</p>
+          <p className="mobile-hero-copy">Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - công nghệ - hệ sinh thái) của doanh nghiệp bạn với hàng trăm doanh nghiệp khác.</p>
           <RedButton action="survey" className="mobile-hero-button">
             <span>Thực hiện khảo sát</span>
             <AssetImage alt="" aria-hidden="true" asset="arrow1" className="mobile-button-arrow h-[15px] w-[17px]" loading="eager" />
@@ -1160,7 +1158,7 @@ function MobileLandingPage() {
       </section>
 
       <section className="mobile-final-cta" data-reveal>
-        <h2>Hệ năng lực tốt hơn<br /><em>Doanh nghiệp</em> mạnh hơn</h2>
+        <h2>Hệ cộng lực mạnh<br /><em>Doanh nghiệp</em> vươn tầm</h2>
         <RedButton action="survey" className="mobile-hero-button">
           <span>Thực hiện khảo sát</span>
           <AssetImage alt="" aria-hidden="true" asset="arrow1" className="mobile-button-arrow h-[15px] w-[17px]" loading="eager" />
