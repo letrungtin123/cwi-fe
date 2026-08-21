@@ -56,7 +56,7 @@ export const advisors: Array<{
     image: 'rectangle4311',
     name: 'PHẠM THỊ MỸ LỆ',
     title: 'Chủ tịch',
-    field: 'Hội đồng Quản trị\nL&A Holding',
+    field: 'Hội đồng Quản trị\nL&A Holdings',
   },
   {
     image: 'headshot138',
@@ -67,14 +67,14 @@ export const advisors: Array<{
   {
     image: 'phamTienKha',
     name: 'PHẠM TIẾN KHA',
-    title: 'Giám đốc AI,',
+    title: 'Quyền giám đốc AI,',
     field: 'Vinsmart Future',
   },
   {
     image: 'dinhKimNhung',
     name: 'ĐINH KIM NHUNG',
-    title: 'TGĐ ctcp đầu tư tài',
-    field: 'chính HOÀNG MINH',
+    title: 'Tổng giám đốc',
+    field: 'Công ty CP Đầu tư\ntài chính Hoàng Minh',
   },
   {
     image: 'headshot141',
