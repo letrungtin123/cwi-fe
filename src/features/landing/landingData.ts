@@ -77,6 +77,12 @@ export const advisors: Array<{
     field: 'Công ty CP Đầu tư\ntài chính Hoàng Minh',
   },
   {
+    image: 'tranQuocKhanh',
+    name: 'TRẦN QUỐC KHÁNH',
+    title: 'Nhà sáng lập',
+    field: 'Giám đốc điều hành\nVIETSUCCESS',
+  },
+  {
     image: 'headshot141',
     name: 'LÊ THỊ THÚY VÂN',
     title: 'Chuyên gia',

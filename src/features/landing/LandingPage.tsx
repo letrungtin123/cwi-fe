@@ -798,7 +798,7 @@ type AdvisorCardSpec = {
 const advisorCardSpecs: AdvisorCardSpec[] = [
   {
     advisor: advisors[0],
-    left: 122.3,
+    left: 0,
     top: 49,
     image: { frame: { left: -31, top: 28, width: 228, height: 328 }, objectCover: true },
     title: { text: 'Chủ tịch', left: 214.44, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
@@ -807,7 +807,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
   },
   {
     advisor: advisors[1],
-    left: 368.65,
+    left: 245.91,
     top: 49.27,
     image: { frame: { left: 0, top: 29.95, width: 232.35, height: 295.5 }, image: { left: '-35.21%', top: '-12.05%', width: '156.95%', height: '123.43%' } },
     title: { text: 'Giám đốc', left: 214.44, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, nowrap: true },
@@ -816,7 +816,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
   },
   {
     advisor: advisors[2],
-    left: 615,
+    left: 491.82,
     top: 49.27,
     image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65, roundedTopLeft: true }, objectCover: true },
     title: { text: 'Quyền giám đốc AI,', left: 214.44, top: 252.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
@@ -825,17 +825,26 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
   },
   {
     advisor: advisors[3],
-    left: 861.35,
+    left: 737.73,
     top: 49.27,
     image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65, roundedTopLeft: true }, objectCover: true },
     title: { text: 'Tổng giám đốc', left: 214.44, top: 235.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
     field: { text: 'Công ty CP Đầu tư\ntài chính Hoàng Minh', left: 214.44, top: 252.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
     name: { text: 'ĐINH KIM NHUNG', left: 214.14, top: 291.45, width: 138.44, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
+  {
+    advisor: advisors[4],
+    left: 983.64,
+    top: 49.27,
+    image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65, roundedTopLeft: true }, objectCover: true },
+    title: { text: 'Nhà sáng lập', left: 214.44, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
+    field: { text: 'Giám đốc điều hành\nVIETSUCCESS', left: 214.44, top: 251.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    name: { text: 'TRẦN QUỐC KHÁNH', left: 214.14, top: 291.45, width: 138.44, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
+  },
 ]
 
-const visibleAdvisors = advisors.slice(0, 4)
-const visibleAdvisorCardSpecs = advisorCardSpecs.slice(0, 4)
+const visibleAdvisors = advisors.slice(0, 5)
+const visibleAdvisorCardSpecs = advisorCardSpecs.slice(0, 5)
 
 function AdvisorImage({ advisor, spec }: { advisor: (typeof advisors)[number]; spec: AdvisorImageSpec }) {
   const imageStyle: CSSProperties = spec.image ? boxStyle(spec.image) : { inset: 0, height: '100%', width: '100%' }
@@ -991,11 +1000,11 @@ function PartnersSection() {
       <FigmaSectionLabel
         as="h3"
         className="absolute left-0 top-[143px] h-[19px] w-full"
-        label="Hiệp hội"
-        leftLine={{ asset: 'line27', left: 464, width: 202 }}
-        rightLine={{ asset: 'line30', left: 774, width: 202, flip: true }}
-        textLeft={689}
-        textWidth={64}
+        label="Đơn vị bảo trợ"
+        leftLine={{ asset: 'line27', left: 438, width: 202 }}
+        rightLine={{ asset: 'line30', left: 802, width: 202, flip: true }}
+        textLeft={663}
+        textWidth={116}
       />
       <div className="absolute left-[136px] top-[190px] h-[55px] w-[1164px]">
         {primaryAssociationLogoSpecs.map((spec) => (
@@ -1052,16 +1061,16 @@ function FooterSection() {
 function MobileSectionTitle({ children }: { children: ReactNode }) {
   return (
     <div className="mobile-section-title" data-reveal>
-      <span />
+      <AssetImage alt="" aria-hidden="true" asset="line27" className="mobile-section-title-line" />
       <strong>{children}</strong>
-      <span />
+      <AssetImage alt="" aria-hidden="true" asset="line30" className="mobile-section-title-line is-right" />
     </div>
   )
 }
 
 function MobileAdvisorCard({ advisor, isActive }: { advisor: (typeof advisors)[number]; isActive: boolean }) {
   return (
-    <article className={cn('mobile-advisor-card', isActive && 'is-active', advisor.name === 'PHẠM THỊ MỸ LỆ' && 'is-primary-advisor', (advisor.name === 'TRƯƠNG CHÍ DŨNG' || advisor.name === 'PHẠM TIẾN KHA' || advisor.name === 'ĐINH KIM NHUNG') && 'is-featured-advisor')}>
+    <article className={cn('mobile-advisor-card', isActive && 'is-active', advisor.name === 'PHẠM THỊ MỸ LỆ' && 'is-primary-advisor', (advisor.name === 'TRƯƠNG CHÍ DŨNG' || advisor.name === 'PHẠM TIẾN KHA' || advisor.name === 'ĐINH KIM NHUNG' || advisor.name === 'TRẦN QUỐC KHÁNH') && 'is-featured-advisor', advisor.name === 'TRẦN QUỐC KHÁNH' && 'is-tran-quoc-khanh')}>
       <AssetImage alt="" aria-hidden="true" asset={advisor.image} className="mobile-advisor-image" />
       <div className="mobile-advisor-blue" />
       <div className="mobile-advisor-copy">
@@ -1278,7 +1287,7 @@ function MobileLandingPage() {
         <h2 id="mobile-partners-title" className="sr-only">Đối tác</h2>
         <MobileSectionTitle>Đơn vị Đồng tổ chức</MobileSectionTitle>
         <MobileLogoRail logos={organizerLogos} variant="organizer" />
-        <MobileSectionTitle>Hiệp hội</MobileSectionTitle>
+        <MobileSectionTitle>Đơn vị bảo trợ</MobileSectionTitle>
         <MobileLogoRail logos={mobileAssociationLogos} variant="static" />
         <MobileSectionTitle>Đối tác</MobileSectionTitle>
         <MobileLogoRail logos={mobilePartnerLogos} variant="static" />

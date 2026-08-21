@@ -1,6 +1,7 @@
 import bgCircleCeo from '@/assets/figma/BG-circle-ceo.png'
 import bgForm from '@/assets/figma/BG-form.png'
 import textCeo from '@/assets/figma/Text-CEO.png'
+import tranQuocKhanh from '@/assets/figma/Tran-Quoc-Khanh.png'
 import aliceOlivia from '@/assets/figma/alice-olivia.png'
 import arrow1 from '@/assets/figma/arrow-1.svg'
 import borgs from '@/assets/figma/borgs.png'
@@ -93,6 +94,7 @@ export const figmaAssets = {
   bgCircleCeo,
   bgForm,
   textCeo,
+  tranQuocKhanh,
   aliceOlivia,
   arrow1,
   borgs,

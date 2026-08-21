@@ -1371,9 +1371,16 @@
     text-align: center;
   }
 
-  .mobile-section-title span {
+  .mobile-section-title-line {
+    display: block;
+    min-width: 0;
+    width: 100%;
     height: 1px;
-    background: rgba(20, 78, 175, 0.72);
+    object-fit: fill;
+  }
+
+  .mobile-section-title-line.is-right {
+    transform: rotate(180deg);
   }
 
   .mobile-advisor-carousel {
@@ -2402,6 +2409,13 @@
   }
 }
 
+@media (max-width: 560px) {
+  .mobile-advisor-card.is-tran-quoc-khanh .mobile-advisor-image,
+  .mobile-advisor-card.is-tran-quoc-khanh.is-active .mobile-advisor-image {
+    transform: scale(1) !important;
+    object-position: center center;
+  }
+}
 @media (max-width: 560px) {
   .mobile-advisor-scroll {
     padding-bottom: 0;
