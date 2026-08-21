@@ -19,6 +19,7 @@ import {
   navItems,
   organizerLogos,
   partnerLogos,
+  reportStats,
   roundtableStats,
 } from './landingData'
 import './landing.css'
@@ -61,13 +62,13 @@ const desktopHeroReveal: Variants = {
   },
 }
 const FIGMA_CANVAS_WIDTH = 1440
-const FIGMA_CANVAS_HEIGHT = 4246
+const FIGMA_CANVAS_HEIGHT = 4466
 const figmaScrollTargets: Record<(typeof navTargets)[number], number> = {
   '#top': 0,
   '#report': 874,
   '#report-card': 874,
-  '#roundtable': 1490,
-  '#about-cwi': 2200,
+  '#roundtable': 1710,
+  '#about-cwi': 2420,
 }
 
 function getViewportScale() {
@@ -553,9 +554,96 @@ function ReportSection() {
       </div>
     </m.section>
   )
-}function RoundtableSection() {
+}function AnimatedReportValue({ value, delay }: { value: string; delay: number }) {
+  const valueRef = useRef<HTMLSpanElement>(null)
+  const [started, setStarted] = useState(false)
+  const [displayed, setDisplayed] = useState(0)
+  const match = value.match(/\d+/)
+  const target = match ? Number(match[0]) : 0
+  const numberStart = match?.index ?? 0
+  const prefix = match ? value.slice(0, numberStart) : value
+  const suffix = match ? value.slice(numberStart + match[0].length) : ""
+
+  useEffect(() => {
+    const node = valueRef.current
+    if (!node) return
+    if (!("IntersectionObserver" in window)) {
+      setStarted(true)
+      return
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) {
+        setStarted(true)
+        observer.disconnect()
+      }
+    }, { threshold: 0.35 })
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!started) return
+
+    let frame = 0
+    const startedAt = performance.now() + delay
+    const tick = (now: number) => {
+      if (now < startedAt) {
+        frame = window.requestAnimationFrame(tick)
+        return
+      }
+
+      const progress = Math.min(1, (now - startedAt) / 1000)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setDisplayed(Math.round(target * eased))
+      if (progress < 1) frame = window.requestAnimationFrame(tick)
+    }
+
+    frame = window.requestAnimationFrame(tick)
+    return () => window.cancelAnimationFrame(frame)
+  }, [delay, started, target])
+
+  return <span ref={valueRef} aria-label={value}>{prefix}{displayed}{suffix}</span>
+}
+
+function ReportStatsSection() {
   return (
-    <m.section id="roundtable" className="absolute left-[40px] top-[1490px] h-[640px] w-[1360px] overflow-hidden rounded-[20px]" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="roundtable-title">
+    <m.section
+      className="absolute left-0 top-[1490px] h-[180px] w-full"
+      initial="hidden"
+      whileInView="show"
+      viewport={desktopMotionViewport}
+      variants={desktopSectionReveal}
+      aria-label="Thông số nghiên cứu"
+    >
+      <div className="absolute left-[234.375px] top-0 h-[147px] w-[971.25px]">
+        {[323.75, 647.5].map((left) => (
+          <div className="absolute top-[32px] h-[104px] w-px bg-[#d9d9d9]" key={left} style={{ left }} />
+        ))}
+        {reportStats.map((stat, index) => {
+          const slots = [
+            { left: 0, width: 323.75 },
+            { left: 323.75, width: 323.75 },
+            { left: 647.5, width: 323.75 },
+          ]
+
+          return (
+            <div className="absolute top-0 h-full text-center" key={stat.value} style={slots[index]}>
+              <AssetImage alt="" aria-hidden="true" asset={stat.icon} className="absolute left-1/2 top-[26px] h-[46px] w-[60px] -translate-x-1/2 object-contain" />
+              <strong className="absolute left-0 top-[84px] w-full text-center text-[18px] font-medium leading-[22px] text-[#144eaf]">
+                <AnimatedReportValue delay={index * 90} value={stat.value} />
+              </strong>
+              <span className="absolute left-0 top-[108px] w-full text-center text-[14px] font-normal leading-[18px] text-black">{stat.label}</span>
+            </div>
+          )
+        })}
+      </div>
+    </m.section>
+  )
+}
+function RoundtableSection() {
+  return (
+    <m.section id="roundtable" className="absolute left-[40px] top-[1710px] h-[640px] w-[1360px] overflow-hidden rounded-[20px]" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="roundtable-title">
       <AssetImage alt="" aria-hidden="true" asset="bgCircleCeo" className="absolute inset-0 h-full w-full object-cover" />
 
       <div className="absolute left-[70px] top-[94px] w-[420px] text-white">
@@ -943,7 +1031,7 @@ function FigmaLogoAsset({ spec }: { spec: FigmaLogoSpec }) {
 }
 function AdvisorsSection() {
   return (
-    <section id="about-cwi" className="about-cwi-section absolute left-0 top-[2200px] h-[708px] w-full" aria-labelledby="advisors-title">
+    <section id="about-cwi" className="about-cwi-section absolute left-0 top-[2420px] h-[708px] w-full" aria-labelledby="advisors-title">
       <m.div className="about-cwi-layout" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal}>
         <div className="about-cwi-left-panel">
           <AboutCwiTitle id="advisors-title" />
@@ -961,7 +1049,7 @@ function AdvisorsSection() {
 
 function AdvisorPeopleSection() {
   return (
-    <m.section className="about-cwi-people-section absolute left-0 top-[2978px] h-[390px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-label="Ban tổ chức">
+    <m.section className="about-cwi-people-section absolute left-0 top-[3198px] h-[390px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-label="Ban tổ chức">
       <div className="absolute left-[112px] top-0 h-[374px] w-[1216px]">
         <FigmaSectionLabel
           as="h2"
@@ -981,7 +1069,7 @@ function AdvisorPeopleSection() {
 }
 function PartnersSection() {
   return (
-    <m.section className="absolute left-0 top-[3400px] h-[401px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="partners-title">
+    <m.section className="absolute left-0 top-[3620px] h-[401px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="partners-title">
       <FigmaSectionLabel
         as="h2"
         className="absolute left-0 top-0 h-[19px] w-full"
@@ -1030,7 +1118,7 @@ function PartnersSection() {
 }
 function FooterSection() {
   return (
-    <m.footer id="footer" className="absolute left-[99px] top-[3864px] h-[382px] w-[1451px] text-black" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} data-node-id="94:276">
+    <m.footer id="footer" className="absolute left-[99px] top-[4084px] h-[382px] w-[1451px] text-black" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} data-node-id="94:276">
       <div className="absolute left-[1046px] top-0 flex h-[382px] w-[405px] items-center justify-center" data-node-id="94:277">
         <div className="flex-none -scale-y-100">
           <AssetImage alt="" aria-hidden="true" asset="image131" className="h-[382px] w-[405px] object-cover" />
@@ -1049,6 +1137,7 @@ function FooterSection() {
         <p className="whitespace-nowrap">
           <strong className="font-semibold uppercase">LIÊN HỆ:</strong> contact@ceo-workforce-index.com
         </p>
+        <p className="whitespace-nowrap">Địa chỉ: 11 Huỳnh Đình Hai, Phường Bình Thạnh, TP.HCM</p>
       </nav>
 
       <p className="absolute left-[322px] top-[303px] h-[20px] w-[598px] whitespace-nowrap text-center text-[14px] font-normal leading-[20px]" data-node-id="94:278">
@@ -1056,6 +1145,21 @@ function FooterSection() {
       </p>
       <AssetImage alt="" aria-hidden="true" asset="line22" className="absolute left-0 top-[14px] h-px w-[1240px]" data-node-id="94:316" />
     </m.footer>
+  )
+}
+function MobileStats() {
+  return (
+    <div className="mobile-stats-list" aria-label="Thông số nghiên cứu">
+      {reportStats.map((stat, index) => (
+        <div className="mobile-stat-row" data-reveal key={stat.value}>
+          <AssetImage alt="" aria-hidden="true" asset={stat.icon} className="mobile-stat-icon" />
+          <div>
+            <strong><AnimatedReportValue delay={index * 90} value={stat.value} /></strong>
+            <span>{stat.label}</span>
+          </div>
+        </div>
+      ))}
+    </div>
   )
 }
 function MobileSectionTitle({ children }: { children: ReactNode }) {
@@ -1246,6 +1350,7 @@ function MobileLandingPage() {
           <SpotlightEditorial mobile />
           <SpotlightInfo />
         </div>
+        <MobileStats />
       </section>
       <section className="mobile-roundtable" data-mobile-target="#roundtable" aria-labelledby="mobile-roundtable-title">
         <AssetImage alt="" aria-hidden="true" asset="bgCircleCeo" className="mobile-roundtable-bg" />
@@ -1310,6 +1415,7 @@ function MobileLandingPage() {
           ))}
         </nav>
         <p className="mobile-footer-contact"><strong>LIÊN HỆ:</strong> contact@ceo-workforce-index.com</p>
+        <p className="mobile-footer-address">Địa chỉ: 11 Huỳnh Đình Hai, Phường Bình Thạnh, TP.HCM</p>
         <p className="mobile-copyright">Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về SKALE</p>
       </footer>
     </main>
@@ -1331,8 +1437,9 @@ export function LandingPage() {
           <div className="figma-canvas-scale-box">
             <main id="top" className="figma-canvas" data-figma-file="R23rMZykc70t6C3YFqXyf9" data-figma-node="96:45">
               <HeroSection />
-              <div className="absolute left-0 top-[793px] h-[1358px] w-[1440px] rounded-t-[60px] bg-white" />
+              <div className="absolute left-0 top-[793px] h-[1578px] w-[1440px] rounded-t-[60px] bg-white" />
               <ReportSection />
+              <ReportStatsSection />
               <RoundtableSection />
               <AdvisorsSection />
               <AdvisorPeopleSection />

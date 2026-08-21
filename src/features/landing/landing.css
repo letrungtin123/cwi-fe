@@ -1,7 +1,7 @@
 .design-page-shell {
   --figma-scale: 1;
   --figma-header-scale: 1;
-  --figma-page-height: 4246px;
+  --figma-page-height: 4466px;
   min-height: var(--figma-page-height);
   overflow-x: hidden;
   background: #f4f5f7;
@@ -28,7 +28,7 @@
   top: 0;
   left: 0;
   width: 1440px;
-  height: 4246px;
+  height: 4466px;
   margin: 0;
   overflow: hidden;
   background: #fff;
@@ -2957,5 +2957,26 @@
 
   .about-cwi-card-viewport {
     margin-top: 18px;
+  }
+}
+
+/* Footer address */
+@media (max-width: 900px) {
+  .mobile-footer-address {
+    margin: 10px 0 0;
+    text-align: center;
+    font-size: 15px;
+    line-height: 23px;
+  }
+}
+@media (max-width: 560px) {
+  .mobile-footer-address {
+    font-size: 13px;
+    line-height: 20px;
+  }
+}
+@media (max-width: 380px) {
+  .mobile-footer-address {
+    font-size: 12px;
   }
 }

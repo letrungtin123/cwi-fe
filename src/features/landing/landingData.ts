@@ -22,11 +22,6 @@ export const reportStats: Array<{
     value: '34 TỈNH / THÀNH PHỐ',
     label: 'Trên toàn quốc',
   },
-  {
-    icon: 'iconStat4',
-    value: '5 NĂM',
-    label: 'Dữ liệu nghiên cứu liên tục',
-  },
 ]
 
 export const roundtableStats: Array<{
