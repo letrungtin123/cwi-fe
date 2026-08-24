@@ -8,6 +8,31 @@ export function validEmail(value: string) {
   return /^\S+@\S+\.\S+$/.test(value)
 }
 
+export function normalizeWebsiteValue(value: string) {
+  const raw = value.trim()
+  if (!raw) return null
+
+  const candidate = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`
+  try {
+    const parsed = new URL(candidate)
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null
+    if (parsed.username || parsed.password) return null
+
+    const hostname = parsed.hostname.toLowerCase()
+    const labels = hostname.split('.')
+    const validLabel = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i
+    const validTld = /^(?:[a-z]{2,63}|xn--[a-z0-9-]{2,59})$/i
+    if (labels.length < 2 || labels.some((label) => !validLabel.test(label)) || !validTld.test(labels.at(-1) ?? '')) return null
+
+    return parsed.href
+  } catch {
+    return null
+  }
+}
+
+export function isValidWebsite(value: string) {
+  return normalizeWebsiteValue(value) !== null
+}
 export function hasQuestionAnswer(question: SurveyQuestion, answers: Answers, otherAnswers: Answers) {
   const answer = answers[question.n]
   if (question.type === 'text') return Boolean(answer?.trim())

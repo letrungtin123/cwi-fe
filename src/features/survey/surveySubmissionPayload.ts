@@ -1,5 +1,5 @@
 import type { ContactState, ConsentChoice, ReportMode } from './surveyPersistence'
-import { OTHER_OPTION, hasQuestionAnswer, type Answers } from './surveyScoring'
+import { normalizeWebsiteValue, OTHER_OPTION, hasQuestionAnswer, type Answers } from './surveyScoring'
 import { partOneQuestions, partTwoQuestions, type SurveyQuestion } from './surveyData'
 
 export type SubmissionStatus = 'part1_only' | 'part2_refused_privacy' | 'full_private_report'
@@ -58,14 +58,9 @@ function normalizeWebsite(value: string) {
   const raw = value.trim()
   if (!raw) throw new Error('Vui lòng nhập website công ty ở câu 24.')
 
-  const candidate = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`
-  try {
-    const parsed = new URL(candidate)
-    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') throw new Error('Invalid protocol')
-    return parsed.href
-  } catch {
-    throw new Error('Website công ty ở câu 24 chưa đúng định dạng URL.')
-  }
+  const normalized = normalizeWebsiteValue(raw)
+  if (!normalized) throw new Error('Website công ty ở câu 24 chưa đúng định dạng URL.')
+  return normalized
 }
 
 function buildAnswer(question: SurveyQuestion, answers: Answers, otherAnswers: Answers): SurveySubmissionAnswer {

@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/cn'
-import { OTHER_OPTION, type Answers } from './surveyScoring'
+import { isValidWebsite, OTHER_OPTION, type Answers } from './surveyScoring'
 import type { SurveyQuestion } from './surveyData'
 
 type QuestionCardProps = {
@@ -15,18 +15,24 @@ type QuestionCardProps = {
 }
 
 export function QuestionCard({ answer, error, isMissing = false, onAnswer, onOtherAnswer, otherAnswer = '', part, question }: QuestionCardProps) {
-  const describedBy = error ? `survey-question-${question.n}-error` : undefined
+  const [websiteTouched, setWebsiteTouched] = useState(false)
+  const websiteError = question.type === 'text' && websiteTouched && Boolean(answer?.trim()) && !isValidWebsite(answer ?? '')
+    ? 'Website công ty chưa đúng định dạng. Ví dụ: https://example.com'
+    : undefined
+  const fieldError = websiteError ?? error
+  const describedBy = fieldError ? `survey-question-${question.n}-error` : undefined
 
   return (
     <article className={cn(isMissing && 'is-missing', 'survey-question-card', `is-${question.type}`)} data-question={question.n} id={`survey-q-${question.n}`}>
       <div className="survey-question-number">Câu {question.n}</div>
-      <h1 className="survey-question-title" id={`survey-question-${question.n}`}>{question.n}. {question.q}</h1>
+      <h1 className="survey-question-title" id={`survey-question-${question.n}`}>{question.q}</h1>
       <QuestionInput
         answer={answer}
         describedBy={describedBy}
-        error={error}
+        error={fieldError}
         onAnswer={onAnswer}
         onOtherAnswer={onOtherAnswer}
+        onWebsiteBlur={() => setWebsiteTouched(true)}
         otherAnswer={otherAnswer}
         part={part}
         question={question}
@@ -35,9 +41,9 @@ export function QuestionCard({ answer, error, isMissing = false, onAnswer, onOth
   )
 }
 
-type QuestionInputProps = QuestionCardProps & { describedBy?: string }
+type QuestionInputProps = QuestionCardProps & { describedBy?: string; onWebsiteBlur?: () => void }
 
-function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, otherAnswer, part, question }: QuestionInputProps) {
+function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, onWebsiteBlur, otherAnswer, part, question }: QuestionInputProps) {
   const otherInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -47,8 +53,7 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, ot
 
   if (question.type === 'likert') {
     return (
-      <fieldset aria-describedby={describedBy} aria-invalid={Boolean(error)} className="survey-question-fieldset">
-        <legend className="survey-question-hint">5 - hoàn toàn đồng ý, 1 - không đồng ý</legend>
+      <fieldset aria-describedby={describedBy} aria-invalid={Boolean(error)} aria-label="Mức độ đồng ý" className="survey-question-fieldset">
         <div className="survey-likert-grid">
           {[1, 2, 3, 4, 5].map((value) => {
             const option = String(value)
@@ -98,7 +103,7 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, ot
                 />
                 <label htmlFor={id}>
                   <span className="survey-option-dot" aria-hidden="true" />
-                  <span>{option}</span>
+                  <span>{isOther ? 'Khác' : option}</span>
                 </label>
                 {isOther ? (
                   <input
@@ -129,11 +134,13 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, ot
         aria-invalid={Boolean(error)}
         className="survey-text-input"
         id={inputId}
+        onBlur={onWebsiteBlur}
         onChange={(event) => onAnswer(question, event.currentTarget.value)}
         placeholder="https://..."
         type="url"
         value={answer || ''}
       />
+       {error ? <p className="survey-field-error" id={describedBy} role="alert">{error}</p> : null}
     </div>
   )
 }

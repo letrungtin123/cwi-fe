@@ -57,12 +57,12 @@ export const advisors: Array<{
     image: 'headshot138',
     name: 'TRƯƠNG CHÍ DŨNG',
     title: 'Giám đốc',
-    field: 'Nghiên cứu & Phát\ntriển Le & Associates',
+    field: 'Nghiên cứu & Phát triển\nLe & Associates',
   },
   {
     image: 'phamTienKha',
     name: 'PHẠM TIẾN KHA',
-    title: 'Quyền giám đốc AI,',
+    title: 'Quyền giám đốc AI',
     field: 'Vinsmart Future',
   },
   {

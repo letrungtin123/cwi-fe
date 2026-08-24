@@ -281,6 +281,8 @@ function Header({ scale, isPolicyPage = false }: { scale: number; isPolicyPage?:
     }
 
     const handleWheel = (event: WheelEvent) => {
+      if (event.target instanceof Element && event.target.closest('.about-cwi-card-viewport')) return
+
       const scrollY = window.scrollY || window.pageYOffset
 
       if (scrollY <= topLock) {
@@ -901,7 +903,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     top: 49.27,
     image: { frame: { left: 0, top: 29.95, width: 232.35, height: 295.5 }, image: { left: '-35.21%', top: '-12.05%', width: '156.95%', height: '123.43%' } },
     title: { text: 'Giám đốc', left: 214.44, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, nowrap: true },
-    field: { text: 'Nghiên cứu & Phát\ntriển Le & Associates', left: 214.44, top: 251.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
+    field: { text: 'Nghiên cứu & Phát triển\nLe & Associates', left: 214.44, top: 251.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
     name: { text: 'TRƯƠNG CHÍ DŨNG', left: 214.14, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
   {
@@ -909,7 +911,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     left: 491.82,
     top: 49.27,
     image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65, roundedTopLeft: true }, objectCover: true },
-    title: { text: 'Quyền giám đốc AI,', left: 214.44, top: 252.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
+    title: { text: 'Quyền giám đốc AI', left: 214.44, top: 252.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
     field: { text: 'Vinsmart Future', left: 214.44, top: 269.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
     name: { text: 'PHẠM TIẾN KHA', left: 214.14, top: 291.45, width: 138.44, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
@@ -969,7 +971,7 @@ function AdvisorCard({ spec }: { spec: AdvisorCardSpec }) {
   return (
     <article className="figma-advisor-card absolute" style={{ left: spec.left, top: spec.top }}>
       <AdvisorImage advisor={spec.advisor} spec={spec.image} />
-      <AssetImage alt="" aria-hidden="true" asset="rectangle4372" className="absolute left-[52.62px] top-[42.91px] h-[282.547px] w-[179.729px]" />
+      <AssetImage alt="" aria-hidden="true" asset="rectangle4372" className="absolute left-[20px] top-[42.91px] h-[282.547px] w-[212.35px]" />
       <AdvisorText spec={spec.title} />
       <AdvisorText spec={spec.field} />
       <AdvisorText spec={spec.name} />

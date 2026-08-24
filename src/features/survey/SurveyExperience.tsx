@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Answers } from './surveyScoring'
-import { getSurveyScores, hasQuestionAnswer, OTHER_OPTION, validEmail } from './surveyScoring'
+import { getSurveyScores, hasQuestionAnswer, isValidWebsite, OTHER_OPTION, validEmail } from './surveyScoring'
 import { partOneQuestions, partTwoQuestions, type SurveyQuestion } from './surveyData'
 import { SurveyHeader } from './SurveyChrome'
 import { QuestionDrawer } from './SurveyNavigation'
@@ -250,6 +250,13 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
     }
 
     setMissingQuestionNumbers([])
+    const websiteQuestion = partTwoQuestions.find((question) => question.type === 'text')
+    if (websiteQuestion && !isValidWebsite(answers[websiteQuestion.n] ?? '')) {
+      setMissingQuestionNumbers([websiteQuestion.n])
+      setQuestionError('Website công ty ở câu 24 chưa đúng định dạng. Ví dụ: https://example.com')
+      return
+    }
+
     setReportMode('private')
     setPartTwoPrivacyRefused(false)
     goToScreen('contact2')
@@ -485,7 +492,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
             part={1}
             primaryLabel="Tiếp theo"
             questions={partOneQuestions}
-            subtitle="Hoàn thành 18 câu hỏi trước khi tiếp tục."
+            subtitle={'Lựa chọn câu trả lời phù hợp:\n1 - Hoàn toàn không đồng ý, 2- Không đồng ý, 3 - Bình thường, 4 - Đồng ý, 5 - Hoàn toàn đồng ý'}
           />
         ) : null}
 
