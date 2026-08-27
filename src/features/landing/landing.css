@@ -2395,27 +2395,12 @@
 
   .mobile-advisor-image,
   .mobile-advisor-card.is-active .mobile-advisor-image {
-    transform: scale(1);
+    transform: scale(1.18);
+    transform-origin: center top;
     object-position: center center;
   }
 }
 
-
-@media (max-width: 560px) {
-  .mobile-advisor-card:nth-child(5) .mobile-advisor-image,
-  .mobile-advisor-card:nth-child(5).is-active .mobile-advisor-image {
-    transform: translateY(45px) scale(1.24) !important;
-    object-position: center 44%;
-  }
-}
-
-@media (max-width: 560px) {
-  .mobile-advisor-card.is-tran-quoc-khanh .mobile-advisor-image,
-  .mobile-advisor-card.is-tran-quoc-khanh.is-active .mobile-advisor-image {
-    transform: scale(1) !important;
-    object-position: center center;
-  }
-}
 @media (max-width: 560px) {
   .mobile-advisor-scroll {
     padding-bottom: 0;
@@ -2427,6 +2412,34 @@
 
   .mobile-advisors-section {
     padding-bottom: var(--m-space-5);
+  }
+}
+
+@media (max-width: 560px) {
+  /* Normalize the different transparent source canvases so each person has the same visual scale. */
+  .mobile-advisor-card:nth-child(1) .mobile-advisor-image {
+    transform: translateY(-31px) scale(1.48);
+    transform-origin: center top;
+  }
+
+  .mobile-advisor-card:nth-child(2) .mobile-advisor-image {
+    transform: translateY(-31px) scale(1.06);
+    transform-origin: center top;
+  }
+
+  .mobile-advisor-card:nth-child(3) .mobile-advisor-image {
+    transform: translateY(8px) scale(1.09);
+    transform-origin: center top;
+  }
+
+  .mobile-advisor-card:nth-child(4) .mobile-advisor-image {
+    transform: translateY(17px) scale(1.09);
+    transform-origin: center top;
+  }
+
+  .mobile-advisor-card:nth-child(5) .mobile-advisor-image {
+    transform: translateY(5px) scale(1.28);
+    transform-origin: center top;
   }
 }
 

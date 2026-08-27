@@ -875,6 +875,8 @@ type AdvisorImageSpec = {
   frame: { left: number; top: number; width: number; height: number; roundedTopLeft?: boolean }
   image?: { left: number | string; top: number | string; width: number | string; height: number | string }
   objectCover?: boolean
+  transform?: string
+  transformOrigin?: string
 }
 
 type AdvisorCardSpec = {
@@ -892,7 +894,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     advisor: advisors[0],
     left: 0,
     top: 49,
-    image: { frame: { left: -31, top: 28, width: 228, height: 328 }, objectCover: true },
+    image: { frame: { left: -31, top: 8, width: 228, height: 328 }, objectCover: true, transform: 'scale(1.22)' },
     title: { text: 'Chủ tịch', left: 214.44, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
     field: { text: 'Hội đồng Quản trị\nL&A Holdings', left: 214.44, top: 251.78, width: 102.01, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
     name: { text: 'PHẠM THỊ MỸ LỆ', left: 214.14, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 500, uppercase: true, nowrap: true },
@@ -901,7 +903,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     advisor: advisors[1],
     left: 245.91,
     top: 49.27,
-    image: { frame: { left: 0, top: 29.95, width: 232.35, height: 295.5 }, image: { left: '-35.21%', top: '-12.05%', width: '156.95%', height: '123.43%' } },
+    image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65, roundedTopLeft: true }, image: { left: '-35.21%', top: '-6.5%', width: '156.95%', height: '112.34%' }, transform: 'scale(1.12)' },
     title: { text: 'Giám đốc', left: 214.44, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300, nowrap: true },
     field: { text: 'Nghiên cứu & Phát triển\nLe & Associates', left: 214.44, top: 251.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
     name: { text: 'TRƯƠNG CHÍ DŨNG', left: 214.14, top: 291.45, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
@@ -910,7 +912,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     advisor: advisors[2],
     left: 491.82,
     top: 49.27,
-    image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65, roundedTopLeft: true }, objectCover: true },
+    image: { frame: { left: 0, top: 0, width: 232.35, height: 324.65, roundedTopLeft: true }, objectCover: true },
     title: { text: 'Quyền giám đốc AI', left: 214.44, top: 252.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
     field: { text: 'Vinsmart Future', left: 214.44, top: 269.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
     name: { text: 'PHẠM TIẾN KHA', left: 214.14, top: 291.45, width: 138.44, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
@@ -919,7 +921,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     advisor: advisors[3],
     left: 737.73,
     top: 49.27,
-    image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65, roundedTopLeft: true }, objectCover: true },
+    image: { frame: { left: 0, top: 7, width: 232.35, height: 324.65, roundedTopLeft: true }, objectCover: true },
     title: { text: 'Giám đốc nhân sự', left: 214.44, top: 252.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
     field: { text: 'Nafoods Group', left: 214.44, top: 269.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
     name: { text: 'ĐINH KIM NHUNG', left: 214.14, top: 291.45, width: 138.44, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
@@ -928,7 +930,7 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     advisor: advisors[4],
     left: 983.64,
     top: 49.27,
-    image: { frame: { left: 0, top: 0.81, width: 232.35, height: 324.65, roundedTopLeft: true }, objectCover: true },
+    image: { frame: { left: 0, top: -3, width: 232.35, height: 324.65, roundedTopLeft: true }, objectCover: true, transform: 'scale(1.25)', transformOrigin: 'center top' },
     title: { text: 'Nhà sáng lập', left: 214.44, top: 234.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 300 },
     field: { text: 'Giám đốc điều hành\nVIETSUCCESS', left: 214.44, top: 251.78, width: 138.44, translateXFull: true, alignRight: true, color: '#fff', fontSize: 12, fontWeight: 400 },
     name: { text: 'TRẦN QUỐC KHÁNH', left: 214.14, top: 291.45, width: 138.44, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
@@ -939,7 +941,10 @@ const visibleAdvisors = advisors.slice(0, 5)
 const visibleAdvisorCardSpecs = advisorCardSpecs.slice(0, 5)
 
 function AdvisorImage({ advisor, spec }: { advisor: (typeof advisors)[number]; spec: AdvisorImageSpec }) {
-  const imageStyle: CSSProperties = spec.image ? boxStyle(spec.image) : { inset: 0, height: '100%', width: '100%' }
+  const imageStyle: CSSProperties = {
+    ...(spec.image ? boxStyle(spec.image) : { inset: 0, height: '100%', width: '100%' }),
+    ...(spec.transform ? { transform: spec.transform, transformOrigin: spec.transformOrigin ?? 'center center' } : {}),
+  }
 
   return (
     <div className={cn('absolute overflow-hidden pointer-events-none', spec.frame.roundedTopLeft && 'rounded-tl-[48.575px]')} style={boxStyle(spec.frame)}>
