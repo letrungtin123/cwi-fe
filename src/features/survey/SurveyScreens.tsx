@@ -169,12 +169,28 @@ type ContactScreenProps = {
   onSubmit: () => void
 }
 
+function getContactRequirementMessage(contact: ContactState) {
+  const requirements: string[] = []
+  const email = contact.email.trim()
+
+  if (!contact.name.trim()) requirements.push('Họ tên')
+  if (!email) {
+    requirements.push('Email công ty cá nhân')
+  } else if (!validEmail(email)) {
+    requirements.push('Email công ty cá nhân hợp lệ')
+  }
+  if (!contact.jobTitle.trim()) requirements.push('Chức vụ')
+
+  return requirements.length ? `*Vui lòng bổ sung: ${requirements.join(', ')}.` : ''
+}
+
 export function ContactScreen({ consent, contact, dataCollectionConsent = false, error, mode, onBack, onConsentChange, onDataCollectionConsentChange, onContactChange, onSkipPrivate, onSubmit }: ContactScreenProps) {
   const isPrivate = mode === 'private'
   const selectedTitle = contact.jobTitle.trim()
   const isContactReady = Boolean(contact.name.trim() && validEmail(contact.email.trim()) && selectedTitle)
   const isSubmitDisabled = !isContactReady || (!isPrivate && !dataCollectionConsent) || (isPrivate && consent === 'no')
   const privacyParagraphs = isPrivate ? contactCopy.privatePrivacy : [contactCopy.anonymousPrivacy]
+  const contactRequirementMessage = getContactRequirementMessage(contact)
 
   return (
     <section className="survey-form-screen" aria-labelledby="survey-contact-title">
@@ -224,8 +240,8 @@ export function ContactScreen({ consent, contact, dataCollectionConsent = false,
             </label>
           </div>
         ) : null}
-        {!isContactReady && !error ? (
-          <p className="survey-contact-required" role="status"><CircleAlert aria-hidden="true" size={15} /><span>*Vui lòng nhập thông tin trước khi tiếp tục</span></p>
+        {contactRequirementMessage && !error ? (
+          <p className="survey-contact-required" role="status"><CircleAlert aria-hidden="true" size={15} /><span>{contactRequirementMessage}</span></p>
         ) : null}
 
         {isPrivate ? (
@@ -721,7 +737,7 @@ export function RoundtableModal({ contact, error, isRegistering = false, isSubmi
 const submissionCompleteCopy = {
   home: '\u0054\u0072\u0061\u006e\u0067 \u0063\u0068\u1ee7',
   eyebrow: 'KH\u1ea2O S\u00c1T \u0110\u00c3 HO\u00c0N T\u1ea4T',
-  message: 'C\u1ea3m \u01a1n anh/ch\u1ecb \u0111\u00e3 ho\u00e0n th\u00e0nh kh\u1ea3o s\u00e1t. B\u00e1o c\u00e1o s\u1ebd \u0111\u01b0\u1ee3c h\u1ec7 th\u1ed1ng x\u1eed l\u00fd v\u00e0 g\u1eedi \u0111\u1ebfn email anh/ch\u1ecb',
+  message: 'C\u1ea3m \u01a1n anh/ch\u1ecb \u0111\u00e3 ho\u00e0n th\u00e0nh kh\u1ea3o s\u00e1t. B\u00e1o c\u00e1o s\u1ebd \u0111\u01b0\u1ee3c h\u1ec7 th\u1ed1ng x\u1eed l\u00fd v\u00e0 g\u1eedi \u0111\u1ebfn email anh/ch\u1ecb.',
   title: 'C\u1ea3m \u01a1n anh/ch\u1ecb',
 }
 

@@ -37,7 +37,7 @@ export const partOneQuestions: SurveyQuestion[] = [
   { n: 3, type: 'likert', q: 'Tôi tin tưởng vào năng lực của đội ngũ quản lý.' },
   { n: 4, type: 'likert', q: 'Đội ngũ quản lý hiện tại đủ sức hỗ trợ kế hoạch tăng trưởng mà CEO mong đợi.' },
   { n: 5, type: 'likert', q: 'Chúng tôi giữ chân được nhân tài quan trọng.' },
-  { n: 6, type: 'likert', q: 'Tôi tin Hệ cộng lực (bao gồm con người, AI, tự động hóa hệ sinh thái) hiện tại sẽ tạo lợi thế cạnh tranh trong 3 năm tới.' },
+  { n: 6, type: 'likert', q: 'Tôi tin Hệ cộng lực (bao gồm con người, AI, tự động hóa, hệ sinh thái) hiện tại sẽ tạo lợi thế cạnh tranh trong 3 năm tới.' },
   { n: 7, type: 'likert', q: 'Đội ngũ quản lý của chúng tôi có thể chuyển các ưu tiên chiến lược thành hành động nhất quán trong đơn vị mình phụ trách.' },
   { n: 8, type: 'likert', q: 'Các quản lý có đủ quyền và năng lực để tự ra quyết định trong phạm vi trách nhiệm mà không phải phụ thuộc quá nhiều vào cấp trên.' },
   { n: 9, type: 'likert', q: 'Các quản lý chủ động phát triển đội ngũ kế cận thay vì chỉ tập trung hoàn thành mục tiêu ngắn hạn.' },
