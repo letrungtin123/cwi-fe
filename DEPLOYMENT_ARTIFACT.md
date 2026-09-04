@@ -14,7 +14,7 @@ npm run lint
 npm run build
 ```
 
-Biến môi trường frontend phải bắt đầu bằng `VITE_` và được truyền trong lúc build. Không đưa service-role key, database URL hoặc secret backend vào frontend.
+Biến môi trường frontend phải bắt đầu bằng `VITE_` và được truyền trong lúc build. Release production mặc định dùng API cùng origin `/api`; `.env` localhost chỉ phục vụ dev và không được đưa vào bundle production. Không đưa service-role key, database URL hoặc secret backend vào frontend.
 
 ## Cập nhật production
 
