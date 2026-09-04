@@ -13,6 +13,7 @@ import coordinationCardIcon from '@/assets/figma/kha-nang-phoi-hop.png'
 import decisionCardIcon from '@/assets/figma/khoang-trong-ra-quyet-dinh.png'
 import directionCardIcon from '@/assets/figma/giai-phap-dinh-huong.png'
 import workforceCardIcon from '@/assets/figma/he-cong-luc.png'
+import { LandingRoundtableModal } from './LandingRoundtableModal'
 import {
   associationLogos,
   advisors,
@@ -26,7 +27,7 @@ import {
 } from './landingData'
 import './landing.css'
 
-type LandingAction = 'login' | 'survey' | 'unlock-report' | 'download-teaser'
+type LandingAction = 'login' | 'survey' | 'roundtable' | 'unlock-report' | 'download-teaser'
 
 const navTargets = ['#top', '#report', '#report-card', '#roundtable', '#about-cwi'] as const
 const legalLinks = [
@@ -171,16 +172,21 @@ function RedButton({
   action,
   children,
   className,
+  onClick,
 }: {
   action: LandingAction
   children: ReactNode
   className?: string
+  onClick?: () => void
 }) {
   return (
     <button
       className={cn('figma-button-red figma-inter rounded-[53px]', className)}
       data-action={action}
-      onClick={() => emitLandingAction(action)}
+      onClick={() => {
+        if (onClick) onClick()
+        else emitLandingAction(action)
+      }}
       type="button"
     >
       {children}
@@ -645,7 +651,7 @@ function ReportStatsSection() {
     </m.section>
   )
 }
-function RoundtableSection() {
+function RoundtableSection({ onOpenRoundtable }: { onOpenRoundtable: () => void }) {
   return (
     <m.section id="roundtable" className="absolute left-[40px] top-[1710px] h-[640px] w-[1360px] overflow-hidden rounded-[20px]" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="roundtable-title">
       <AssetImage alt="" aria-hidden="true" asset="bgCircleCeo" className="absolute inset-0 h-full w-full object-cover" />
@@ -686,7 +692,7 @@ function RoundtableSection() {
       </div>
 
 
-      <RedButton action="survey" className="absolute left-[70px] top-[435px] h-[50px] w-[330px] text-[16px] font-medium">
+      <RedButton action="roundtable" className="absolute left-[70px] top-[435px] h-[50px] w-[330px] text-[16px] font-medium" onClick={onOpenRoundtable}>
         Đăng kí tham gia
       </RedButton>
       <div className="absolute left-[594px] top-[80px] h-[480px] w-[686px] rounded-[16px] border border-white/90 p-[9px]">
@@ -1363,7 +1369,7 @@ function MobileLogoRail({
   )
 }
 
-function MobileLandingPage() {
+function MobileLandingPage({ onOpenRoundtable }: { onOpenRoundtable: () => void }) {
 
   return (
     <main className="mobile-landing">
@@ -1411,7 +1417,7 @@ function MobileLandingPage() {
               </div>
             ))}
           </div>
-          <RedButton action="survey" className="mobile-roundtable-button">Đăng kí tham gia</RedButton>
+          <RedButton action="roundtable" className="mobile-roundtable-button" onClick={onOpenRoundtable}>Đăng kí tham gia</RedButton>
         </div>
         <div className="mobile-roundtable-photo-frame" data-reveal>
           <AssetImage alt="Roundtable session" asset="image124" className="mobile-roundtable-photo" />
@@ -1467,6 +1473,7 @@ function MobileLandingPage() {
   )
 }
 export function LandingPage() {
+  const [roundtableOpen, setRoundtableOpen] = useState(false)
   const scale = useFigmaViewportScale()
   const responsiveStyle = {
     '--figma-scale': scale,
@@ -1485,7 +1492,7 @@ export function LandingPage() {
               <div className="absolute left-0 top-[793px] h-[1578px] w-[1440px] rounded-t-[60px] bg-white" />
               <ReportSection />
               <ReportStatsSection />
-              <RoundtableSection />
+              <RoundtableSection onOpenRoundtable={() => setRoundtableOpen(true)} />
               <AdvisorsSection />
               <AdvisorPeopleSection />
               <PartnersSection />
@@ -1493,7 +1500,8 @@ export function LandingPage() {
             </main>
           </div>
         </div>
-        <MobileLandingPage />
+        <MobileLandingPage onOpenRoundtable={() => setRoundtableOpen(true)} />
+        <LandingRoundtableModal onClose={() => setRoundtableOpen(false)} open={roundtableOpen} />
       </div>
     </LazyMotion>
   )

@@ -1956,7 +1956,30 @@
     max-height: calc(100dvh - 96px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     overflow-y: auto;
     overscroll-behavior: contain;
+    scrollbar-color: rgba(255, 255, 255, .5) transparent;
+    scrollbar-width: thin;
     -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-menu-panel::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .mobile-menu-panel::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .mobile-menu-panel::-webkit-scrollbar-thumb {
+    min-height: 42px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .5);
+    background-clip: padding-box;
+  }
+
+  .mobile-menu-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, .78);
+    background-clip: padding-box;
   }
 
   .mobile-chart-scroll {

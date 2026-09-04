@@ -7,6 +7,7 @@ type QuestionCardProps = {
   answer?: string
   error?: string
   isMissing?: boolean
+  readOnly?: boolean
   onAnswer: (question: SurveyQuestion, value: string) => void
   onOtherAnswer: (question: SurveyQuestion, value: string) => void
   otherAnswer?: string
@@ -14,7 +15,7 @@ type QuestionCardProps = {
   question: SurveyQuestion
 }
 
-export function QuestionCard({ answer, error, isMissing = false, onAnswer, onOtherAnswer, otherAnswer = '', part, question }: QuestionCardProps) {
+export function QuestionCard({ answer, error, isMissing = false, onAnswer, onOtherAnswer, otherAnswer = '', part, question, readOnly = false }: QuestionCardProps) {
   const [websiteTouched, setWebsiteTouched] = useState(false)
   const websiteError = question.type === 'text' && websiteTouched && Boolean(answer?.trim()) && !isValidWebsite(answer ?? '')
     ? 'Website công ty chưa đúng định dạng. Ví dụ: https://example.com'
@@ -23,7 +24,7 @@ export function QuestionCard({ answer, error, isMissing = false, onAnswer, onOth
   const describedBy = fieldError ? `survey-question-${question.n}-error` : undefined
 
   return (
-    <article className={cn(isMissing && 'is-missing', 'survey-question-card', `is-${question.type}`)} data-question={question.n} id={`survey-q-${question.n}`}>
+    <article aria-readonly={readOnly} className={cn(isMissing && 'is-missing', readOnly && 'is-read-only', 'survey-question-card', `is-${question.type}`)} data-question={question.n} id={`survey-q-${question.n}`}>
       <div className="survey-question-number">Câu {question.n}</div>
       <h1 className="survey-question-title" id={`survey-question-${question.n}`}>{question.q}</h1>
       <QuestionInput
@@ -36,6 +37,7 @@ export function QuestionCard({ answer, error, isMissing = false, onAnswer, onOth
         otherAnswer={otherAnswer}
         part={part}
         question={question}
+        readOnly={readOnly}
       />
     </article>
   )
@@ -43,7 +45,7 @@ export function QuestionCard({ answer, error, isMissing = false, onAnswer, onOth
 
 type QuestionInputProps = QuestionCardProps & { describedBy?: string; onWebsiteBlur?: () => void }
 
-function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, onWebsiteBlur, otherAnswer, part, question }: QuestionInputProps) {
+function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, onWebsiteBlur, otherAnswer, part, question, readOnly = false }: QuestionInputProps) {
   const otherInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -63,6 +65,7 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, on
               <div key={id}>
                 <input
                   checked={answer === option}
+                  disabled={readOnly}
                   id={id}
                   name={`survey-q-${question.n}`}
                   onChange={() => onAnswer(question, option)}
@@ -92,10 +95,12 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, on
               <div className="survey-option-wrap" key={id}>
                 <input
                   checked={checked}
+                  disabled={readOnly}
                   id={id}
                   name={`survey-q-${question.n}`}
                   onChange={() => onAnswer(question, option)}
                   onClick={() => {
+                    if (readOnly) return
                     if (part === 2 && answer === option) onAnswer(question, '')
                   }}
                   type="radio"
@@ -110,6 +115,7 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, on
                     aria-label={`Nội dung khác cho câu ${question.n}`}
                     aria-invalid={Boolean(checked && error)}
                     className={cn('survey-other-input', checked && 'is-visible')}
+                    disabled={readOnly}
                     onChange={(event) => onOtherAnswer(question, event.currentTarget.value)}
                     placeholder="Nhập nội dung khác"
                     ref={otherInputRef}
@@ -133,6 +139,7 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, on
         aria-describedby={describedBy}
         aria-invalid={Boolean(error)}
         className="survey-text-input"
+        disabled={readOnly}
         id={inputId}
         onBlur={onWebsiteBlur}
         onChange={(event) => onAnswer(question, event.currentTarget.value)}

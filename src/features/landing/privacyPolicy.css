@@ -760,12 +760,35 @@
     width: 100%;
     max-height: min(82dvh, 680px);
     overflow-y: auto;
+    scrollbar-color: rgba(20, 78, 175, .5) transparent;
+    scrollbar-width: thin;
     padding: 20px 18px 22px;
     border: 1px solid rgba(20, 78, 175, 0.14);
     border-radius: 24px;
     background: #fff;
     box-shadow: 0 24px 70px rgba(0, 19, 47, 0.22);
     overscroll-behavior: contain;
+  }
+
+  .privacy-mobile-toc-sheet::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .privacy-mobile-toc-sheet::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .privacy-mobile-toc-sheet::-webkit-scrollbar-thumb {
+    min-height: 42px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: rgba(20, 78, 175, .5);
+    background-clip: padding-box;
+  }
+
+  .privacy-mobile-toc-sheet::-webkit-scrollbar-thumb:hover {
+    background: rgba(20, 78, 175, .78);
+    background-clip: padding-box;
   }
 
   .privacy-mobile-toc-sheet-head {

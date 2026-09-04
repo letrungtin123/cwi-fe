@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
-import { Check, CheckCircle2, ChevronDown, CircleAlert, Download, LockKeyhole, X } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Check, CheckCircle2, ChevronDown, CircleAlert, Download, LockKeyhole, Maximize2, Minimize2, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
-import { contactCopy, introCopy, jobTitleOptions, reportParts, roundtableCopy } from './surveyData'
+import { contactCopy, introCopy, jobTitleOptions, partOneQuestions, partTwoQuestions, reportParts, roundtableCopy } from './surveyData'
 import { marketBenchmarkData, type MarketBenchmarkData } from './surveyReportData'
 import { getAnswerDisplay, type Answers, validEmail } from './surveyScoring'
 import { SurveyBrandMark, SurveyEyebrow, SurveyForwardArrow } from './SurveyChrome'
+import type { ReportEmailStatus, ReportJobStatusValue } from './surveyApi'
 
 type ContactState = { email: string; name: string; jobTitle: string; jobTitleOther: string }
 type ConsentChoice = 'yes' | 'no' | ''
@@ -311,6 +313,106 @@ export function LoadingScreen({ reportMode, step }: { reportMode: 'part1' | 'pri
             {item}
           </span>
         ))}
+      </div>
+    </section>
+  )
+}
+
+type ReportScreenProps = {
+  emailStatus: ReportEmailStatus
+  html: string
+  mode: 'part1' | 'private'
+  onHome: () => void
+  onReviewAnswers: () => void
+}
+
+export function ReportScreen({ emailStatus, html, mode, onHome, onReviewAnswers }: ReportScreenProps) {
+  const previewHtml = useMemo(() => prepareReportPreviewHtml(html), [html])
+  const frameRef = useRef<HTMLDivElement>(null)
+  const [nativeFullscreen, setNativeFullscreen] = useState(false)
+  const [fallbackFullscreen, setFallbackFullscreen] = useState(false)
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setNativeFullscreen(document.fullscreenElement === frameRef.current)
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange)
+  }, [])
+
+  const isFullscreen = nativeFullscreen || fallbackFullscreen
+
+  useEffect(() => {
+    if (!isFullscreen) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [isFullscreen])
+
+  const toggleFullscreen = async () => {
+    if (nativeFullscreen) {
+      await document.exitFullscreen().catch(() => undefined)
+      return
+    }
+
+    if (fallbackFullscreen) {
+      setFallbackFullscreen(false)
+      return
+    }
+
+    try {
+      if (document.fullscreenEnabled && frameRef.current) {
+        await frameRef.current.requestFullscreen()
+        return
+      }
+    } catch {
+      // Some mobile browsers expose the API but reject it for embedded documents.
+    }
+
+    setFallbackFullscreen(true)
+  }
+
+  if (!previewHtml) {
+    return <LoadingScreen reportMode={mode} step={4} />
+  }
+
+  return (
+    <section aria-labelledby="survey-report-page-title" className="survey-report-page">
+      <div className="survey-report-page-heading">
+        <div>
+          <SurveyEyebrow>BÁO CÁO KHẢO SÁT</SurveyEyebrow>
+          <h1 id="survey-report-page-title">Báo cáo của Anh/Chị</h1>
+          <p>Báo cáo đã sẵn sàng. Anh/Chị có thể xem đầy đủ nội dung ngay trên trang này.</p>
+        </div>
+        <div aria-live="polite" className="survey-report-page-status">
+          <span aria-hidden="true" className="survey-submission-delivery-dot" />
+          {reportEmailLabel(emailStatus)}
+        </div>
+      </div>
+      <div className={cn('survey-report-page-frame', isFullscreen && 'is-expanded')} ref={frameRef}>
+        <div className="survey-report-page-frame-toolbar">
+          <span>{isFullscreen ? 'Đang xem toàn màn hình' : 'Báo cáo khảo sát'}</span>
+          <button
+            aria-label={isFullscreen ? 'Thu nhỏ báo cáo' : 'Phóng to báo cáo toàn màn hình'}
+            aria-pressed={isFullscreen}
+            className="survey-report-page-fullscreen-button"
+            onClick={() => void toggleFullscreen()}
+            title={isFullscreen ? 'Thu nhỏ báo cáo' : 'Phóng to báo cáo toàn màn hình'}
+            type="button"
+          >
+            {isFullscreen ? <Minimize2 aria-hidden="true" size={17} /> : <Maximize2 aria-hidden="true" size={17} />}
+            <span>{isFullscreen ? 'Thu nhỏ' : 'Toàn màn hình'}</span>
+          </button>
+        </div>
+        <iframe loading="eager" referrerPolicy="no-referrer" sandbox="allow-same-origin" srcDoc={previewHtml} title="Báo cáo CEO Workforce Index" />
+      </div>
+      <div className="survey-report-page-actions">
+        <button className="survey-outline-button" onClick={onReviewAnswers} type="button">Xem khảo sát</button>
+        <button className="survey-primary-button" onClick={onHome} type="button">Trang chủ</button>
       </div>
     </section>
   )
@@ -641,6 +743,7 @@ function PrivateAnalysisSection({ answers, otherAnswers }: { answers: Answers; o
 type RoundtableModalProps = {
   contact: ContactState
   error?: string
+  isChecking?: boolean
   isRegistering?: boolean
   isSubmitting?: boolean
   onChange: (next: ContactState) => void
@@ -650,9 +753,10 @@ type RoundtableModalProps = {
   onSkip: () => void
   open: boolean
   registered: boolean
+  registeredFromExisting?: boolean
 }
 
-export function RoundtableModal({ contact, error, isRegistering = false, isSubmitting = false, onChange, onClose, onContinue, onRegister, onSkip, open, registered }: RoundtableModalProps) {
+export function RoundtableModal({ contact, error, isChecking = false, isRegistering = false, isSubmitting = false, onChange, onClose, onContinue, onRegister, onSkip, open, registered, registeredFromExisting = false }: RoundtableModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
   const initialFocusRef = useRef<HTMLButtonElement>(null)
 
@@ -710,19 +814,19 @@ export function RoundtableModal({ contact, error, isRegistering = false, isSubmi
         </div>
         <div className="survey-modal-body">
           <div className="survey-form-grid">
-            <label htmlFor="survey-roundtable-name"><span>Họ tên *</span><input autoComplete="name" disabled={registered || isRegistering || isSubmitting} id="survey-roundtable-name" onChange={(event) => onChange({ ...contact, name: event.currentTarget.value })} value={contact.name} /></label>
-            <label htmlFor="survey-roundtable-email"><span>Email công ty cá nhân *</span><input autoComplete="email" disabled={registered || isRegistering || isSubmitting} id="survey-roundtable-email" onChange={(event) => onChange({ ...contact, email: event.currentTarget.value })} inputMode="email" type="text" value={contact.email} /></label>
+            <label htmlFor="survey-roundtable-name"><span>Họ tên *</span><input autoComplete="name" disabled={registered || isChecking || isRegistering || isSubmitting} id="survey-roundtable-name" onChange={(event) => onChange({ ...contact, name: event.currentTarget.value })} value={contact.name} /></label>
+            <label htmlFor="survey-roundtable-email"><span>Email công ty cá nhân *</span><input autoComplete="email" disabled={registered || isChecking || isRegistering || isSubmitting} id="survey-roundtable-email" onChange={(event) => onChange({ ...contact, email: event.currentTarget.value })} inputMode="email" type="text" value={contact.email} /></label>
           </div>
           {error ? <p className="survey-inline-error" role="alert">{error}</p> : null}
-          {registered ? <p className="survey-success-message">✓ Anh/Chị đã đăng ký tham dự CEO Roundtable thành công.</p> : null}
+          {registered ? <p className="survey-success-message">✓ {registeredFromExisting ? 'Email này đã được đăng ký tham dự CEO Roundtable.' : 'Anh/Chị đã đăng ký tham dự CEO Roundtable thành công.'}</p> : null}
           <div className="survey-modal-actions">
             {registered ? (
               <button className="survey-primary-button" disabled={isRegistering || isSubmitting} onClick={onContinue} type="button">{isSubmitting ? 'Đang gửi kết quả...' : '\u0054\u0069\u1ebfp \u0074\u1ee5c \u0067\u1eedi \u006b\u1ebft \u0071\u0075\u1ea3'}</button>
             ) : (
               <>
-                <button className="survey-primary-button" disabled={isRegistering || isSubmitting} onClick={onRegister} type="button">
-                  {isRegistering ? 'Đang đăng ký...' : 'Đăng ký tham dự'}
-                  {isRegistering ? null : <SurveyForwardArrow />}
+                <button className="survey-primary-button" disabled={isChecking || isRegistering || isSubmitting} onClick={onRegister} type="button">
+                  {isChecking ? 'Đang kiểm tra...' : isRegistering ? 'Đang đăng ký...' : 'Đăng ký tham dự'}
+                  {isChecking || isRegistering ? null : <SurveyForwardArrow />}
                 </button>
                 <button className="survey-outline-button" disabled={isRegistering || isSubmitting} onClick={onSkip} type="button">{isSubmitting ? 'Đang gửi kết quả...' : '\u0042\u1ecf \u0071\u0075\u0061 & \u0067\u1eedi \u006b\u1ebft \u0071\u0075\u1ea3'}</button>
               </>
@@ -742,13 +846,214 @@ const submissionCompleteCopy = {
 }
 
 type SubmissionCompleteModalProps = {
+  emailStatus: ReportEmailStatus
+  error: string
+  hasReportJob: boolean
+  html: string
   onHome: () => void
+  onRetry: () => void
   open: boolean
+  pollTimedOut: boolean
+  reportStatus: ReportJobStatusValue | ''
 }
 
-export function SubmissionCompleteModal({ onHome, open }: SubmissionCompleteModalProps) {
+const reportProgressSteps = [
+  { label: 'Tiếp nhận câu trả lời', statuses: ['pending', 'queued', 'queued_ai'] },
+  { label: 'Phân tích dữ liệu khảo sát', statuses: ['generating', 'generating_ai'] },
+  { label: 'Chuẩn bị báo cáo trực quan', statuses: ['rendering_assets', 'generating_pdf'] },
+  { label: 'Hiển thị báo cáo', statuses: ['html_ready', 'completed', 'sent'] },
+] as const
+
+function reportProgressIndex(status: ReportJobStatusValue | '') {
+  const index = reportProgressSteps.findIndex((step) => (step.statuses as readonly string[]).includes(status))
+  if (index >= 0) return index
+  return status === 'failed' ? 0 : 0
+}
+
+function reportEmailLabel(status: ReportEmailStatus) {
+  if (status === 'sent') return 'Email đã được gửi'
+  if (status === 'sending') return 'Đang gửi email'
+  if (status === 'queued') return 'Email đang chờ gửi'
+  if (status === 'failed') return 'Gửi email chưa thành công'
+  if (status === 'unknown') return 'Đang xác nhận trạng thái email'
+  return 'Email sẽ được gửi sau khi hoàn tất báo cáo'
+}
+
+function prepareReportPreviewHtml(source: string) {
+  if (!source) return source
+
+  const responsiveStyles = source.includes('id="cwi-survey-report-responsive"')
+    ? ''
+    : `<style id="cwi-survey-report-responsive">
+      html, body { margin: 0 !important; max-width: 100% !important; min-width: 0 !important; overflow-x: hidden !important; }
+      *, *::before, *::after { box-sizing: border-box; }
+      img, video, canvas { height: auto; max-width: 100%; }
+      svg { max-width: 100%; }
+      table { max-width: 100%; }
+      .report-nav { display: none !important; }
+      .workspace {
+        display: block !important;
+        padding: 34px 28px 72px !important;
+      }
+      .report-stage {
+        margin: 0 auto !important;
+        width: min(210mm, 100%) !important;
+      }
+      @media (max-width: 767px) {
+        body { min-width: 0 !important; width: 100% !important; }
+        body > * { max-width: 100% !important; min-width: 0 !important; width: 100% !important; }
+        .page, .page-unit, .a4-page, .report-page {
+          height: auto !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+          max-width: 100% !important;
+          min-height: 0 !important;
+          min-width: 0 !important;
+          box-shadow: none !important;
+          width: 100% !important;
+        }
+        h1, h2, h3, h4, p, li, td, th { overflow-wrap: anywhere; }
+        table { display: block; overflow-x: auto; width: 100% !important; }
+      }
+    </style>`
+
+  const head = /<head(?:\s[^>]*)?>/i.exec(source)
+  const viewport = /<meta\s[^>]*name=["']viewport["']/i.test(source)
+    ? ''
+    : '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">'
+
+  if (!head || head.index === undefined) {
+    return `${viewport}${responsiveStyles}${source}`
+  }
+
+  const insertAt = head.index + head[0].length
+  return source.slice(0, insertAt) + viewport + responsiveStyles + source.slice(insertAt)
+}
+
+type SurveyAnswersReviewModalProps = {
+  answers: Answers
+  contact: ContactState
+  onClose: () => void
+  open: boolean
+  otherAnswers: Answers
+  partTwoPrivacyRefused: boolean
+  reportMode: 'part1' | 'private'
+  roundtableRegistered: boolean
+}
+
+function reviewAnswerValue(questionNumber: number, answers: Answers, otherAnswers: Answers) {
+  const value = getAnswerDisplay(questionNumber, answers, otherAnswers)
+  return value === '—' ? 'Chưa trả lời' : value
+}
+
+function ReviewAnswerSection({ answers, otherAnswers, questions, title }: { answers: Answers; otherAnswers: Answers; questions: typeof partOneQuestions; title: string }) {
+  return (
+    <section className="survey-review-answer-section" aria-labelledby={`survey-review-${title}`}>
+      <div className="survey-review-section-heading">
+        <h3 id={`survey-review-${title}`}>{title}</h3>
+        <span>{questions.length} câu</span>
+      </div>
+      <ol className="survey-review-answer-list">
+        {questions.map((question) => (
+          <li key={question.n}>
+            <div className="survey-review-question-label">Câu {question.n}</div>
+            <p>{question.q}</p>
+            <strong>{reviewAnswerValue(question.n, answers, otherAnswers)}</strong>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}
+
+export function SurveyAnswersReviewModal({ answers, contact, onClose, open, otherAnswers, partTwoPrivacyRefused, reportMode, roundtableRegistered }: SurveyAnswersReviewModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
   const initialFocusRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+
+    const previousFocus = document.activeElement as HTMLElement | null
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    window.requestAnimationFrame(() => initialFocusRef.current?.focus())
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        onClose()
+        return
+      }
+      if (event.key !== 'Tab' || !modalRef.current) return
+
+      const focusable = Array.from(modalRef.current.querySelectorAll<HTMLElement>('button, [href], [tabindex]:not([tabindex="-1"])'))
+      if (!focusable.length) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = previousOverflow
+      window.requestAnimationFrame(() => previousFocus?.focus())
+    }
+  }, [onClose, open])
+
+  if (!open) return null
+
+  const position = contact.jobTitle === 'Khác' && contact.jobTitleOther.trim()
+    ? `${contact.jobTitle} - ${contact.jobTitleOther.trim()}`
+    : contact.jobTitle || 'Chưa cập nhật'
+  const showPartTwoAnswers = reportMode === 'private' && !partTwoPrivacyRefused
+
+  return (
+    <div className="survey-modal-backdrop survey-review-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }} role="presentation">
+      <div aria-labelledby="survey-review-title" aria-modal="true" className="survey-review-modal" ref={modalRef} role="dialog">
+        <header className="survey-review-modal-header">
+          <div>
+            <SurveyEyebrow>XEM LẠI KHẢO SÁT</SurveyEyebrow>
+            <h2 id="survey-review-title">Câu trả lời của Anh/Chị</h2>
+            <p>Thông tin được hiển thị ở chế độ chỉ đọc.</p>
+          </div>
+          <button aria-label="Đóng cửa sổ xem lại khảo sát" className="survey-review-close" onClick={onClose} ref={initialFocusRef} type="button"><X aria-hidden="true" size={20} /></button>
+        </header>
+        <div className="survey-review-modal-body">
+          <section className="survey-review-contact" aria-labelledby="survey-review-contact-title">
+            <div className="survey-review-section-heading">
+              <h3 id="survey-review-contact-title">Thông tin đã gửi</h3>
+              <span>{reportMode === 'private' ? 'Báo cáo toàn phần' : 'Báo cáo Phần 1'}</span>
+            </div>
+            <div className="survey-review-contact-grid">
+              <div><span>Họ tên</span><strong>{contact.name || 'Chưa cập nhật'}</strong></div>
+              <div><span>Email</span><strong>{contact.email || 'Chưa cập nhật'}</strong></div>
+              <div><span>Chức vụ</span><strong>{position}</strong></div>
+              <div><span>Roundtable</span><strong>{roundtableRegistered ? 'Đã đăng ký' : 'Chưa đăng ký'}</strong></div>
+            </div>
+          </section>
+          <ReviewAnswerSection answers={answers} otherAnswers={otherAnswers} questions={partOneQuestions} title="Phần 1 - Khảo sát khuyết danh" />
+          {showPartTwoAnswers ? <ReviewAnswerSection answers={answers} otherAnswers={otherAnswers} questions={partTwoQuestions} title="Phần 2 - Khảo sát định danh" /> : null}
+        </div>
+        <footer className="survey-review-modal-footer">
+          <button className="survey-primary-button" onClick={onClose} type="button">Đóng</button>
+        </footer>
+      </div>
+    </div>
+  )
+}
+
+export function SubmissionCompleteModal({ emailStatus, error, hasReportJob, html, onHome, onRetry, open, pollTimedOut, reportStatus }: SubmissionCompleteModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null)
+  const initialFocusRef = useRef<HTMLButtonElement>(null)
+  const previewHtml = useMemo(() => prepareReportPreviewHtml(html), [html])
+  const activeProgressIndex = reportProgressIndex(reportStatus)
 
   useEffect(() => {
     if (!open) return
@@ -785,18 +1090,80 @@ export function SubmissionCompleteModal({ onHome, open }: SubmissionCompleteModa
 
   return (
     <div className="survey-modal-backdrop survey-submission-backdrop" role="presentation">
-      <div aria-labelledby="survey-submission-title" aria-modal="true" className="survey-submission-modal" ref={modalRef} role="dialog">
+      <div aria-busy={hasReportJob && !html} aria-labelledby="survey-submission-title" aria-modal="true" className={cn('survey-submission-modal', html && 'has-report-preview')} ref={modalRef} role="dialog">
         <div className="survey-submission-modal-content">
-          <div className="survey-submission-modal-top">
-            <div aria-hidden="true" className="survey-submission-modal-icon"><CheckCircle2 size={30} /></div>
-          </div>
-          <SurveyEyebrow>{submissionCompleteCopy.eyebrow}</SurveyEyebrow>
-          <div aria-hidden="true" className="survey-submission-modal-logo-title">
-            <SurveyBrandMark decorative variant="intro" />
-          </div>
-          <h2 className="survey-sr-only" id="survey-submission-title">{submissionCompleteCopy.title}</h2>
-          <p>{submissionCompleteCopy.message}</p>
-          <button className="survey-primary-button survey-submission-modal-button" onClick={onHome} ref={initialFocusRef} type="button">{submissionCompleteCopy.home}</button>
+          <AnimatePresence initial={false} mode="wait">
+            {previewHtml ? (
+              <motion.div animate={{ opacity: 1, y: 0 }} className="survey-report-preview-state" initial={{ opacity: 0, y: 10 }} key="report-preview" transition={{ duration: .28 }}>
+                <div className="survey-submission-modal-top">
+                  <div aria-hidden="true" className="survey-submission-modal-icon"><CheckCircle2 size={30} /></div>
+                </div>
+                <SurveyEyebrow>BÁO CÁO ĐÃ SẴN SÀNG</SurveyEyebrow>
+                <h2 id="survey-submission-title">Báo cáo của Anh/Chị</h2>
+                <p className="survey-submission-modal-lede">Báo cáo đã được tạo. Anh/Chị có thể xem ngay tại đây; bản PDF sẽ tiếp tục được hoàn thiện và gửi qua email.</p>
+                <div className="survey-report-preview-frame">
+                  <iframe loading="eager" referrerPolicy="no-referrer" sandbox="allow-same-origin" srcDoc={previewHtml} title="Báo cáo CEO Workforce Index" />
+                </div>
+                <div className="survey-submission-delivery-status" aria-live="polite">
+                  <span className="survey-submission-delivery-dot" aria-hidden="true" />
+                  {reportEmailLabel(emailStatus)}
+                </div>
+                <button className="survey-primary-button survey-submission-modal-button" onClick={onHome} ref={initialFocusRef} type="button">{submissionCompleteCopy.home}</button>
+              </motion.div>
+            ) : hasReportJob ? (
+              <motion.div animate={{ opacity: 1, y: 0 }} className="survey-report-loading-state" initial={{ opacity: 0, y: 10 }} key="report-loading" transition={{ duration: .28 }}>
+                <div className="survey-submission-modal-top">
+                  <div aria-hidden="true" className="survey-report-loading-visual">
+                    <motion.div className="survey-report-loading-spinner" animate={{ rotate: 360 }} transition={{ duration: 1.25, ease: 'linear', repeat: Infinity }}>
+                      <span />
+                    </motion.div>
+                    <motion.span className="survey-report-loading-glow" animate={{ opacity: [.35, .85, .35], scale: [.92, 1.06, .92] }} transition={{ duration: 1.8, ease: 'easeInOut', repeat: Infinity }} />
+                  </div>
+                </div>
+                <SurveyEyebrow>KHẢO SÁT ĐÃ HOÀN TẤT</SurveyEyebrow>
+                <h2 id="survey-submission-title">Đang chuẩn bị báo cáo</h2>
+                <p className="survey-submission-modal-lede">CWI đang phân tích câu trả lời và dựng báo cáo riêng cho Anh/Chị. Báo cáo sẽ hiển thị ngay khi sẵn sàng.</p>
+                <motion.p animate={{ opacity: 1, y: 0 }} className="survey-report-loading-stage" initial={{ opacity: 0, y: 4 }} key={reportStatus || 'pending'}>
+                  {reportProgressSteps[activeProgressIndex]?.label ?? 'Đang tiếp nhận câu trả lời'}
+                </motion.p>
+                <div aria-label="Tiến độ tạo báo cáo" className="survey-report-loading-progress" role="progressbar" aria-valuemax={100} aria-valuemin={0} aria-valuenow={(activeProgressIndex + 1) * 25}>
+                  <motion.span animate={{ scaleX: (activeProgressIndex + 1) / reportProgressSteps.length }} initial={{ scaleX: .12 }} transition={{ duration: .45, ease: 'easeOut' }} />
+                </div>
+                <div aria-label="Tiến độ tạo báo cáo" className="survey-report-progress" role="list">
+                  {reportProgressSteps.map((step, index) => {
+                    const done = Boolean(previewHtml) || index < activeProgressIndex
+                    const active = index === activeProgressIndex && !done
+                    return (
+                      <div className={cn('survey-report-progress-step', done && 'is-done', active && 'is-active')} key={step.label} role="listitem">
+                        <span aria-hidden="true" className="survey-report-progress-marker">{done ? '✓' : index + 1}</span>
+                        <span>{step.label}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+                <div className="survey-report-loading-note" aria-live="polite">
+                  <motion.span animate={{ opacity: [.45, 1, .45] }} transition={{ duration: 1.4, repeat: Infinity }} />
+                  {pollTimedOut ? 'Báo cáo đang được xử lý lâu hơn dự kiến.' : 'Anh/Chị có thể giữ nguyên cửa sổ này; hệ thống sẽ tự cập nhật.'}
+                </div>
+                {error ? <p className="survey-submission-modal-error" role="alert">{error}</p> : null}
+                {pollTimedOut || error ? <button className="survey-outline-button survey-submission-modal-retry" onClick={onRetry} type="button">Kiểm tra lại</button> : null}
+                <button className="survey-primary-button survey-submission-modal-button" onClick={onHome} ref={initialFocusRef} type="button">{submissionCompleteCopy.home}</button>
+              </motion.div>
+            ) : (
+              <motion.div animate={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 10 }} key="submission-complete" transition={{ duration: .28 }}>
+                <div className="survey-submission-modal-top">
+                  <div aria-hidden="true" className="survey-submission-modal-icon"><CheckCircle2 size={30} /></div>
+                </div>
+                <SurveyEyebrow>{submissionCompleteCopy.eyebrow}</SurveyEyebrow>
+                <div aria-hidden="true" className="survey-submission-modal-logo-title">
+                  <SurveyBrandMark decorative variant="intro" />
+                </div>
+                <h2 className="survey-sr-only" id="survey-submission-title">{submissionCompleteCopy.title}</h2>
+                <p>{submissionCompleteCopy.message}</p>
+                <button className="survey-primary-button survey-submission-modal-button" onClick={onHome} ref={initialFocusRef} type="button">{submissionCompleteCopy.home}</button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </div>

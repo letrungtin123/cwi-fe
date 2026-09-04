@@ -2,7 +2,7 @@ import type { Answers } from './surveyScoring'
 
 export const SURVEY_SESSION_STORAGE_KEY = 'cwi:survey-session:v1'
 
-export type SurveyScreen = 'intro' | 'part1' | 'part2' | 'contact1' | 'contact2' | 'loading' | 'result'
+export type SurveyScreen = 'intro' | 'part1' | 'part2' | 'contact1' | 'contact2' | 'loading' | 'report' | 'result'
 export type ReportMode = 'part1' | 'private'
 export type ConsentChoice = 'yes' | 'no' | ''
 export type ContactState = { email: string; name: string; jobTitle: string; jobTitleOther: string }
@@ -18,6 +18,11 @@ export type SurveySession = {
   missingQuestionNumbers: number[]
   otherAnswers: Answers
   partTwoPrivacyRefused: boolean
+  reportAccessToken?: string
+  reportAccessTokenExpiresAt?: string
+  reportEmailStatus?: string
+  reportJobId?: string
+  reportStatus?: string
   reportMode: ReportMode
   roundtableContact: ContactState
   roundtableError: string

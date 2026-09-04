@@ -20,6 +20,7 @@ type SurveyQuestionPageProps = {
   part: 1 | 2
   primaryLabel: string
   questions: SurveyQuestion[]
+  readOnly?: boolean
   secondaryLabel?: string
   subtitle: string
 }
@@ -44,6 +45,7 @@ export function SurveyQuestionPage({
   part,
   primaryLabel,
   questions,
+  readOnly = false,
   secondaryLabel = 'Xóa hết câu trả lời',
   subtitle,
 }: SurveyQuestionPageProps) {
@@ -91,6 +93,7 @@ export function SurveyQuestionPage({
                 otherAnswer={otherAnswers[question.n]}
                 part={part}
                 question={question}
+                readOnly={readOnly}
               />
             )
           })}
@@ -104,7 +107,7 @@ export function SurveyQuestionPage({
             Quay lại
           </button>
           <div className="survey-question-action-end">
-            {onSecondary ? <button className="survey-text-button survey-question-secondary-action" onClick={onSecondary} type="button">{secondaryLabel}</button> : null}
+            {onSecondary && !readOnly ? <button className="survey-text-button survey-question-secondary-action" onClick={onSecondary} type="button">{secondaryLabel}</button> : null}
             <div className="survey-question-submit-group">
               {error ? (
                 <div className="survey-validation-message survey-validation-message--summary" role="alert">

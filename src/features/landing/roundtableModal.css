@@ -1,0 +1,151 @@
+.landing-roundtable-modal-backdrop {
+  position: fixed;
+  z-index: 1200;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgb(4 20 48 / 72%);
+  backdrop-filter: blur(10px);
+}
+
+.landing-roundtable-modal {
+  position: relative;
+  width: min(620px, calc(100vw - 48px));
+  min-width: 0;
+  max-height: min(760px, calc(100dvh - 48px));
+  overflow: auto;
+  overflow-x: hidden;
+  isolation: isolate;
+  overscroll-behavior: contain;
+  scrollbar-color: rgba(126, 150, 181, .72) transparent;
+  scrollbar-width: thin;
+  border: 1px solid rgb(255 255 255 / 62%);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 28px 90px rgb(0 25 73 / 34%);
+  color: #071a35;
+}
+
+.landing-roundtable-modal::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.landing-roundtable-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.landing-roundtable-modal::-webkit-scrollbar-thumb {
+  min-height: 42px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: rgba(126, 150, 181, .72);
+  background-clip: padding-box;
+}
+
+.landing-roundtable-modal::-webkit-scrollbar-thumb:hover {
+  background: rgba(61, 111, 174, .88);
+  background-clip: padding-box;
+}
+
+.landing-roundtable-modal-topline {
+  height: 5px;
+  background: linear-gradient(90deg, #0c4aa3 0%, #2fd3c5 52%, #ef222b 100%);
+}
+
+.landing-roundtable-modal-close {
+  position: absolute;
+  z-index: 1;
+  top: 20px;
+  right: 20px;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid #d7e0ed;
+  border-radius: 50%;
+  background: #fff;
+  color: #2b4567;
+  cursor: pointer;
+  transition: border-color .18s ease, color .18s ease, background .18s ease;
+}
+
+.landing-roundtable-modal-close:hover:not(:disabled) { border-color: #0c4aa3; background: #f2f7ff; color: #0c4aa3; }
+.landing-roundtable-modal-close:disabled { cursor: not-allowed; opacity: .5; }
+
+.landing-roundtable-modal-header { padding: 34px 38px 22px; }
+.landing-roundtable-modal-logo { display: block; width: 154px; height: auto; margin-inline: auto; object-fit: contain; object-position: center; }
+.landing-roundtable-modal-kicker { margin: 22px 0 9px; color: #0e51ad; font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+.landing-roundtable-modal-header h2, .landing-roundtable-modal-success h2 { margin: 0; color: #071a35; font-size: clamp(25px, 4vw, 34px); font-weight: 650; letter-spacing: 0; line-height: 1.12; }
+.landing-roundtable-modal-header h2 { margin-top: 22px; }
+.landing-roundtable-modal-lead { max-width: 480px; margin: 12px 0 0; color: #526982; font-size: 16px; line-height: 1.5; }
+
+.landing-roundtable-modal-details { display: grid; gap: 10px; margin: 0 38px; padding: 17px 18px; border: 1px solid #dce7f4; border-radius: 14px; background: #f5f9ff; }
+.landing-roundtable-modal-details div { display: flex; align-items: center; gap: 10px; color: #26476f; font-size: 14px; line-height: 1.35; }
+.landing-roundtable-modal-details svg { flex: 0 0 auto; color: #0c66cc; }
+
+.landing-roundtable-modal-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 16px; padding: 26px 38px 0; }
+.landing-roundtable-modal-form label { min-width: 0; }
+.landing-roundtable-modal-form label > span, .landing-roundtable-modal-position-field > span { display: block; margin-bottom: 8px; color: #233e62; font-size: 13px; font-weight: 650; }
+.landing-roundtable-modal-form label b { color: #e5202b; }
+.landing-roundtable-modal-form input { width: 100%; height: 48px; min-width: 0; border: 1px solid #cbd8e8; border-radius: 10px; outline: none; background: #fff; color: #0b1e39; font: inherit; font-size: 15px; padding: 0 14px; transition: border-color .18s ease, box-shadow .18s ease; }
+.landing-roundtable-modal-form input::placeholder { color: #91a1b5; }
+.landing-roundtable-modal-form input:focus { border-color: #1965c2; box-shadow: 0 0 0 3px rgb(25 101 194 / 14%); }
+.landing-roundtable-modal-position-field { min-width: 0; }
+.landing-roundtable-modal-position-field.is-open { position: relative; z-index: 10; }
+.landing-roundtable-modal-position-control { position: relative; }
+.landing-roundtable-modal-position-trigger { display: flex; width: 100%; height: 48px; min-width: 0; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid #cbd8e8; border-radius: 10px; outline: none; background: #fff; color: #0b1e39; cursor: pointer; font: inherit; font-size: 15px; padding: 0 14px; text-align: left; transition: border-color .18s ease, box-shadow .18s ease, background .18s ease; }
+.landing-roundtable-modal-position-trigger > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.landing-roundtable-modal-position-trigger .is-placeholder { color: #91a1b5; }
+.landing-roundtable-modal-position-trigger:hover { border-color: #9bb7db; background: #fbfdff; }
+.landing-roundtable-modal-position-trigger:focus-visible, .landing-roundtable-modal-position-trigger.is-open { border-color: #1965c2; box-shadow: 0 0 0 3px rgb(25 101 194 / 14%); }
+.landing-roundtable-modal-position-icon { flex: 0 0 auto; color: #58718f; transition: transform .18s ease; }
+.landing-roundtable-modal-position-icon.is-open { transform: rotate(180deg); }
+.landing-roundtable-modal-position-menu { position: absolute; z-index: 8; top: calc(100% + 8px); right: 0; left: 0; max-height: min(260px, 32vh); overflow-y: auto; overscroll-behavior: contain; scrollbar-color: rgba(126, 150, 181, .72) transparent; scrollbar-width: thin; border: 1px solid #d5e0ee; border-radius: 12px; background: #fff; box-shadow: 0 16px 34px rgb(7 26 53 / 18%); padding: 6px; }
+.landing-roundtable-modal-position-menu::-webkit-scrollbar { width: 5px; }
+.landing-roundtable-modal-position-menu::-webkit-scrollbar-track { background: transparent; }
+.landing-roundtable-modal-position-menu::-webkit-scrollbar-thumb { border-radius: 999px; background: rgba(126, 150, 181, .72); }
+.landing-roundtable-modal-position-option { display: flex; width: 100%; min-height: 42px; align-items: center; justify-content: space-between; gap: 12px; border: 0; border-radius: 8px; background: transparent; color: #233e62; cursor: pointer; font: inherit; font-size: 14px; padding: 10px 11px; text-align: left; transition: background .16s ease, color .16s ease; }
+.landing-roundtable-modal-position-option > span { min-width: 0; overflow-wrap: anywhere; }
+.landing-roundtable-modal-position-option:hover, .landing-roundtable-modal-position-option.is-active { background: #f0f6ff; color: #0e51ad; }
+.landing-roundtable-modal-position-option[aria-selected="true"] { color: #0e51ad; font-weight: 650; }
+.landing-roundtable-modal-position-option svg { flex: 0 0 auto; color: #0e9d83; }
+.landing-roundtable-modal-form label:last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+.landing-roundtable-modal-error { margin: 16px 38px 0; color: #c81d2a; font-size: 13px; line-height: 1.45; }
+.landing-roundtable-modal-actions { display: flex; justify-content: flex-end; gap: 12px; padding: 28px 38px 34px; }
+.landing-roundtable-modal-primary, .landing-roundtable-modal-secondary { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 8px; border-radius: 999px; cursor: pointer; font: inherit; font-size: 15px; font-weight: 650; padding: 0 24px; transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease; }
+.landing-roundtable-modal-primary { border: 0; background: linear-gradient(135deg, #ff3035, #d91621); box-shadow: 0 12px 24px rgb(224 27 39 / 20%); color: #fff; }
+.landing-roundtable-modal-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 15px 28px rgb(224 27 39 / 28%); }
+.landing-roundtable-modal-secondary { border: 1px solid #b9c9dc; background: #fff; color: #17375f; }
+.landing-roundtable-modal-secondary:hover:not(:disabled) { border-color: #0d54ad; background: #f5f9ff; }
+.landing-roundtable-modal-primary:disabled, .landing-roundtable-modal-secondary:disabled { cursor: not-allowed; opacity: .55; }
+.landing-roundtable-modal-spinner { animation: landing-roundtable-spin .8s linear infinite; }
+@keyframes landing-roundtable-spin { to { transform: rotate(360deg); } }
+
+.landing-roundtable-modal-success { padding: 72px 44px 42px; text-align: center; }
+.landing-roundtable-modal-success-icon { display: grid; width: 68px; height: 68px; margin: 0 auto 22px; place-items: center; border: 1px solid #a9e5d4; border-radius: 50%; background: #effcf8; color: #078b68; }
+.landing-roundtable-modal-success .landing-roundtable-modal-kicker { margin-top: 0; }
+.landing-roundtable-modal-success > p:not(.landing-roundtable-modal-kicker) { max-width: 430px; margin: 16px auto 28px; color: #526982; font-size: 16px; line-height: 1.55; }
+
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  .landing-roundtable-modal-backdrop { align-items: end; padding: 12px; }
+  .landing-roundtable-modal { width: calc(100vw - 24px); max-width: 620px; max-height: calc(100dvh - 24px); border-radius: 20px; }
+  .landing-roundtable-modal-close { top: 15px; right: 15px; }
+  .landing-roundtable-modal-header { padding: 28px 24px 18px; }
+  .landing-roundtable-modal-logo { width: 128px; }
+  .landing-roundtable-modal-kicker { margin-top: 17px; font-size: 10px; }
+  .landing-roundtable-modal-header h2, .landing-roundtable-modal-success h2 { font-size: 25px; }
+  .landing-roundtable-modal-header h2 { margin-top: 17px; }
+  .landing-roundtable-modal-lead { font-size: 14px; }
+  .landing-roundtable-modal-details { margin: 0 24px; padding: 14px; }
+  .landing-roundtable-modal-details div { font-size: 13px; }
+  .landing-roundtable-modal-form { grid-template-columns: 1fr; gap: 15px; padding: 22px 24px 0; }
+  .landing-roundtable-modal-form label:last-child:nth-child(odd) { grid-column: auto; }
+  .landing-roundtable-modal-position-menu { top: auto; bottom: calc(100% + 8px); max-height: min(248px, 36dvh); }
+  .landing-roundtable-modal-error { margin: 14px 24px 0; }
+  .landing-roundtable-modal-actions { padding: 24px; }
+  .landing-roundtable-modal-primary, .landing-roundtable-modal-secondary { flex: 1; padding: 0 14px; }
+  .landing-roundtable-modal-success { padding: 56px 24px 28px; }
+}
