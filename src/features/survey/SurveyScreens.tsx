@@ -880,54 +880,9 @@ function reportEmailLabel(status: ReportEmailStatus) {
 }
 
 function prepareReportPreviewHtml(source: string) {
-  if (!source) return source
-
-  const responsiveStyles = source.includes('id="cwi-survey-report-responsive"')
-    ? ''
-    : `<style id="cwi-survey-report-responsive">
-      html, body { margin: 0 !important; max-width: 100% !important; min-width: 0 !important; overflow-x: hidden !important; }
-      *, *::before, *::after { box-sizing: border-box; }
-      img, video, canvas { height: auto; max-width: 100%; }
-      svg { max-width: 100%; }
-      table { max-width: 100%; }
-      .report-nav { display: none !important; }
-      .workspace {
-        display: block !important;
-        padding: 34px 28px 72px !important;
-      }
-      .report-stage {
-        margin: 0 auto !important;
-        width: min(210mm, 100%) !important;
-      }
-      @media (max-width: 767px) {
-        body { min-width: 0 !important; width: 100% !important; }
-        body > * { max-width: 100% !important; min-width: 0 !important; width: 100% !important; }
-        .page, .page-unit, .a4-page, .report-page {
-          height: auto !important;
-          margin-left: 0 !important;
-          margin-right: 0 !important;
-          max-width: 100% !important;
-          min-height: 0 !important;
-          min-width: 0 !important;
-          box-shadow: none !important;
-          width: 100% !important;
-        }
-        h1, h2, h3, h4, p, li, td, th { overflow-wrap: anywhere; }
-        table { display: block; overflow-x: auto; width: 100% !important; }
-      }
-    </style>`
-
-  const head = /<head(?:\s[^>]*)?>/i.exec(source)
-  const viewport = /<meta\s[^>]*name=["']viewport["']/i.test(source)
-    ? ''
-    : '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">'
-
-  if (!head || head.index === undefined) {
-    return `${viewport}${responsiveStyles}${source}`
-  }
-
-  const insertAt = head.index + head[0].length
-  return source.slice(0, insertAt) + viewport + responsiveStyles + source.slice(insertAt)
+  // The report service owns the complete document styling and responsive layout.
+  // Keep the HTML byte-for-byte intact so the iframe matches the upstream report.
+  return source
 }
 
 type SurveyAnswersReviewModalProps = {
