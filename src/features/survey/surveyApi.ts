@@ -2,6 +2,12 @@ import type { SurveySubmissionPayload } from './surveySubmissionPayload'
 
 const apiBaseUrl = (import.meta.env.VITE_CWI_API_BASE_URL ?? 'http://localhost:8088').replace(/\/+$/, '')
 
+function apiUrl(path: string) {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`
+  const baseUrl = apiBaseUrl.replace(/\/api$/i, '')
+  return `${baseUrl}${normalizedPath}`
+}
+
 function positiveEnvNumber(value: string | undefined, fallback: number) {
   const parsed = Number(value)
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
@@ -133,7 +139,7 @@ export async function submitSurveySubmission(payload: SurveySubmissionPayload, i
   const timeoutId = window.setTimeout(() => controller.abort(), Number.isFinite(submitTimeoutMs) ? submitTimeoutMs : 15000)
 
   try {
-    const response = await fetch(`${apiBaseUrl}/api/v1/survey-submissions`, {
+    const response = await fetch(apiUrl('/api/v1/survey-submissions'), {
       body: JSON.stringify({ ...payload, idempotencyKey }),
       headers: {
         'content-type': 'application/json',
@@ -157,7 +163,7 @@ export async function submitRoundtableRegistration(payload: RoundtableRegistrati
   const timeoutId = window.setTimeout(() => controller.abort(), Number.isFinite(submitTimeoutMs) ? submitTimeoutMs : 15000)
 
   try {
-    const response = await fetch(`${apiBaseUrl}/api/v1/roundtable-registrations`, {
+    const response = await fetch(apiUrl('/api/v1/roundtable-registrations'), {
       body: JSON.stringify({ ...payload, idempotencyKey }),
       headers: {
         'content-type': 'application/json',
@@ -183,7 +189,7 @@ export async function checkRoundtableRegistration(email: string, signal?: AbortS
   signal?.addEventListener('abort', abortFromCaller, { once: true })
 
   try {
-    const response = await fetch(`${apiBaseUrl}/api/v1/roundtable-registrations/check`, {
+    const response = await fetch(apiUrl('/api/v1/roundtable-registrations/check'), {
       body: JSON.stringify({ email }),
       cache: 'no-store',
       headers: {
@@ -211,7 +217,7 @@ export async function getReportJobStatus(jobId: string, accessToken: string, sig
   signal?.addEventListener('abort', abortFromCaller, { once: true })
 
   try {
-    const response = await fetch(`${apiBaseUrl}/api/v1/public/report-jobs/${encodeURIComponent(jobId)}/status`, {
+    const response = await fetch(apiUrl(`/api/v1/public/report-jobs/${encodeURIComponent(jobId)}/status`), {
       cache: 'no-store',
       headers: {
         accept: 'application/json',
@@ -235,7 +241,7 @@ export async function getReportHtml(jobId: string, accessToken: string, signal?:
   signal?.addEventListener('abort', abortFromCaller, { once: true })
 
   try {
-    const response = await fetch(`${apiBaseUrl}/api/v1/public/report-jobs/${encodeURIComponent(jobId)}/html`, {
+    const response = await fetch(apiUrl(`/api/v1/public/report-jobs/${encodeURIComponent(jobId)}/html`), {
       cache: 'no-store',
       headers: {
         accept: 'text/html',
