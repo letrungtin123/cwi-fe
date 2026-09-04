@@ -880,9 +880,36 @@ function reportEmailLabel(status: ReportEmailStatus) {
 }
 
 function prepareReportPreviewHtml(source: string) {
-  // The report service owns the complete document styling and responsive layout.
-  // Keep the HTML byte-for-byte intact so the iframe matches the upstream report.
-  return source
+  // Keep the upstream report as the source of truth. Only remove navigation
+  // furniture that is not usable inside the embedded, fullscreen preview.
+  if (!source || typeof DOMParser === 'undefined') return source
+
+  const document = new DOMParser().parseFromString(source, 'text/html')
+  document.querySelectorAll('aside.report-nav').forEach((navigation) => navigation.remove())
+
+  const previewLayoutStyle = document.createElement('style')
+  previewLayoutStyle.textContent = `
+    .workspace { grid-template-columns: minmax(0, 210mm); }
+    .report-stage { margin: 0 auto; width: min(210mm, 100%); }
+    @media (max-width: 1180px) {
+      .workspace { display: block; }
+      .report-stage { margin: 0 auto; width: min(210mm, 100%); }
+    }
+  `
+  document.head.append(previewLayoutStyle)
+
+  // The report currently emits a page id on both the section and an empty
+  // anchor inside it. Keep the section id as the single valid fragment target.
+  document.querySelectorAll<HTMLAnchorElement>('a[id^="page-"]').forEach((anchor) => {
+    const parent = anchor.parentElement
+    if (parent?.tagName === 'P' && parent.childNodes.length === 1) {
+      parent.remove()
+      return
+    }
+    anchor.remove()
+  })
+
+  return `<!doctype html>${document.documentElement.outerHTML}`
 }
 
 type SurveyAnswersReviewModalProps = {
