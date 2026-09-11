@@ -3,6 +3,8 @@ import { Menu } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import type { SurveyQuestion } from './surveyData'
 
+export const surveyPersistentQuestionPanelMediaQuery = '(min-width: 1200px)'
+
 type SurveyNavigationProps = {
   activeQuestion: number
   hasAnswer?: (question: SurveyQuestion) => boolean
@@ -55,7 +57,7 @@ export function QuestionDrawer({ activeQuestion, hasAnswer, onClose, onJump, ope
   }, [activeQuestion, open])
 
   useEffect(() => {
-    if (!open || window.matchMedia('(min-width: 768px)').matches) return
+    if (!open || window.matchMedia(surveyPersistentQuestionPanelMediaQuery).matches) return
 
     const previousFocus = document.activeElement as HTMLElement | null
     const previousOverflow = document.body.style.overflow

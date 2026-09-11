@@ -3,7 +3,7 @@ import type { Answers } from './surveyScoring'
 import { getSurveyScores, hasQuestionAnswer, isValidWebsite, OTHER_OPTION, validEmail } from './surveyScoring'
 import { partOneQuestions, partTwoQuestions, type SurveyQuestion } from './surveyData'
 import { SurveyHeader } from './SurveyChrome'
-import { QuestionDrawer } from './SurveyNavigation'
+import { QuestionDrawer, surveyPersistentQuestionPanelMediaQuery } from './SurveyNavigation'
 import { SurveyQuestionPage } from './SurveyQuestionPage'
 import {
   ContactScreen,
@@ -76,7 +76,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
   const [answers, setAnswers] = useState<Answers>(() => restoredSession?.answers ?? {})
   const [otherAnswers, setOtherAnswers] = useState<Answers>(() => restoredSession?.otherAnswers ?? {})
   const [activeQuestion, setActiveQuestion] = useState(() => restoredSession?.activeQuestion ?? partOneQuestions[0]?.n ?? 1)
-  const [drawerOpen, setDrawerOpen] = useState(() => window.matchMedia('(min-width: 768px)').matches)
+  const [drawerOpen, setDrawerOpen] = useState(() => window.matchMedia(surveyPersistentQuestionPanelMediaQuery).matches)
   const [questionError, setQuestionError] = useState(() => restoredSession?.questionError ?? '')
   const [missingQuestionNumbers, setMissingQuestionNumbers] = useState<number[]>(() => restoredSession?.missingQuestionNumbers ?? [])
   const [formError, setFormError] = useState(() => restoredSession?.formError ?? '')
@@ -169,7 +169,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
   }, [activeQuestion, answers, consent, contact, dataCollectionConsent, formError, loadingStep, missingQuestionNumbers, otherAnswers, partTwoPrivacyRefused, questionError, reportAccessToken, reportAccessTokenExpiresAt, reportEmailStatus, reportJobId, reportMode, reportStatus, roundtableContact, roundtableError, roundtableOpen, roundtableRegistered, roundtableRegisteredAt, roundtableRegistrationId, roundtableRegistrationIdempotencyKey, screen, submittedAt, submittedSubmissionId, submissionError, submissionIdempotencyKey, submissionModalOpen])
 
   useEffect(() => {
-    const desktopMedia = window.matchMedia('(min-width: 768px)')
+    const desktopMedia = window.matchMedia(surveyPersistentQuestionPanelMediaQuery)
     const syncDrawerWithViewport = () => {
       if (canOpenDrawer) setDrawerOpen(desktopMedia.matches)
     }
@@ -212,7 +212,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
     setFormError('')
     setSubmissionError('')
     setMissingQuestionNumbers([])
-    setDrawerOpen((nextScreen === 'part1' || nextScreen === 'part2') && window.matchMedia('(min-width: 768px)').matches)
+    setDrawerOpen((nextScreen === 'part1' || nextScreen === 'part2') && window.matchMedia(surveyPersistentQuestionPanelMediaQuery).matches)
     window.requestAnimationFrame(scrollToTop)
   }, [])
 

@@ -153,9 +153,14 @@ export const roundtableCopy = {
     'Sau khi hoàn tất quá trình phân tích dữ liệu, Quý Anh/Chị sẽ được trân trọng mời tham dự CEO Roundtable – phiên đối thoại giới hạn dành riêng cho các CEO Đồng kiến tạo.',
     'Tại đây, Quý Anh/Chị sẽ là một trong những người đầu tiên tiếp cận những phát hiện nổi bật của nghiên cứu, cùng trao đổi với các CEO khác về những thách thức và cơ hội trong việc xây dựng năng lực lãnh đạo, phát triển tổ chức và ứng dụng AI để tạo lợi thế cạnh tranh bền vững.',
   ],
-  meta: [
-    '11:00 – 13:30 | Thứ Năm, ngày 17/09/2026',
-    'Quy mô giới hạn: Tối đa 30 người',
-    'Địa điểm: Sẽ được thông báo trong thư xác nhận',
+  details: [
+    {
+      label: 'Thời gian',
+      value: '8:00 – 10:00, Thứ năm ngày 17/09/2026',
+    },
+    {
+      label: 'Địa điểm',
+      value: 'Tòa nhà VCCI, 171 Võ Thị Sáu, Phường Xuân Hòa, TP. HCM',
+    },
   ],
 }

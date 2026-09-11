@@ -450,9 +450,11 @@ export function ResultScreen({ answers, mode, onBackHome, onOpenRoundtable, othe
         <SurveyEyebrow>CEO Roundtable</SurveyEyebrow>
         <h2>Đăng kí tham dự CEO Roundtable</h2>
         {roundtableCopy.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-        <div className="survey-round-meta">
-          {roundtableCopy.meta.map((item) => <span key={item}>{item}</span>)}
-        </div>
+        <ul aria-label="Thông tin chương trình" className="survey-round-meta">
+          {roundtableCopy.details.map((detail) => (
+            <li key={detail.label}><strong>{detail.label}:</strong> {detail.value}</li>
+          ))}
+        </ul>
         <button className="survey-outline-button" onClick={(event) => onOpenRoundtable(event.currentTarget)} type="button">
           Đăng ký tham dự
         </button>
@@ -808,9 +810,11 @@ export function RoundtableModal({ contact, error, isChecking = false, isRegister
           </div>
           <h2 id="survey-roundtable-title">{roundtableCopy.title}</h2>
           {roundtableCopy.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-          <div className="survey-round-meta">
-            {roundtableCopy.meta.map((item) => <span key={item}>{item}</span>)}
-          </div>
+          <ul aria-label="Thông tin chương trình" className="survey-round-meta">
+            {roundtableCopy.details.map((detail) => (
+              <li key={detail.label}><strong>{detail.label}:</strong> {detail.value}</li>
+            ))}
+          </ul>
         </div>
         <div className="survey-modal-body">
           <div className="survey-form-grid">

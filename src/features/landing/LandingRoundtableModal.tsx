@@ -1,5 +1,5 @@
 import { AnimatePresence, m } from 'framer-motion'
-import { CalendarDays, Check, CheckCircle2, ChevronDown, LoaderCircle, UsersRound, X } from 'lucide-react'
+import { Check, CheckCircle2, ChevronDown, LoaderCircle, X } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { figmaAssets } from './figmaAssets'
 import { roundtableCopy } from '../survey/surveyData'
@@ -241,10 +241,11 @@ export function LandingRoundtableModal({ onClose, open }: LandingRoundtableModal
                   <h2 id="landing-roundtable-title">{roundtableCopy.title}</h2>
                   <p className="landing-roundtable-modal-lead">Khai mở góc nhìn, kết nối lãnh đạo và cùng kiến tạo năng lực tăng trưởng.</p>
                 </div>
-                <div className="landing-roundtable-modal-details">
-                  <div><CalendarDays aria-hidden="true" size={17} /><span>{roundtableCopy.meta[0]}</span></div>
-                  <div><UsersRound aria-hidden="true" size={17} /><span>{roundtableCopy.meta[1]}</span></div>
-                </div>
+                <ul aria-label="Thông tin chương trình" className="landing-roundtable-modal-details">
+                  {roundtableCopy.details.map((detail) => (
+                    <li key={detail.label}><strong>{detail.label}:</strong> {detail.value}</li>
+                  ))}
+                </ul>
                 <div className="landing-roundtable-modal-form">
                   <label htmlFor="landing-roundtable-name"><span>Họ tên <b>*</b></span><input ref={nameInputRef} autoComplete="name" id="landing-roundtable-name" onChange={(event) => { setContact({ ...contact, name: event.currentTarget.value }); setError('') }} placeholder="Nguyễn Văn An" value={contact.name} /></label>
                   <label htmlFor="landing-roundtable-email"><span>Email <b>*</b></span><input autoComplete="email" id="landing-roundtable-email" inputMode="email" onChange={(event) => { setContact({ ...contact, email: event.currentTarget.value }); setError('') }} placeholder="name@company.com" type="email" value={contact.email} /></label>
