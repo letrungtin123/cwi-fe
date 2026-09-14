@@ -295,8 +295,8 @@
 .survey-question-card.is-read-only .survey-text-input { cursor: default; }
 .survey-question-card.is-read-only .survey-likert-grid label:hover,
 .survey-question-card.is-read-only .survey-options label:hover { background: var(--survey-surface); border-color: var(--survey-border-strong); }
-.survey-question-card.is-read-only .survey-other-input:disabled,
-.survey-question-card.is-read-only .survey-text-input:disabled { color: var(--survey-ink); opacity: 1; }
+.survey-question-card.is-read-only .survey-other-input:read-only,
+.survey-question-card.is-read-only .survey-text-input:read-only { color: var(--survey-ink); opacity: 1; }
 .survey-option-dot { border: 1.5px solid var(--survey-border-strong); border-radius: 50%; flex: 0 0 18px; height: 18px; margin-top: 1px; position: relative; width: 18px; }
 .survey-options input:checked + label .survey-option-dot { border-color: var(--survey-blue); }
 .survey-options input:checked + label .survey-option-dot::after { background: var(--survey-blue); border-radius: 50%; content: ""; height: 8px; left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%); width: 8px; }

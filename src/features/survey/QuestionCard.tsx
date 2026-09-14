@@ -49,9 +49,9 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, on
   const otherInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (question.type !== 'mcq' || answer !== OTHER_OPTION) return
+    if (readOnly || question.type !== 'mcq' || answer !== OTHER_OPTION) return
     window.requestAnimationFrame(() => otherInputRef.current?.focus())
-  }, [answer, question.type])
+  }, [answer, question.type, readOnly])
 
   if (question.type === 'likert') {
     return (
@@ -115,9 +115,9 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, on
                     aria-label={`Nội dung khác cho câu ${question.n}`}
                     aria-invalid={Boolean(checked && error)}
                     className={cn('survey-other-input', checked && 'is-visible')}
-                    disabled={readOnly}
                     onChange={(event) => onOtherAnswer(question, event.currentTarget.value)}
                     placeholder="Nhập nội dung khác"
+                    readOnly={readOnly}
                     ref={otherInputRef}
                     type="text"
                     value={otherAnswer}
@@ -138,12 +138,16 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, on
       <input
         aria-describedby={describedBy}
         aria-invalid={Boolean(error)}
+        autoCapitalize="none"
+        autoCorrect="off"
+        autoComplete="url"
         className="survey-text-input"
-        disabled={readOnly}
         id={inputId}
+        inputMode="url"
         onBlur={onWebsiteBlur}
         onChange={(event) => onAnswer(question, event.currentTarget.value)}
         placeholder="https://..."
+        readOnly={readOnly}
         type="url"
         value={answer || ''}
       />

@@ -30,6 +30,9 @@ function App() {
       const action = (event as LandingActionEvent).detail?.action
       if (action !== 'survey' && action !== 'unlock-report') return
 
+      // A landing-page survey CTA always starts a new attempt. Report access
+      // keeps the existing session so the user can continue viewing it.
+      if (action === 'survey') clearSurveySession()
       setMode('survey')
       window.requestAnimationFrame(() => window.scrollTo({ top: 0 }))
     }
