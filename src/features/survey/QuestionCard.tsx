@@ -18,7 +18,7 @@ type QuestionCardProps = {
 export function QuestionCard({ answer, error, isMissing = false, onAnswer, onOtherAnswer, otherAnswer = '', part, question, readOnly = false }: QuestionCardProps) {
   const [websiteTouched, setWebsiteTouched] = useState(false)
   const websiteError = question.type === 'text' && websiteTouched && Boolean(answer?.trim()) && !isValidWebsite(answer ?? '')
-    ? 'Website công ty chưa đúng định dạng. Ví dụ: https://example.com'
+    ? 'Website công ty chưa đúng định dạng. Ví dụ: example.com hoặc https://example.com'
     : undefined
   const fieldError = websiteError ?? error
   const describedBy = fieldError ? `survey-question-${question.n}-error` : undefined
@@ -146,7 +146,7 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, on
         inputMode="url"
         onBlur={onWebsiteBlur}
         onChange={(event) => onAnswer(question, event.currentTarget.value)}
-        placeholder="https://..."
+        placeholder="example.com hoặc https://example.com"
         readOnly={readOnly}
         type="url"
         value={answer || ''}

@@ -430,7 +430,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
     const websiteQuestion = partTwoQuestions.find((question) => question.type === 'text')
     if (websiteQuestion && !isValidWebsite(answers[websiteQuestion.n] ?? '')) {
       setMissingQuestionNumbers([websiteQuestion.n])
-      setQuestionError('Website công ty ở câu 24 chưa đúng định dạng. Ví dụ: https://example.com')
+      setQuestionError('Website công ty ở câu 24 chưa đúng định dạng. Ví dụ: example.com hoặc https://example.com')
       return
     }
 

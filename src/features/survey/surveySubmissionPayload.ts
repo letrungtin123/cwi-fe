@@ -59,7 +59,7 @@ function normalizeWebsite(value: string) {
   if (!raw) throw new Error('Vui lòng nhập website công ty ở câu 24.')
 
   const normalized = normalizeWebsiteValue(raw)
-  if (!normalized) throw new Error('Website công ty ở câu 24 chưa đúng định dạng URL.')
+  if (!normalized) throw new Error('Website công ty ở câu 24 chưa đúng định dạng. Ví dụ: example.com hoặc https://example.com')
   return normalized
 }
 
