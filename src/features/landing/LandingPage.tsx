@@ -13,6 +13,8 @@ import coordinationCardIcon from '@/assets/figma/kha-nang-phoi-hop.png'
 import decisionCardIcon from '@/assets/figma/khoang-trong-ra-quyet-dinh.png'
 import directionCardIcon from '@/assets/figma/giai-phap-dinh-huong.png'
 import workforceCardIcon from '@/assets/figma/he-cong-luc.png'
+import carouselCwiBackground from '@/assets/figma/carousel-cwi.png'
+import logoSectionCarouselCwi from '@/assets/figma/logo-section-carousel-cwi.png'
 import { LandingRoundtableModal } from './LandingRoundtableModal'
 import {
   associationLogos,
@@ -473,11 +475,28 @@ function Sparkles() {
   ))
 }
 
+function HeroBannerBackground({ imageClassName }: { imageClassName: string }) {
+  return (
+    <div aria-hidden="true" className="hero-banner-background">
+      <img
+        alt=""
+        className={cn(imageClassName, 'hero-banner-image')}
+        draggable={false}
+        loading="eager"
+        src={carouselCwiBackground}
+      />
+      <div className="hero-logo-strip">
+        <img alt="" draggable={false} src={logoSectionCarouselCwi} />
+      </div>
+    </div>
+  )
+}
+
 function HeroSection() {
   return (
-    <m.section animate="show" className="absolute left-0 top-0 h-[940px] w-full overflow-hidden" initial="hidden" variants={desktopHeroReveal} aria-labelledby="hero-title">
-      <AssetImage alt="" aria-hidden="true" asset="image75Bg" className="figma-hero-bg absolute left-[-67px] top-0 h-[929px] w-[1574px]" loading="eager" />
-      <div className="figma-hero-gradient absolute left-[-1px] top-0 h-[940px] w-[1442px]" />
+    <m.section animate="show" className="figma-hero-section absolute left-0 top-0 h-[940px] w-full overflow-hidden" initial="hidden" variants={desktopHeroReveal} aria-labelledby="hero-title">
+      <HeroBannerBackground imageClassName="figma-hero-bg absolute left-[-67px] top-0 h-[929px] w-[1574px]" />
+      <div className="figma-hero-gradient absolute inset-0 h-full w-full" />
       <AssetImage alt="" aria-hidden="true" asset="rectangle4329" className="absolute left-0 top-[763px] h-[156px] w-[1440px] object-cover" loading="eager" />
       <Sparkles />
       <p className="absolute left-[440px] top-[220px] w-[560px] whitespace-nowrap text-center text-[16px] font-medium uppercase leading-[19px] text-[#13e6d0]">
@@ -1374,7 +1393,7 @@ function MobileLandingPage({ onOpenRoundtable }: { onOpenRoundtable: () => void 
   return (
     <main className="mobile-landing">
       <section className="mobile-hero" data-mobile-target="#top" aria-labelledby="mobile-hero-title">
-        <AssetImage alt="" aria-hidden="true" asset="image75Bg" className="mobile-hero-bg" loading="eager" />
+        <HeroBannerBackground imageClassName="mobile-hero-bg" />
         <div className="mobile-hero-gradient" />
         <AssetImage alt="" aria-hidden="true" asset="group9301" className="mobile-spark mobile-spark-1" loading="eager" />
         <AssetImage alt="" aria-hidden="true" asset="group9303" className="mobile-spark mobile-spark-2" loading="eager" />

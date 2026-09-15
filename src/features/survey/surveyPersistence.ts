@@ -5,7 +5,7 @@ export const SURVEY_SESSION_STORAGE_KEY = 'cwi:survey-session:v1'
 export type SurveyScreen = 'intro' | 'part1' | 'part2' | 'contact1' | 'contact2' | 'loading' | 'report' | 'result'
 export type ReportMode = 'part1' | 'private'
 export type ConsentChoice = 'yes' | 'no' | ''
-export type ContactState = { email: string; name: string; jobTitle: string; jobTitleOther: string }
+export type ContactState = { email: string; name: string; phone: string; jobTitle: string; jobTitleOther: string }
 
 export type SurveySession = {
   activeQuestion: number
@@ -41,6 +41,16 @@ export type SurveySession = {
   version: 1
 }
 
+function normalizeContactState(value: Partial<ContactState> | null | undefined): ContactState {
+  return {
+    email: value?.email ?? '',
+    name: value?.name ?? '',
+    phone: value?.phone ?? '',
+    jobTitle: value?.jobTitle ?? '',
+    jobTitleOther: value?.jobTitleOther ?? '',
+  }
+}
+
 export function hasSurveySession() {
   if (typeof window === 'undefined') return false
 
@@ -60,7 +70,11 @@ export function readSurveySession(): SurveySession | null {
 
     const parsed = JSON.parse(raw) as SurveySession
     if (parsed.version !== 1 || !parsed.screen || !parsed.answers || !parsed.otherAnswers) return null
-    return parsed
+    return {
+      ...parsed,
+      contact: normalizeContactState(parsed.contact),
+      roundtableContact: normalizeContactState(parsed.roundtableContact),
+    }
   } catch {
     return null
   }

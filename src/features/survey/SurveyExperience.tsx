@@ -17,11 +17,12 @@ import {
 } from './SurveyScreens'
 import { checkRoundtableRegistration, createRoundtableRegistrationIdempotencyKey, createSurveySubmissionIdempotencyKey, getReportHtml, getReportJobStatus, submitRoundtableRegistration, submitSurveySubmission, SurveyApiError, type ReportEmailStatus, type ReportJobStatusValue } from './surveyApi'
 import { buildSurveySubmissionPayload } from './surveySubmissionPayload'
+import { isValidPhone } from './phoneValidation'
 import './survey.css'
 
 import { clearSurveySession, readSurveySession, writeSurveySession, type ContactState, type ConsentChoice, type ReportMode, type SurveyScreen, type SurveySession } from './surveyPersistence'
 
-const emptyContact: ContactState = { email: '', name: '', jobTitle: '', jobTitleOther: '' }
+const emptyContact: ContactState = { email: '', name: '', phone: '', jobTitle: '', jobTitleOther: '' }
 
 function countAnswers(questions: SurveyQuestion[], hasAnswer: (question: SurveyQuestion) => boolean) {
   return questions.reduce((count, question) => count + (hasAnswer(question) ? 1 : 0), 0)
@@ -29,8 +30,8 @@ function countAnswers(questions: SurveyQuestion[], hasAnswer: (question: SurveyQ
 
 function isContactValid(contact: ContactState) {
   const title = contact.jobTitle.trim()
-  if (!contact.name.trim() || !validEmail(contact.email.trim()) || !title) {
-    return 'Vui lòng điền đầy đủ Họ tên, Email công ty cá nhân hợp lệ và Chức vụ.'
+  if (!contact.name.trim() || !validEmail(contact.email.trim()) || !isValidPhone(contact.phone) || !title) {
+    return 'Vui lòng điền đầy đủ Họ tên, Email công ty cá nhân hợp lệ, Số điện thoại và Chức vụ.'
   }
   return ''
 }

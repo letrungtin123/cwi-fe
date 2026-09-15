@@ -5,10 +5,11 @@ import { cn } from '@/lib/cn'
 import { contactCopy, introCopy, jobTitleOptions, partOneQuestions, partTwoQuestions, reportParts, roundtableCopy } from './surveyData'
 import { marketBenchmarkData, type MarketBenchmarkData } from './surveyReportData'
 import { getAnswerDisplay, type Answers, validEmail } from './surveyScoring'
+import { isValidPhone } from './phoneValidation'
 import { SurveyBrandMark, SurveyEyebrow, SurveyForwardArrow } from './SurveyChrome'
 import type { ReportEmailStatus, ReportJobStatusValue } from './surveyApi'
 
-type ContactState = { email: string; name: string; jobTitle: string; jobTitleOther: string }
+type ContactState = { email: string; name: string; phone: string; jobTitle: string; jobTitleOther: string }
 type ConsentChoice = 'yes' | 'no' | ''
 type ScoreSet = {
   domains: Array<{ name: string; value: number }>
@@ -181,6 +182,11 @@ function getContactRequirementMessage(contact: ContactState) {
   } else if (!validEmail(email)) {
     requirements.push('Email công ty cá nhân hợp lệ')
   }
+  if (!contact.phone.trim()) {
+    requirements.push('Số điện thoại')
+  } else if (!isValidPhone(contact.phone)) {
+    requirements.push('Số điện thoại hợp lệ')
+  }
   if (!contact.jobTitle.trim()) requirements.push('Chức vụ')
 
   return requirements.length ? `*Vui lòng bổ sung: ${requirements.join(', ')}.` : ''
@@ -189,7 +195,7 @@ function getContactRequirementMessage(contact: ContactState) {
 export function ContactScreen({ consent, contact, dataCollectionConsent = false, error, mode, onBack, onConsentChange, onDataCollectionConsentChange, onContactChange, onSkipPrivate, onSubmit }: ContactScreenProps) {
   const isPrivate = mode === 'private'
   const selectedTitle = contact.jobTitle.trim()
-  const isContactReady = Boolean(contact.name.trim() && validEmail(contact.email.trim()) && selectedTitle)
+  const isContactReady = Boolean(contact.name.trim() && validEmail(contact.email.trim()) && isValidPhone(contact.phone) && selectedTitle)
   const isSubmitDisabled = !isContactReady || (!isPrivate && !dataCollectionConsent) || (isPrivate && consent === 'no')
   const privacyParagraphs = isPrivate ? contactCopy.privatePrivacy : [contactCopy.anonymousPrivacy]
   const contactRequirementMessage = getContactRequirementMessage(contact)
@@ -209,19 +215,23 @@ export function ContactScreen({ consent, contact, dataCollectionConsent = false,
       >
         <div className="survey-form-grid">
           <label htmlFor="survey-contact-name">
-            <span>Họ tên *</span>
+            <span>Họ tên <b className="survey-required-mark">*</b></span>
             <input autoComplete="name" id="survey-contact-name" onChange={(event) => onContactChange({ ...contact, name: event.currentTarget.value })} placeholder="Họ và tên" value={contact.name} />
           </label>
           <label htmlFor="survey-contact-email">
-            <span>Email công ty cá nhân *</span>
+            <span>Email công ty cá nhân <b className="survey-required-mark">*</b></span>
             <input autoComplete="email" id="survey-contact-email" onChange={(event) => onContactChange({ ...contact, email: event.currentTarget.value })} placeholder="name@company.com" inputMode="email" type="text" value={contact.email} />
           </label>
           <label htmlFor="survey-contact-title">
-            <span>Chức vụ *</span>
+            <span>Chức vụ <b className="survey-required-mark">*</b></span>
             <JobTitleSelect
               onChange={(value) => onContactChange({ ...contact, jobTitle: value, jobTitleOther: '' })}
               value={contact.jobTitle}
             />
+          </label>
+          <label htmlFor="survey-contact-phone">
+            <span>Số điện thoại <b className="survey-required-mark">*</b></span>
+            <input autoComplete="tel" id="survey-contact-phone" inputMode="tel" onChange={(event) => onContactChange({ ...contact, phone: event.currentTarget.value })} placeholder="+84" type="tel" value={contact.phone} />
           </label>
         </div>
         {!isPrivate ? (
@@ -818,8 +828,8 @@ export function RoundtableModal({ contact, error, isChecking = false, isRegister
         </div>
         <div className="survey-modal-body">
           <div className="survey-form-grid">
-            <label htmlFor="survey-roundtable-name"><span>Họ tên *</span><input autoComplete="name" disabled={registered || isChecking || isRegistering || isSubmitting} id="survey-roundtable-name" onChange={(event) => onChange({ ...contact, name: event.currentTarget.value })} value={contact.name} /></label>
-            <label htmlFor="survey-roundtable-email"><span>Email công ty cá nhân *</span><input autoComplete="email" disabled={registered || isChecking || isRegistering || isSubmitting} id="survey-roundtable-email" onChange={(event) => onChange({ ...contact, email: event.currentTarget.value })} inputMode="email" type="text" value={contact.email} /></label>
+<label htmlFor="survey-roundtable-name"><span>Họ tên <b className="survey-required-mark">*</b></span><input autoComplete="name" disabled={registered || isChecking || isRegistering || isSubmitting} id="survey-roundtable-name" onChange={(event) => onChange({ ...contact, name: event.currentTarget.value })} value={contact.name} /></label>
+<label htmlFor="survey-roundtable-email"><span>Email công ty cá nhân <b className="survey-required-mark">*</b></span><input autoComplete="email" disabled={registered || isChecking || isRegistering || isSubmitting} id="survey-roundtable-email" onChange={(event) => onChange({ ...contact, email: event.currentTarget.value })} inputMode="email" type="text" value={contact.email} /></label>
           </div>
           {error ? <p className="survey-inline-error" role="alert">{error}</p> : null}
           {registered ? <p className="survey-success-message">✓ {registeredFromExisting ? 'Email này đã được đăng ký tham dự CEO Roundtable.' : 'Anh/Chị đã đăng ký tham dự CEO Roundtable thành công.'}</p> : null}

@@ -9,7 +9,7 @@ import { validEmail } from '../survey/surveyScoring'
 import type { ContactState } from '../survey/surveyPersistence'
 import './roundtableModal.css'
 
-const emptyContact: ContactState = { email: '', name: '', jobTitle: '', jobTitleOther: '' }
+const emptyContact: ContactState = { email: '', name: '', phone: '', jobTitle: '', jobTitleOther: '' }
 
 function getPositionIndex(position: string) {
   const index = jobTitleOptions.findIndex((option) => option === position)

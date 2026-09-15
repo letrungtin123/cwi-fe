@@ -17,6 +17,7 @@ export type SurveySubmissionPayload = {
   participant: {
     email: string
     fullName: string
+    phone: string
     position: string
   }
   privacyConsent: PrivacyConsent
@@ -114,11 +115,12 @@ export function buildSurveySubmissionPayload(input: BuildSurveySubmissionPayload
   const participant = {
     email: input.contact.email.trim().toLowerCase(),
     fullName: input.contact.name.trim().replace(/\s+/g, ' '),
+    phone: input.contact.phone.trim(),
     position: normalizePosition(input.contact),
   }
 
-  if (!participant.fullName || !participant.email || !participant.position) {
-    throw new Error('Vui lòng điền đầy đủ Họ tên, Email và Chức vụ trước khi gửi kết quả.')
+  if (!participant.fullName || !participant.email || !participant.phone || !participant.position) {
+    throw new Error('Vui lòng điền đầy đủ Họ tên, Email, Số điện thoại và Chức vụ trước khi gửi kết quả.')
   }
 
   const roundtableName = input.roundtableContact.name.trim().replace(/\s+/g, ' ') || participant.fullName

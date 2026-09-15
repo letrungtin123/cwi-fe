@@ -123,6 +123,40 @@
   pointer-events: none;
 }
 
+.hero-banner-background {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: #00132f;
+}
+
+.hero-banner-image {
+  max-width: none;
+}
+
+.hero-logo-strip {
+  position: absolute;
+  top: 664px;
+  left: 50%;
+  z-index: 5;
+  display: flex;
+  width: min(1320px, calc(100% - 40px));
+  height: 96px;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 1;
+  transform: translateX(-50%);
+}
+
+.hero-logo-strip img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .figma-hero-gradient {
   background: linear-gradient(
     179.97deg,
@@ -767,14 +801,16 @@
     object-fit: cover;
   }
 
-  .mobile-hero-bg {
-    object-position: 56% top;
-    animation: mobile-bg-settle 1200ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
+  .mobile-hero-bg { object-position: 56% top; }
 
-  @keyframes mobile-bg-settle {
-    from { transform: scale(1.07); }
-    to { transform: scale(1.02); }
+  .hero-logo-strip {
+    top: auto;
+    right: 24px;
+    bottom: 68px;
+    left: 24px;
+    width: auto;
+    height: 42px;
+    transform: none;
   }
 
   .mobile-hero-gradient {
@@ -1733,9 +1769,6 @@
     min-height: 720px;
     padding: 144px var(--m-page-x) var(--m-space-9);
   }
-
-  .mobile-hero-bg { animation: mobile-bg-settle 1200ms var(--m-ease) both; }
-  @keyframes mobile-bg-settle { from { transform: scale(1.06); } to { transform: scale(1); } }
 
   .mobile-hero-gradient { backdrop-filter: none; }
   .mobile-spark { animation: none; }
