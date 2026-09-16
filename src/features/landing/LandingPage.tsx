@@ -15,6 +15,8 @@ import directionCardIcon from '@/assets/figma/giai-phap-dinh-huong.png'
 import workforceCardIcon from '@/assets/figma/he-cong-luc.png'
 import carouselCwiBackground from '@/assets/figma/carousel-cwi.png'
 import logoSectionCarouselCwi from '@/assets/figma/logo-section-carousel-cwi.png'
+import mobileHeroBackground from '@/assets/figma/BG mobile banner.jpg'
+import mobileLogoStrip from '@/assets/figma/Logo Website Mobile.png'
 import { LandingRoundtableModal } from './LandingRoundtableModal'
 import {
   associationLogos,
@@ -478,17 +480,26 @@ function Sparkles() {
 function HeroBannerBackground({ imageClassName }: { imageClassName: string }) {
   return (
     <div aria-hidden="true" className="hero-banner-background">
-      <img
-        alt=""
-        className={cn(imageClassName, 'hero-banner-image')}
-        draggable={false}
-        loading="eager"
-        src={carouselCwiBackground}
-      />
-      <div className="hero-logo-strip">
-        <img alt="" draggable={false} src={logoSectionCarouselCwi} />
-      </div>
+      <picture className="hero-banner-picture">
+        <source media="(max-width: 900px)" srcSet={mobileHeroBackground} />
+        <img
+          alt=""
+          className={cn(imageClassName, 'hero-banner-image')}
+          draggable={false}
+          loading="eager"
+          src={carouselCwiBackground}
+        />
+      </picture>
     </div>
+  )
+}
+
+function HeroLogoStrip({ className }: { className: string }) {
+  return (
+    <picture aria-hidden="true" className={className}>
+      <source media="(max-width: 900px)" srcSet={mobileLogoStrip} />
+      <img alt="" draggable={false} src={logoSectionCarouselCwi} />
+    </picture>
   )
 }
 
@@ -496,6 +507,7 @@ function HeroSection() {
   return (
     <m.section animate="show" className="figma-hero-section absolute left-0 top-0 h-[940px] w-full overflow-hidden" initial="hidden" variants={desktopHeroReveal} aria-labelledby="hero-title">
       <HeroBannerBackground imageClassName="figma-hero-bg absolute left-[-67px] top-0 h-[929px] w-[1574px]" />
+      <HeroLogoStrip className="hero-logo-strip" />
       <div className="figma-hero-gradient absolute inset-0 h-full w-full" />
       <AssetImage alt="" aria-hidden="true" asset="rectangle4329" className="absolute left-0 top-[763px] h-[156px] w-[1440px] object-cover" loading="eager" />
       <Sparkles />
@@ -1233,9 +1245,9 @@ function MobileStats() {
 function MobileSectionTitle({ children }: { children: ReactNode }) {
   return (
     <div className="mobile-section-title" data-reveal>
-      <AssetImage alt="" aria-hidden="true" asset="line27" className="mobile-section-title-line" />
+      <span aria-hidden="true" className="mobile-section-title-line" />
       <strong>{children}</strong>
-      <AssetImage alt="" aria-hidden="true" asset="line30" className="mobile-section-title-line is-right" />
+      <span aria-hidden="true" className="mobile-section-title-line is-right" />
     </div>
   )
 }
@@ -1408,6 +1420,7 @@ function MobileLandingPage({ onOpenRoundtable }: { onOpenRoundtable: () => void 
             <span>Thực hiện khảo sát</span>
             <AssetImage alt="" aria-hidden="true" asset="arrow1" className="mobile-button-arrow h-[15px] w-[17px]" loading="eager" />
           </RedButton>
+          <HeroLogoStrip className="mobile-hero-logo-strip" />
         </div>
       </section>
 
