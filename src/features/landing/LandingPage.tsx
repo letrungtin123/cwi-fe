@@ -15,8 +15,8 @@ import directionCardIcon from '@/assets/figma/giai-phap-dinh-huong.png'
 import workforceCardIcon from '@/assets/figma/he-cong-luc.png'
 import carouselCwiBackground from '@/assets/figma/carousel-cwi.png'
 import logoSectionCarouselCwi from '@/assets/figma/logo-section-carousel-cwi.png'
-import mobileHeroBackground from '@/assets/figma/BG mobile banner.jpg'
-import mobileLogoStrip from '@/assets/figma/Logo Website Mobile.png'
+import mobileHeroBackground from '@/assets/figma/bg-mobile-banner.jpg'
+import mobileLogoStrip from '@/assets/figma/logo-website-mobile.png'
 import { LandingRoundtableModal } from './LandingRoundtableModal'
 import {
   associationLogos,
