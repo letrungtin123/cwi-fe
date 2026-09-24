@@ -45,7 +45,7 @@ function MobileReportPdfViewer() {
         ])
         if (cancelled) return
 
-        pdfjs.GlobalWorkerOptions.workerSrc = workerModule.default
+        pdfjs.GlobalWorkerOptions.workerSrc = `${workerModule.default}?worker=1`
         const loadingTask = pdfjs.getDocument({ url: `${reportPdf}?inline=1` })
         destroyLoadingTask = () => loadingTask.destroy()
         const pdf = await loadingTask.promise
