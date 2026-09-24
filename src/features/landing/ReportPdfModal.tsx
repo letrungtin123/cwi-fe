@@ -43,7 +43,7 @@ export function ReportPdfModal({ onClose, open }: ReportPdfModalProps) {
         <button aria-label="Đóng báo cáo" className="report-pdf-modal-close" onClick={onClose} ref={closeButtonRef} type="button">
           <X aria-hidden="true" size={22} strokeWidth={2} />
         </button>
-        <iframe className="report-pdf-modal-document" src={`${reportPdf}#view=FitH`} title="Báo cáo Quý 3/2026" />
+        <iframe className="report-pdf-modal-document" src={`${reportPdf}?inline=1#view=FitH`} title="Báo cáo Quý 3/2026" />
       </section>
     </div>,
     document.body,
