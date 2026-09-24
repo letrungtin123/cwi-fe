@@ -53,7 +53,27 @@
   background: #fff;
 }
 
+.report-pdf-mobile-viewer { display: none; }
+
 @media (max-width: 900px) {
+  .report-pdf-mobile-viewer {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: #e9eff6;
+    padding: 68px 12px 28px;
+    scrollbar-color: #96aabd transparent;
+    scrollbar-width: thin;
+  }
+
+  .report-pdf-mobile-pages { display: grid; gap: 18px; min-height: 100%; }
+  .report-pdf-modal-page { display: grid; justify-items: center; gap: 8px; min-width: 0; }
+  .report-pdf-modal-page-label { color: #526982; font-size: 12px; font-weight: 650; }
+  .report-pdf-modal-page canvas { display: block; max-width: 100%; height: auto !important; background: #fff; box-shadow: 0 8px 22px rgb(7 26 53 / 16%); }
+  .report-pdf-mobile-status { position: absolute; z-index: 1; top: 84px; right: 0; left: 0; margin: 0; color: #36546f; font-size: 14px; font-weight: 650; text-align: center; }
+  .report-pdf-mobile-status.is-error { color: #b4232b; }
   .report-pdf-modal-close {
     top: 12px;
     right: 12px;
