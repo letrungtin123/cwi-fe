@@ -1,6 +1,6 @@
 import { LazyMotion, domAnimation, m, type Variants } from 'framer-motion'
-import { SquarePen } from 'lucide-react'
-import { useEffect, useRef, useState, type CSSProperties, type ImgHTMLAttributes, type ReactNode } from 'react'
+import { ChevronLeft, ChevronRight, SquarePen } from 'lucide-react'
+import { useEffect, useRef, useState, type CSSProperties, type ImgHTMLAttributes, type PointerEvent, type ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 import { figmaAssets, type FigmaAssetKey } from './figmaAssets'
 import spotlightBackground from '@/assets/figma/bg-tieu-diem.png'
@@ -14,10 +14,18 @@ import decisionCardIcon from '@/assets/figma/khoang-trong-ra-quyet-dinh.png'
 import directionCardIcon from '@/assets/figma/giai-phap-dinh-huong.png'
 import workforceCardIcon from '@/assets/figma/he-cong-luc.png'
 import carouselCwiBackground from '@/assets/figma/carousel-cwi.png'
+import reportCarouselBackground from '@/assets/figma/carousel-baocaoquy3.png'
+import roundtableCarouselBackground from '@/assets/figma/carousel-dauanbantron.jpg'
+import webinarCarouselBackground from '@/assets/figma/carousel-webinar.png'
+import mobileReportCarouselBackground from '@/assets/figma/carousel-baocaoquy3-mobile.png'
+import mobileRoundtableCarouselBackground from '@/assets/figma/carousel-dauanbantron-mobile.png'
+import mobileWebinarCarouselBackground from '@/assets/figma/carousel-webinar-mobile.png'
 import logoSectionCarouselCwi from '@/assets/figma/logo-section-carousel-cwi.png'
 import mobileHeroBackground from '@/assets/figma/bg-mobile-banner.jpg'
 import mobileLogoStrip from '@/assets/figma/logo-website-mobile.png'
 import { LandingRoundtableModal } from './LandingRoundtableModal'
+import { ReportPdfModal } from './ReportPdfModal'
+import { WebinarInfoModal } from './WebinarInfoModal'
 import {
   associationLogos,
   advisors,
@@ -70,6 +78,96 @@ const desktopHeroReveal: Variants = {
 }
 const FIGMA_CANVAS_WIDTH = 1440
 const FIGMA_CANVAS_HEIGHT = 4758
+const HERO_CAROUSEL_INTERVAL_MS = 3000
+
+type HeroCarouselSlide = {
+  image: string
+  ctaLabel: string
+  action?: LandingAction
+  copy?: HeroCarouselCopy
+  href?: string
+  mobileImage?: string
+  opensReportPdf?: boolean
+  opensWebinarModal?: boolean
+  showIntro?: boolean
+}
+
+type HeroCarouselCopy = {
+  eyebrow?: string
+  description: readonly string[]
+  heading: readonly HeroCarouselHeadingLine[]
+  variant: 'report' | 'roundtable' | 'webinar'
+}
+
+type HeroCarouselHeadingLine = {
+  compact?: boolean
+  segments: readonly {
+    accent?: boolean
+    text: string
+  }[]
+}
+
+const heroCarouselSlides: readonly HeroCarouselSlide[] = [
+  {
+    image: carouselCwiBackground,
+    ctaLabel: 'Thực hiện khảo sát',
+    action: 'survey',
+    mobileImage: mobileHeroBackground,
+    showIntro: true,
+  },
+  {
+    image: reportCarouselBackground,
+    ctaLabel: 'Xem báo cáo',
+    mobileImage: mobileReportCarouselBackground,
+    opensReportPdf: true,
+    copy: {
+      eyebrow: 'BÁO CÁO QUÝ 3/2026',
+      heading: [
+        { segments: [{ text: 'Năng lực lãnh đạo' }] },
+        { segments: [{ accent: true, text: 'cho tăng trưởng' }] },
+      ],
+      description: [
+        'Dành cho CEO, đội ngũ điều hành và lãnh đạo nhân sự\nmuốn biến tham vọng tăng trưởng thành năng lực tổ chức.',
+        'Trọng tâm là củng cố quản lý cấp trung, chuẩn bị\nngười kế nhiệm và làm rõ quyền ra quyết định.',
+      ],
+      variant: 'report',
+    },
+  },
+  {
+    image: roundtableCarouselBackground,
+    ctaLabel: 'Khám phá',
+    mobileImage: mobileRoundtableCarouselBackground,
+    copy: {
+      eyebrow: 'CEO WORKFORCE INDEX · BÀN TRÒN CEO',
+      heading: [
+        { segments: [{ text: 'Dấu ấn Bàn tròn CEO' }] },
+        { segments: [{ accent: true, text: 'Quý 3/2026' }] },
+      ],
+      description: [
+        'Sự kiện Bàn tròn CEO Quý 3/2026 đã thu hút sự quan tâm của các báo kinh tế uy tín.',
+      ],
+      variant: 'roundtable',
+    },
+    href: 'https://cafebiz.vn/dieu-gi-dang-can-tro-doanh-nghiep-tang-truong-176260922103948402.chn',
+  },
+  {
+    image: webinarCarouselBackground,
+    ctaLabel: 'Đăng kí ngay',
+    mobileImage: mobileWebinarCarouselBackground,
+    opensWebinarModal: true,
+    copy: {
+      heading: [
+        { compact: true, segments: [{ accent: true, text: 'Webinar:' }] },
+        { segments: [{ text: 'Làm sao để ' }, { accent: true, text: 'CEO và HRD' }] },
+        { segments: [{ text: 'hết lệch pha và không lỗi nhịp?' }] },
+      ],
+      description: [
+        'Đăng ký ngay để nhận bộ quà 3 - in 1 gồm báo cáo Q3,\nbáo cáo cá nhân hóa và quyền tham dự webinar.',
+      ],
+      variant: 'webinar',
+    },
+  },
+] as const
 const figmaScrollTargets: Record<(typeof navTargets)[number], number> = {
   '#top': 0,
   '#report': 874,
@@ -477,19 +575,100 @@ function Sparkles() {
   ))
 }
 
-function HeroBannerBackground({ imageClassName }: { imageClassName: string }) {
+function HeroCarousel({ activeIndex }: { activeIndex: number }) {
   return (
-    <div aria-hidden="true" className="hero-banner-background">
-      <picture className="hero-banner-picture">
-        <source media="(max-width: 900px)" srcSet={mobileHeroBackground} />
+    <div aria-hidden="true" className="hero-carousel-background">
+      {heroCarouselSlides.map((slide, index) => (
         <img
           alt=""
-          className={cn(imageClassName, 'hero-banner-image')}
+          className={cn('hero-carousel-image', index === activeIndex && 'is-active')}
           draggable={false}
-          loading="eager"
-          src={carouselCwiBackground}
+          key={slide.image}
+          loading={index === 0 ? 'eager' : 'lazy'}
+          src={slide.image}
         />
-      </picture>
+      ))}
+    </div>
+  )
+}
+
+function HeroCarouselButton({ onOpenReportPdf, onOpenWebinarModal, slide }: { onOpenReportPdf: () => void; onOpenWebinarModal: () => void; slide: HeroCarouselSlide }) {
+  const action = slide.action
+  const className = 'figma-button-red figma-hero-survey-button absolute left-[564px] top-[539px] h-[60px] w-[313px] text-[22px] font-medium'
+  const content = (
+    <>
+      <span>{slide.ctaLabel}</span>
+      <AssetImage alt="" aria-hidden="true" asset="arrow1" className="h-[15px] w-[17px]" loading="eager" />
+    </>
+  )
+
+  if (slide.href) {
+    return (
+      <a className={className} href={slide.href} rel="noopener noreferrer" target="_blank">
+        {content}
+      </a>
+    )
+  }
+
+  if (slide.opensReportPdf) {
+    return (
+      <button className={className} data-action="open-report-pdf" onClick={onOpenReportPdf} type="button">
+        {content}
+      </button>
+    )
+  }
+
+  if (slide.opensWebinarModal) {
+    return (
+      <button className={className} data-action="open-webinar-info" onClick={onOpenWebinarModal} type="button">
+        {content}
+      </button>
+    )
+  }
+
+  return (
+    <button
+      className={className}
+      data-action={action}
+      onClick={action ? () => emitLandingAction(action) : undefined}
+      type="button"
+    >
+      {content}
+    </button>
+  )
+}
+
+function HeroCarouselNavigation({ onNext, onPrevious }: { onNext: () => void; onPrevious: () => void }) {
+  return (
+    <div className="hero-carousel-navigation">
+      <button aria-label="Slide trước" className="hero-carousel-navigation-button" onClick={onPrevious} title="Slide trước" type="button">
+        <ChevronLeft aria-hidden="true" size={34} strokeWidth={1.8} />
+      </button>
+      <button aria-label="Slide tiếp theo" className="hero-carousel-navigation-button" onClick={onNext} title="Slide tiếp theo" type="button">
+        <ChevronRight aria-hidden="true" size={34} strokeWidth={1.8} />
+      </button>
+    </div>
+  )
+}
+
+function HeroCarouselCopy({ copy }: { copy: HeroCarouselCopy }) {
+  return (
+    <div className={cn('hero-carousel-copy', `hero-carousel-copy--${copy.variant}`)}>
+      {copy.eyebrow && <p className="hero-carousel-eyebrow">{copy.eyebrow}</p>}
+      <h1 id="hero-title" className="hero-carousel-heading">
+        {copy.heading.map((line, lineIndex) => (
+          <span className={cn('hero-carousel-copy-line', line.compact && 'is-compact')} key={lineIndex}>
+            {line.segments.map((segment, segmentIndex) => (
+              <span className={cn(segment.accent && 'hero-carousel-copy-accent')} key={`${lineIndex}-${segmentIndex}`}>
+                {segment.text}
+              </span>
+            ))}
+          </span>
+        ))}
+      </h1>
+      <div className="hero-carousel-description">
+        {copy.description.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+      </div>
     </div>
   )
 }
@@ -504,29 +683,65 @@ function HeroLogoStrip({ className }: { className: string }) {
 }
 
 function HeroSection() {
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [carouselCycle, setCarouselCycle] = useState(0)
+  const [reportPdfOpen, setReportPdfOpen] = useState(false)
+  const [webinarInfoOpen, setWebinarInfoOpen] = useState(false)
+  const activeSlide = heroCarouselSlides[activeIndex]
+  const restartCarouselCycle = () => setCarouselCycle((currentCycle) => currentCycle + 1)
+  const showPreviousSlide = () => {
+    setActiveIndex((currentIndex) => (currentIndex - 1 + heroCarouselSlides.length) % heroCarouselSlides.length)
+    restartCarouselCycle()
+  }
+  const showNextSlide = () => {
+    setActiveIndex((currentIndex) => (currentIndex + 1) % heroCarouselSlides.length)
+    restartCarouselCycle()
+  }
+
+  const closeReportPdf = () => {
+    setReportPdfOpen(false)
+    restartCarouselCycle()
+  }
+
+  useEffect(() => {
+    if (reportPdfOpen || webinarInfoOpen) return
+
+    const intervalId = window.setInterval(() => {
+      setActiveIndex((currentIndex) => (currentIndex + 1) % heroCarouselSlides.length)
+    }, HERO_CAROUSEL_INTERVAL_MS)
+
+    return () => window.clearInterval(intervalId)
+  }, [carouselCycle, reportPdfOpen, webinarInfoOpen])
+
   return (
     <m.section animate="show" className="figma-hero-section absolute left-0 top-0 h-[940px] w-full overflow-hidden" initial="hidden" variants={desktopHeroReveal} aria-labelledby="hero-title">
-      <HeroBannerBackground imageClassName="figma-hero-bg absolute left-[-67px] top-0 h-[929px] w-[1574px]" />
+      <HeroCarousel activeIndex={activeIndex} />
       <HeroLogoStrip className="hero-logo-strip" />
       <div className="figma-hero-gradient absolute inset-0 h-full w-full" />
       <AssetImage alt="" aria-hidden="true" asset="rectangle4329" className="absolute left-0 top-[763px] h-[156px] w-[1440px] object-cover" loading="eager" />
       <Sparkles />
-      <p className="absolute left-[440px] top-[220px] w-[560px] whitespace-nowrap text-center text-[16px] font-medium uppercase leading-[19px] text-[#13e6d0]">
-        LA BÀN ĐỊNH HƯỚNG NĂNG LỰC VẬN HÀNH CỦA TỔ CHỨC
-      </p>
-      <h1 id="hero-title" className="absolute left-[236px] top-[254px] w-[968px] text-center text-[81px] font-medium leading-[90px] text-white">
-        <span className="block">Hệ cộng lực mạnh</span>
-        <span className="block">
-          <em className="figma-text-gradient font-semibold italic">Doanh nghiệp</em> vươn tầm
-        </span>
-      </h1>
-      <p className="figma-hero-body-copy absolute left-[370px] top-[449px] w-[700px] text-center">
-        Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - tự động hoá - hệ sinh thái) của doanh nghiệp bạn với thị trường, hiểu nguyên nhân và nhận khuyến nghị hành động.
-      </p>
-      <RedButton action="survey" className="figma-hero-survey-button absolute left-[564px] top-[539px] h-[60px] w-[313px] text-[22px] font-medium">
-        <span>Thực hiện khảo sát</span>
-        <AssetImage alt="" aria-hidden="true" asset="arrow1" className="h-[15px] w-[17px]" loading="eager" />
-      </RedButton>
+      {activeSlide.showIntro && (
+        <>
+          <p className="absolute left-[440px] top-[220px] w-[560px] whitespace-nowrap text-center text-[16px] font-medium uppercase leading-[19px] text-[#13e6d0]">
+            LA BÀN ĐỊNH HƯỚNG NĂNG LỰC VẬN HÀNH CỦA TỔ CHỨC
+          </p>
+          <h1 id="hero-title" className="absolute left-[236px] top-[254px] w-[968px] text-center text-[81px] font-medium leading-[90px] text-white">
+            <span className="block">Hệ cộng lực mạnh</span>
+            <span className="block">
+              <em className="figma-text-gradient font-semibold italic">Doanh nghiệp</em> vươn tầm
+            </span>
+          </h1>
+          <p className="figma-hero-body-copy absolute left-[370px] top-[449px] w-[700px] text-center">
+            Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - tự động hoá - hệ sinh thái) của doanh nghiệp bạn với thị trường, hiểu nguyên nhân và nhận khuyến nghị hành động.
+          </p>
+        </>
+      )}
+      {activeSlide.copy && <HeroCarouselCopy copy={activeSlide.copy} />}
+      {!activeSlide.showIntro && !activeSlide.copy && <h1 id="hero-title" className="sr-only">CEO Workforce Index</h1>}
+      <HeroCarouselButton onOpenReportPdf={() => setReportPdfOpen(true)} onOpenWebinarModal={() => setWebinarInfoOpen(true)} slide={activeSlide} />
+      <HeroCarouselNavigation onNext={showNextSlide} onPrevious={showPreviousSlide} />
+      <ReportPdfModal onClose={closeReportPdf} open={reportPdfOpen} />
+      <WebinarInfoModal onClose={() => { setWebinarInfoOpen(false); restartCarouselCycle() }} open={webinarInfoOpen} />
     </m.section>
   )
 }
@@ -1400,29 +1615,193 @@ function MobileLogoRail({
   )
 }
 
+function MobileHeroCarouselBackground({ activeIndex }: { activeIndex: number }) {
+  return (
+    <div aria-hidden="true" className="mobile-hero-carousel-background">
+      {heroCarouselSlides.map((slide, index) => (
+        <img
+          alt=""
+          className={cn('mobile-hero-carousel-image', index === activeIndex && 'is-active')}
+          draggable={false}
+          key={slide.mobileImage ?? slide.image}
+          loading={index === 0 ? 'eager' : 'lazy'}
+          src={slide.mobileImage ?? slide.image}
+        />
+      ))}
+    </div>
+  )
+}
+
+function MobileHeroCarouselContent({ copy, showIntro }: { copy?: HeroCarouselCopy; showIntro?: boolean }) {
+  if (showIntro) {
+    return (
+      <>
+        <p className="mobile-eyebrow">LA BÀN ĐỊNH HƯỚNG NĂNG LỰC VẬN HÀNH CỦA TỔ CHỨC</p>
+        <h1 id="mobile-hero-title">
+          <span><span>Hệ cộng lực mạnh</span></span>
+          <span className="mobile-heading-cluster"><span><em>Doanh nghiệp</em> vươn tầm</span></span>
+        </h1>
+        <p className="mobile-hero-copy">Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - tự động hoá - hệ sinh thái) của doanh nghiệp bạn với thị trường, hiểu nguyên nhân và nhận khuyến nghị hành động.</p>
+      </>
+    )
+  }
+
+  if (!copy) return <h1 className="sr-only" id="mobile-hero-title">CEO Workforce Index</h1>
+
+  return (
+    <>
+      {copy.eyebrow ? <p className="mobile-carousel-eyebrow">{copy.eyebrow}</p> : null}
+      <h1 className={cn('mobile-carousel-heading', `is-${copy.variant}`)} id="mobile-hero-title">
+        {copy.heading.map((line, lineIndex) => (
+          <span className={cn('mobile-carousel-heading-line', line.compact && 'is-compact')} key={lineIndex}>
+            {line.segments.map((segment, segmentIndex) => segment.accent
+              ? <em key={`${lineIndex}-${segmentIndex}`}>{segment.text}</em>
+              : <span key={`${lineIndex}-${segmentIndex}`}>{segment.text}</span>)}
+          </span>
+        ))}
+      </h1>
+      <div className="mobile-carousel-description">
+        {copy.description.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+      </div>
+    </>
+  )
+}
+
+function MobileHeroCarouselButton({ onOpenReportPdf, onOpenWebinarModal, slide }: { onOpenReportPdf: () => void; onOpenWebinarModal: () => void; slide: HeroCarouselSlide }) {
+  const className = 'figma-button-red mobile-hero-button mobile-carousel-action'
+  const content = (
+    <>
+      <span>{slide.ctaLabel}</span>
+      <AssetImage alt="" aria-hidden="true" asset="arrow1" className="mobile-button-arrow h-[15px] w-[17px]" loading="eager" />
+    </>
+  )
+
+  if (slide.href) {
+    return <a className={className} href={slide.href} rel="noopener noreferrer" target="_blank">{content}</a>
+  }
+
+  if (slide.opensReportPdf) {
+    return <button className={className} data-action="open-report-pdf" onClick={onOpenReportPdf} type="button">{content}</button>
+  }
+
+  if (slide.opensWebinarModal) {
+    return <button className={className} data-action="open-webinar-info" onClick={onOpenWebinarModal} type="button">{content}</button>
+  }
+
+  if (slide.action) {
+    return <RedButton action={slide.action} className="mobile-hero-button mobile-carousel-action">{content}</RedButton>
+  }
+
+  return <button className={className} type="button">{content}</button>
+}
+
+function MobileHeroCarouselProgress({ activeIndex, onSelect }: { activeIndex: number; onSelect: (index: number) => void }) {
+  return (
+    <div aria-label="Điều hướng slide" className="mobile-hero-carousel-progress" role="group">
+      {heroCarouselSlides.map((slide, index) => (
+        <button
+          aria-current={index === activeIndex ? 'true' : undefined}
+          aria-label={`Xem slide ${index + 1}`}
+          className={cn('mobile-hero-carousel-progress-item', index === activeIndex && 'is-active')}
+          key={slide.image}
+          onClick={() => onSelect(index)}
+          type="button"
+        />
+      ))}
+    </div>
+  )
+}
+
+function MobileHeroCarousel() {
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [carouselCycle, setCarouselCycle] = useState(0)
+  const [reportPdfOpen, setReportPdfOpen] = useState(false)
+  const [webinarInfoOpen, setWebinarInfoOpen] = useState(false)
+  const swipeStartRef = useRef<{ x: number; y: number; pointerId: number } | null>(null)
+  const activeSlide = heroCarouselSlides[activeIndex]
+  const restartCarouselCycle = () => setCarouselCycle((currentCycle) => currentCycle + 1)
+
+  const showPreviousSlide = () => {
+    setActiveIndex((currentIndex) => (currentIndex - 1 + heroCarouselSlides.length) % heroCarouselSlides.length)
+    restartCarouselCycle()
+  }
+
+  const showNextSlide = () => {
+    setActiveIndex((currentIndex) => (currentIndex + 1) % heroCarouselSlides.length)
+    restartCarouselCycle()
+  }
+
+  const selectSlide = (index: number) => {
+    setActiveIndex(index)
+    restartCarouselCycle()
+  }
+
+  const handlePointerDown = (event: PointerEvent<HTMLElement>) => {
+    if (event.pointerType === 'mouse') return
+    swipeStartRef.current = { x: event.clientX, y: event.clientY, pointerId: event.pointerId }
+  }
+
+  const handlePointerUp = (event: PointerEvent<HTMLElement>) => {
+    const swipeStart = swipeStartRef.current
+    swipeStartRef.current = null
+
+    if (!swipeStart || swipeStart.pointerId !== event.pointerId) return
+
+    const horizontalDistance = event.clientX - swipeStart.x
+    const verticalDistance = event.clientY - swipeStart.y
+    const minimumSwipeDistance = 48
+
+    if (Math.abs(horizontalDistance) < minimumSwipeDistance || Math.abs(horizontalDistance) <= Math.abs(verticalDistance)) return
+
+    if (horizontalDistance < 0) showNextSlide()
+    else showPreviousSlide()
+  }
+
+  useEffect(() => {
+    if (reportPdfOpen || webinarInfoOpen) return
+
+    const intervalId = window.setInterval(() => {
+      setActiveIndex((currentIndex) => (currentIndex + 1) % heroCarouselSlides.length)
+    }, HERO_CAROUSEL_INTERVAL_MS)
+
+    return () => window.clearInterval(intervalId)
+  }, [carouselCycle, reportPdfOpen, webinarInfoOpen])
+
+  const closeReportPdf = () => {
+    setReportPdfOpen(false)
+    restartCarouselCycle()
+  }
+
+  return (
+    <section
+      className="mobile-hero"
+      data-mobile-target="#top"
+      aria-labelledby="mobile-hero-title"
+      onPointerCancel={() => { swipeStartRef.current = null }}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+    >
+      <MobileHeroCarouselBackground activeIndex={activeIndex} />
+      <div className="mobile-hero-gradient" />
+      <AssetImage alt="" aria-hidden="true" asset="group9301" className="mobile-spark mobile-spark-1" loading="eager" />
+      <AssetImage alt="" aria-hidden="true" asset="group9303" className="mobile-spark mobile-spark-2" loading="eager" />
+      <div className={cn('mobile-hero-content', !activeSlide.showIntro && 'is-carousel-slide')} data-reveal key={activeSlide.image}>
+        <MobileHeroCarouselContent copy={activeSlide.copy} showIntro={activeSlide.showIntro} />
+        <MobileHeroCarouselButton onOpenReportPdf={() => setReportPdfOpen(true)} onOpenWebinarModal={() => setWebinarInfoOpen(true)} slide={activeSlide} />
+        <HeroLogoStrip className="mobile-hero-logo-strip" />
+      </div>
+      <MobileHeroCarouselProgress activeIndex={activeIndex} onSelect={selectSlide} />
+      <ReportPdfModal onClose={closeReportPdf} open={reportPdfOpen} />
+      <WebinarInfoModal onClose={() => { setWebinarInfoOpen(false); restartCarouselCycle() }} open={webinarInfoOpen} />
+    </section>
+  )
+}
+
 function MobileLandingPage({ onOpenRoundtable }: { onOpenRoundtable: () => void }) {
 
   return (
     <main className="mobile-landing">
-      <section className="mobile-hero" data-mobile-target="#top" aria-labelledby="mobile-hero-title">
-        <HeroBannerBackground imageClassName="mobile-hero-bg" />
-        <div className="mobile-hero-gradient" />
-        <AssetImage alt="" aria-hidden="true" asset="group9301" className="mobile-spark mobile-spark-1" loading="eager" />
-        <AssetImage alt="" aria-hidden="true" asset="group9303" className="mobile-spark mobile-spark-2" loading="eager" />
-        <div className="mobile-hero-content" data-reveal>
-          <p className="mobile-eyebrow">LA BÀN ĐỊNH HƯỚNG NĂNG LỰC VẬN HÀNH CỦA TỔ CHỨC</p>
-          <h1 id="mobile-hero-title">
-            <span><span>Hệ cộng lực mạnh</span></span>
-            <span className="mobile-heading-cluster"><span><em>Doanh nghiệp</em> vươn tầm</span></span>
-          </h1>
-          <p className="mobile-hero-copy">Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - tự động hoá - hệ sinh thái) của doanh nghiệp bạn với thị trường, hiểu nguyên nhân và nhận khuyến nghị hành động.</p>
-          <RedButton action="survey" className="mobile-hero-button">
-            <span>Thực hiện khảo sát</span>
-            <AssetImage alt="" aria-hidden="true" asset="arrow1" className="mobile-button-arrow h-[15px] w-[17px]" loading="eager" />
-          </RedButton>
-          <HeroLogoStrip className="mobile-hero-logo-strip" />
-        </div>
-      </section>
+      <MobileHeroCarousel />
 
       <section className="mobile-section mobile-report-section" data-mobile-target="#report" aria-labelledby="mobile-report-title">
         <div className="spotlight-grid spotlight-grid-mobile" data-reveal>

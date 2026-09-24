@@ -9,13 +9,13 @@ import {
   ContactScreen,
   IntroScreen,
   LoadingScreen,
+  ReportGenerationScreen,
   ReportScreen,
   ResultScreen,
   RoundtableModal,
   SurveyAnswersReviewModal,
-  SubmissionCompleteModal,
 } from './SurveyScreens'
-import { checkRoundtableRegistration, createRoundtableRegistrationIdempotencyKey, createSurveySubmissionIdempotencyKey, getReportHtml, getReportJobStatus, submitRoundtableRegistration, submitSurveySubmission, SurveyApiError, type ReportEmailStatus, type ReportJobStatusValue } from './surveyApi'
+import { checkRoundtableRegistration, createRoundtableRegistrationIdempotencyKey, createSurveySubmissionIdempotencyKey, createWebinarRegistrationIdempotencyKey, getReportHtml, getReportJobStatus, submitRoundtableRegistration, submitSurveySubmission, submitWebinarRegistration, SurveyApiError, type ReportEmailStatus, type ReportJobStatusValue } from './surveyApi'
 import { buildSurveySubmissionPayload } from './surveySubmissionPayload'
 import { isValidPhone } from './phoneValidation'
 import './survey.css'
@@ -93,11 +93,15 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
   const [roundtableRegistrationId, setRoundtableRegistrationId] = useState(() => restoredSession?.roundtableRegistrationId ?? '')
   const [roundtableRegisteredAt, setRoundtableRegisteredAt] = useState(() => restoredSession?.roundtableRegisteredAt ?? '')
   const [roundtableRegisteredFromCheck, setRoundtableRegisteredFromCheck] = useState(false)
-  const [submissionModalOpen, setSubmissionModalOpen] = useState(() => restoredSession?.submissionModalOpen ?? false)
+  const [webinarError, setWebinarError] = useState(() => restoredSession?.webinarError ?? '')
+  const [webinarRegistered, setWebinarRegistered] = useState(() => Boolean(restoredSession?.webinarRegistrationId))
+  const [webinarRegistrationId, setWebinarRegistrationId] = useState(() => restoredSession?.webinarRegistrationId ?? '')
+  const [webinarRegisteredAt, setWebinarRegisteredAt] = useState(() => restoredSession?.webinarRegisteredAt ?? '')
   const [surveyAnswersReviewOpen, setSurveyAnswersReviewOpen] = useState(false)
   const [partTwoPrivacyRefused, setPartTwoPrivacyRefused] = useState(() => restoredSession?.partTwoPrivacyRefused ?? false)
   const [submissionIdempotencyKey] = useState(() => restoredSession?.submissionIdempotencyKey ?? createSurveySubmissionIdempotencyKey())
   const [roundtableRegistrationIdempotencyKey] = useState(() => restoredSession?.roundtableRegistrationIdempotencyKey ?? createRoundtableRegistrationIdempotencyKey())
+  const [webinarRegistrationIdempotencyKey] = useState(() => restoredSession?.webinarRegistrationIdempotencyKey ?? createWebinarRegistrationIdempotencyKey())
   const [submissionError, setSubmissionError] = useState(() => restoredSession?.submissionError ?? '')
   const [submittedSubmissionId, setSubmittedSubmissionId] = useState(() => restoredSession?.submittedSubmissionId ?? '')
   const [submittedAt, setSubmittedAt] = useState(() => restoredSession?.submittedAt ?? '')
@@ -113,6 +117,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
   const [submitting, setSubmitting] = useState(false)
   const [roundtableSubmitting, setRoundtableSubmitting] = useState(false)
   const [roundtableChecking, setRoundtableChecking] = useState(false)
+  const [webinarSubmitting, setWebinarSubmitting] = useState(false)
   const roundtableTriggerRef = useRef<HTMLButtonElement | null>(null)
   const reportHtmlLoadedRef = useRef(false)
 
@@ -158,16 +163,21 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
       roundtableRegisteredAt,
       roundtableRegistrationId,
       roundtableRegistrationIdempotencyKey,
+      webinarError,
+      webinarRegistered,
+      webinarRegisteredAt,
+      webinarRegistrationId,
+      webinarRegistrationIdempotencyKey,
       screen,
       submittedAt,
       submittedSubmissionId,
       submissionError,
       submissionIdempotencyKey,
-      submissionModalOpen,
+      submissionModalOpen: false,
       questionError,
       version: 1,
     })
-  }, [activeQuestion, answers, consent, contact, dataCollectionConsent, formError, loadingStep, missingQuestionNumbers, otherAnswers, partTwoPrivacyRefused, questionError, reportAccessToken, reportAccessTokenExpiresAt, reportEmailStatus, reportJobId, reportMode, reportStatus, roundtableContact, roundtableError, roundtableOpen, roundtableRegistered, roundtableRegisteredAt, roundtableRegistrationId, roundtableRegistrationIdempotencyKey, screen, submittedAt, submittedSubmissionId, submissionError, submissionIdempotencyKey, submissionModalOpen])
+  }, [activeQuestion, answers, consent, contact, dataCollectionConsent, formError, loadingStep, missingQuestionNumbers, otherAnswers, partTwoPrivacyRefused, questionError, reportAccessToken, reportAccessTokenExpiresAt, reportEmailStatus, reportJobId, reportMode, reportStatus, roundtableContact, roundtableError, roundtableOpen, roundtableRegistered, roundtableRegisteredAt, roundtableRegistrationId, roundtableRegistrationIdempotencyKey, screen, submittedAt, submittedSubmissionId, submissionError, submissionIdempotencyKey, webinarError, webinarRegistered, webinarRegisteredAt, webinarRegistrationId, webinarRegistrationIdempotencyKey])
 
   useEffect(() => {
     const desktopMedia = window.matchMedia(surveyPersistentQuestionPanelMediaQuery)
@@ -217,13 +227,6 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
     window.requestAnimationFrame(scrollToTop)
   }, [])
 
-  const openSubmissionComplete = useCallback(() => {
-    setSubmissionModalOpen(true)
-    setDrawerOpen(false)
-    setQuestionError('')
-    setMissingQuestionNumbers([])
-  }, [])
-
   useEffect(() => {
     reportHtmlLoadedRef.current = false
     setReportHtml('')
@@ -236,12 +239,11 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
     // the browser restores a report screen without its transient HTML payload.
     if (screen === 'report' && !reportHtml && reportJobId && reportAccessToken) {
       setScreen('loading')
-      setSubmissionModalOpen(true)
     }
   }, [reportAccessToken, reportHtml, reportJobId, screen])
 
   useEffect(() => {
-    if ((!submissionModalOpen && screen !== 'report') || !reportJobId || !reportAccessToken || (screen === 'report' && reportHtml)) return
+    if ((screen !== 'loading' && screen !== 'report') || !reportJobId || !reportAccessToken || (screen === 'report' && reportHtml)) return
 
     let cancelled = false
     let inFlight = false
@@ -303,7 +305,6 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
           if (cancelled) return
           reportHtmlLoadedRef.current = true
           setReportHtml(html)
-          setSubmissionModalOpen(false)
           setScreen('report')
           window.requestAnimationFrame(scrollToTop)
           return
@@ -347,7 +348,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
       controller?.abort()
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [reportAccessToken, reportAccessTokenExpiresAt, reportHtml, reportJobId, reportPollingRetry, screen, submissionModalOpen])
+  }, [reportAccessToken, reportAccessTokenExpiresAt, reportHtml, reportJobId, reportPollingRetry, screen])
 
 
   const navigateToQuestion = useCallback((questionNumber: number) => {
@@ -571,11 +572,43 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
     window.requestAnimationFrame(() => roundtableTriggerRef.current?.focus())
   }
 
+  const registerWebinarFromResult = async () => {
+    if (webinarSubmitting || webinarRegistered) return
+    if (!contact.name.trim() || !validEmail(contact.email.trim())) {
+      setWebinarError('Không tìm thấy Họ tên và Email hợp lệ từ khảo sát để đăng ký Webinar.')
+      return
+    }
+
+    setWebinarSubmitting(true)
+    setWebinarError('')
+    try {
+      const result = await submitWebinarRegistration(
+        {
+          clientMeta: buildClientMeta('survey_webinar_registration'),
+          email: contact.email.trim().toLowerCase(),
+          fullName: contact.name.trim().replace(/\s+/g, ' '),
+          position: normalizeContactPosition(contact) || undefined,
+          surveySubmissionIdempotencyKey: submissionIdempotencyKey,
+        },
+        webinarRegistrationIdempotencyKey,
+      )
+      setWebinarRegistrationId(result.registrationId)
+      setWebinarRegisteredAt(result.registeredAt)
+      setWebinarRegistered(true)
+    } catch (error) {
+      setWebinarError(error instanceof Error ? error.message : 'Không thể đăng ký Webinar. Vui lòng thử lại.')
+    } finally {
+      setWebinarSubmitting(false)
+    }
+  }
+
   const continueFromRoundtable = async () => {
     if (submitting) return
     if (submittedSubmissionId) {
       closeRoundtable()
-      openSubmissionComplete()
+      setDrawerOpen(false)
+      setScreen('loading')
+      window.requestAnimationFrame(scrollToTop)
       return
     }
 
@@ -608,7 +641,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
       reportHtmlLoadedRef.current = false
       setScreen('loading')
       closeRoundtable()
-      openSubmissionComplete()
+      window.requestAnimationFrame(scrollToTop)
     } catch (error) {
       setSubmissionError(error instanceof Error ? error.message : 'Không thể gửi kết quả khảo sát. Vui lòng thử lại.')
     } finally {
@@ -621,7 +654,6 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
     setReportHtml('')
     setRoundtableOpen(false)
     setSurveyAnswersReviewOpen(false)
-    setSubmissionModalOpen(false)
     onBackHome()
   }
 
@@ -778,7 +810,22 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
           />
         ) : null}
 
-        {screen === 'loading' ? <LoadingScreen reportMode={reportMode} step={loadingStep} /> : null}
+        {screen === 'loading' ? (
+          reportJobId && reportAccessToken ? (
+            <ReportGenerationScreen
+              error={reportError}
+              isWebinarRegistering={webinarSubmitting}
+              onHome={backToLanding}
+              onRegisterWebinar={() => void registerWebinarFromResult()}
+              onRetry={retryReportPolling}
+              pollTimedOut={reportPollingTimedOut}
+              reportStatus={reportStatus}
+              webinarError={webinarError}
+              webinarRegistered={webinarRegistered}
+              webinarRegisteredAt={webinarRegisteredAt}
+            />
+          ) : <LoadingScreen reportMode={reportMode} step={loadingStep} />
+        ) : null}
 
         {screen === 'report' ? (
           <ReportScreen emailStatus={reportEmailStatus} html={reportHtml} mode={reportMode} onHome={backToLanding} onReviewAnswers={() => setSurveyAnswersReviewOpen(true)} />
@@ -787,11 +834,16 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
         {screen === 'result' ? (
           <ResultScreen
             answers={answers}
+            isWebinarRegistering={webinarSubmitting}
             mode={reportMode}
             onBackHome={backToLanding}
             onOpenRoundtable={openRoundtableFromResult}
+            onRegisterWebinar={() => void registerWebinarFromResult()}
             otherAnswers={otherAnswers}
             scores={scores}
+            webinarError={webinarError}
+            webinarRegistered={webinarRegistered}
+            webinarRegisteredAt={webinarRegisteredAt}
           />
         ) : null}
       </div>
@@ -814,18 +866,6 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
         open={roundtableOpen}
         registered={roundtableRegistered}
         registeredFromExisting={roundtableRegisteredFromCheck}
-      />
-
-      <SubmissionCompleteModal
-        emailStatus={reportEmailStatus}
-        error={reportError}
-        hasReportJob={Boolean(reportJobId && reportAccessToken)}
-        html={reportHtml}
-        onHome={backToLanding}
-        open={submissionModalOpen}
-        onRetry={retryReportPolling}
-        pollTimedOut={reportPollingTimedOut}
-        reportStatus={reportStatus}
       />
 
       <SurveyAnswersReviewModal

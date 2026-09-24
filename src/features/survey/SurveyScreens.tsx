@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Check, CheckCircle2, ChevronDown, CircleAlert, Download, LockKeyhole, Maximize2, Minimize2, X } from 'lucide-react'
+import { Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, Download, LockKeyhole, Maximize2, Minimize2, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { contactCopy, introCopy, jobTitleOptions, partOneQuestions, partTwoQuestions, reportParts, roundtableCopy } from './surveyData'
 import { marketBenchmarkData, type MarketBenchmarkData } from './surveyReportData'
@@ -8,6 +9,9 @@ import { getAnswerDisplay, type Answers, validEmail } from './surveyScoring'
 import { isValidPhone } from './phoneValidation'
 import { SurveyBrandMark, SurveyEyebrow, SurveyForwardArrow } from './SurveyChrome'
 import type { ReportEmailStatus, ReportJobStatusValue } from './surveyApi'
+import reportCarouselFallback from '@/assets/figma/carousel-baocaoquy3.png'
+import roundtableCarouselFallback from '@/assets/figma/carousel-dauanbantron.jpg'
+import webinarCarouselFallback from '@/assets/figma/carousel-webinar.png'
 
 type ContactState = { email: string; name: string; phone: string; jobTitle: string; jobTitleOther: string }
 type ConsentChoice = 'yes' | 'no' | ''
@@ -430,14 +434,19 @@ export function ReportScreen({ emailStatus, html, mode, onHome, onReviewAnswers 
 
 type ResultScreenProps = {
   answers: Answers
+  isWebinarRegistering: boolean
   mode: 'part1' | 'private'
   onBackHome: () => void
   onOpenRoundtable: (trigger: HTMLButtonElement) => void
+  onRegisterWebinar: () => void
   otherAnswers: Answers
   scores: ScoreSet
+  webinarError: string
+  webinarRegistered: boolean
+  webinarRegisteredAt: string
 }
 
-export function ResultScreen({ answers, mode, onBackHome, onOpenRoundtable, otherAnswers, scores }: ResultScreenProps) {
+export function ResultScreen({ answers, isWebinarRegistering, mode, onBackHome, onOpenRoundtable, onRegisterWebinar, otherAnswers, scores, webinarError, webinarRegistered, webinarRegisteredAt }: ResultScreenProps) {
   const isPrivate = mode === 'private'
 
   return (
@@ -467,6 +476,21 @@ export function ResultScreen({ answers, mode, onBackHome, onOpenRoundtable, othe
         </ul>
         <button className="survey-outline-button" onClick={(event) => onOpenRoundtable(event.currentTarget)} type="button">
           Đăng ký tham dự
+        </button>
+      </section>
+
+      <section className="survey-webinar-invitation">
+        <SurveyEyebrow>CEO WORKFORCE INDEX WEBINAR</SurveyEyebrow>
+        <h2>Đăng kí tham dự Webinar</h2>
+        <p>Webinar: Làm sao để CEO và HRD hết lệch pha và không lỗi nhịp?</p>
+        <ul aria-label="Thông tin Webinar" className="survey-round-meta">
+          <li><strong>Thời gian:</strong> 14:00–16:00 | 22/10/2026</li>
+          <li><strong>Hình thức:</strong> Trực tuyến qua Zoom</li>
+        </ul>
+        {webinarError ? <p className="survey-inline-error" role="alert">{webinarError}</p> : null}
+        {webinarRegistered ? <p className="survey-success-message">Đăng ký Webinar đã được ghi nhận{webinarRegisteredAt ? ` lúc ${new Date(webinarRegisteredAt).toLocaleString('vi-VN')}` : ''}.</p> : null}
+        <button className="survey-outline-button" disabled={webinarRegistered || isWebinarRegistering} onClick={onRegisterWebinar} type="button">
+          {webinarRegistered ? 'Đã đăng ký' : isWebinarRegistering ? 'Đang đăng ký...' : 'Đăng ký tham dự'}
         </button>
       </section>
 
@@ -878,6 +902,22 @@ const reportProgressSteps = [
   { label: 'Hiển thị báo cáo', statuses: ['html_ready', 'completed', 'sent'] },
 ] as const
 
+const reportLoadingCarouselModules = import.meta.glob('../../assets/figma/carousel-result-loading/web/*.webp', {
+  eager: true,
+  import: 'default',
+  query: '?url',
+})
+
+const reportLoadingCarouselImages = Object.entries(reportLoadingCarouselModules)
+  .sort(([firstPath], [secondPath]) => firstPath.localeCompare(secondPath, undefined, { numeric: true }))
+  .map(([, source]) => source as string)
+
+const reportLoadingCarouselFallbackImages = [
+  reportCarouselFallback,
+  roundtableCarouselFallback,
+  webinarCarouselFallback,
+] as const
+
 function reportProgressIndex(status: ReportJobStatusValue | '') {
   const index = reportProgressSteps.findIndex((step) => (step.statuses as readonly string[]).includes(status))
   if (index >= 0) return index
@@ -891,6 +931,295 @@ function reportEmailLabel(status: ReportEmailStatus) {
   if (status === 'failed') return 'Gửi email chưa thành công'
   if (status === 'unknown') return 'Đang xác nhận trạng thái email'
   return 'Email sẽ được gửi sau khi hoàn tất báo cáo'
+}
+
+type ReportGenerationScreenProps = {
+  error: string
+  isWebinarRegistering: boolean
+  onHome: () => void
+  onRegisterWebinar: () => void
+  onRetry: () => void
+  pollTimedOut: boolean
+  reportStatus: ReportJobStatusValue | ''
+  webinarError: string
+  webinarRegistered: boolean
+  webinarRegisteredAt: string
+}
+
+function ReportGenerationCarousel() {
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+  const [carouselCycle, setCarouselCycle] = useState(0)
+  const lightboxDialogRef = useRef<HTMLDivElement>(null)
+  const lightboxCloseRef = useRef<HTMLButtonElement>(null)
+  const swipeStartRef = useRef<{ pointerId: number; x: number; y: number } | null>(null)
+  const images = reportLoadingCarouselImages.length ? reportLoadingCarouselImages : reportLoadingCarouselFallbackImages
+  const imageCount = images.length
+
+  const restartCarousel = () => setCarouselCycle((currentCycle) => currentCycle + 1)
+  const selectImage = (index: number) => {
+    setActiveIndex((index + imageCount) % imageCount)
+    restartCarousel()
+  }
+  const showPreviousImage = () => {
+    setActiveIndex((currentIndex) => (currentIndex - 1 + imageCount) % imageCount)
+    restartCarousel()
+  }
+  const showNextImage = () => {
+    setActiveIndex((currentIndex) => (currentIndex + 1) % imageCount)
+    restartCarousel()
+  }
+
+  useEffect(() => {
+    if (imageCount < 2 || lightboxIndex !== null) return
+
+    const intervalId = window.setInterval(() => {
+      setActiveIndex((currentIndex) => (currentIndex + 1) % imageCount)
+    }, 4400)
+
+    return () => window.clearInterval(intervalId)
+  }, [carouselCycle, imageCount, lightboxIndex])
+
+  useEffect(() => {
+    if (lightboxIndex === null) return
+
+    const previousFocus = document.activeElement as HTMLElement | null
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    window.requestAnimationFrame(() => lightboxCloseRef.current?.focus())
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        setLightboxIndex(null)
+        return
+      }
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault()
+        setActiveIndex((currentIndex) => (currentIndex - 1 + imageCount) % imageCount)
+        setCarouselCycle((currentCycle) => currentCycle + 1)
+      }
+      if (event.key === 'ArrowRight') {
+        event.preventDefault()
+        setActiveIndex((currentIndex) => (currentIndex + 1) % imageCount)
+        setCarouselCycle((currentCycle) => currentCycle + 1)
+      }
+      if (event.key !== 'Tab' || !lightboxDialogRef.current) return
+
+      const focusable = Array.from(lightboxDialogRef.current.querySelectorAll<HTMLElement>('button, [href], [tabindex]:not([tabindex="-1"])'))
+      if (!focusable.length) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = previousOverflow
+      window.requestAnimationFrame(() => previousFocus?.focus())
+    }
+  }, [imageCount, lightboxIndex])
+
+  const handlePointerDown = (event: ReactPointerEvent<HTMLElement>) => {
+    if (event.pointerType === 'mouse') return
+    swipeStartRef.current = { pointerId: event.pointerId, x: event.clientX, y: event.clientY }
+  }
+
+  const handlePointerUp = (event: ReactPointerEvent<HTMLElement>) => {
+    const swipeStart = swipeStartRef.current
+    swipeStartRef.current = null
+    if (!swipeStart || swipeStart.pointerId !== event.pointerId) return
+
+    const horizontalDistance = event.clientX - swipeStart.x
+    const verticalDistance = event.clientY - swipeStart.y
+    if (Math.abs(horizontalDistance) < 42 || Math.abs(horizontalDistance) <= Math.abs(verticalDistance)) return
+
+    if (horizontalDistance < 0) showNextImage()
+    else showPreviousImage()
+  }
+
+  if (!imageCount) return null
+
+  const lightboxImage = lightboxIndex === null ? '' : images[lightboxIndex]
+
+  return (
+    <section aria-labelledby="survey-report-gallery-title" className="survey-report-generation-gallery">
+      <div className="survey-report-generation-gallery-heading">
+        <div>
+          <SurveyEyebrow>RECAP SỰ KIỆN</SurveyEyebrow>
+          <h2 aria-label="Sự kiện Bàn tròn CEO Quý 3/2026 đã thu hút sự quan tâm của các báo kinh tế uy tín" id="survey-report-gallery-title">
+            <span aria-hidden="true" className="survey-report-generation-gallery-title-desktop">Sự kiện Bàn tròn CEO Quý 3/2026<br />đã thu hút sự quan tâm của các báo kinh tế uy tín</span>
+            <span aria-hidden="true" className="survey-report-generation-gallery-title-mobile">
+              <span>Sự kiện Bàn tròn CEO</span>
+              <span>Quý 3/2026 đã thu hút</span>
+              <span>sự quan tâm của các báo kinh tế uy tín</span>
+            </span>
+          </h2>
+          <a className="survey-primary-button survey-report-generation-recap-link" href="https://cafebiz.vn/dieu-gi-dang-can-tro-doanh-nghiep-tang-truong-176260922103948402.chn" rel="noopener noreferrer" target="_blank">Xem chi tiết</a>
+        </div>
+        <span aria-live="polite" className="survey-report-generation-gallery-index">
+          {String(activeIndex + 1).padStart(2, '0')} <i /> {String(imageCount).padStart(2, '0')}
+        </span>
+      </div>
+
+      <div className="survey-report-generation-carousel-shell">
+        {imageCount > 1 ? <button aria-label="Ảnh trước" className="survey-report-generation-carousel-control is-previous" onClick={showPreviousImage} type="button"><ChevronLeft aria-hidden="true" size={24} /></button> : null}
+        <div
+          aria-label="Bộ sưu tập hình ảnh"
+          className="survey-report-generation-carousel-viewport"
+          onPointerCancel={() => { swipeStartRef.current = null }}
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
+        >
+          <motion.div
+            animate={{ x: `-${activeIndex * 100}%` }}
+            className="survey-report-generation-carousel-track"
+            initial={false}
+            transition={{ duration: .72, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {images.map((image, index) => (
+              <article className={cn('survey-report-generation-carousel-slide', index === activeIndex && 'is-active')} key={image}>
+                <button aria-label={`Phóng to hình ảnh ${index + 1}`} className="survey-report-generation-carousel-image-button" onClick={() => setLightboxIndex(index)} type="button">
+                  <img alt={`CEO Workforce Index - hình ảnh ${index + 1}`} draggable={false} loading={index === 0 ? 'eager' : 'lazy'} src={image} />
+                  <span aria-hidden="true" className="survey-report-generation-carousel-image-sheen" />
+                  <span className="survey-report-generation-carousel-image-caption">Chạm để phóng to</span>
+                </button>
+              </article>
+            ))}
+          </motion.div>
+        </div>
+        {imageCount > 1 ? <button aria-label="Ảnh tiếp theo" className="survey-report-generation-carousel-control is-next" onClick={showNextImage} type="button"><ChevronRight aria-hidden="true" size={24} /></button> : null}
+      </div>
+
+      {imageCount > 1 ? (
+        <div aria-label="Chọn hình ảnh" className="survey-report-generation-carousel-pagination" role="group">
+          {images.map((image, index) => (
+            <button aria-current={index === activeIndex ? 'true' : undefined} aria-label={`Hiển thị hình ảnh ${index + 1}`} className={cn(index === activeIndex && 'is-active')} key={image} onClick={() => selectImage(index)} type="button" />
+          ))}
+        </div>
+      ) : null}
+
+      {typeof document !== 'undefined' ? createPortal(
+        <AnimatePresence>
+          {lightboxIndex !== null ? (
+            <motion.div animate={{ opacity: 1 }} className="survey-report-generation-lightbox" exit={{ opacity: 0 }} initial={{ opacity: 0 }} onMouseDown={(event) => { if (event.target === event.currentTarget) setLightboxIndex(null) }} role="presentation">
+              <motion.div animate={{ opacity: 1, scale: 1, y: 0 }} aria-label={`Hình ảnh ${lightboxIndex + 1} phóng to`} aria-modal="true" className="survey-report-generation-lightbox-dialog" initial={{ opacity: 0, scale: .97, y: 14 }} ref={lightboxDialogRef} role="dialog" transition={{ duration: .2, ease: 'easeOut' }}>
+                <img alt={`CEO Workforce Index - hình ảnh ${lightboxIndex + 1}`} src={lightboxImage} />
+                <button aria-label="Đóng hình ảnh phóng to" className="survey-report-generation-lightbox-close" onClick={() => setLightboxIndex(null)} ref={lightboxCloseRef} type="button"><X aria-hidden="true" size={22} /></button>
+                {imageCount > 1 ? <button aria-label="Hình ảnh trước" className="survey-report-generation-lightbox-control is-previous" onClick={showPreviousImage} type="button"><ChevronLeft aria-hidden="true" size={30} /></button> : null}
+                {imageCount > 1 ? <button aria-label="Hình ảnh tiếp theo" className="survey-report-generation-lightbox-control is-next" onClick={showNextImage} type="button"><ChevronRight aria-hidden="true" size={30} /></button> : null}
+              </motion.div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>,
+        document.body,
+      ) : null}
+    </section>
+  )
+}
+
+export function ReportGenerationScreen({ error, isWebinarRegistering, onHome, onRegisterWebinar, onRetry, pollTimedOut, reportStatus, webinarError, webinarRegistered, webinarRegisteredAt }: ReportGenerationScreenProps) {
+  const activeProgressIndex = reportProgressIndex(reportStatus)
+  const activeStep = reportProgressSteps[activeProgressIndex] ?? reportProgressSteps[0]
+
+  return (
+    <section aria-busy="true" aria-labelledby="survey-report-generation-title" className="survey-report-generation-page">
+      <div aria-hidden="true" className="survey-report-generation-ambient survey-report-generation-ambient--left" />
+      <div aria-hidden="true" className="survey-report-generation-ambient survey-report-generation-ambient--right" />
+      <div className="survey-report-generation-layout">
+        <header className="survey-report-generation-hero">
+          <div className="survey-report-generation-copy">
+            <SurveyEyebrow>KHẢO SÁT ĐÃ HOÀN TẤT</SurveyEyebrow>
+            <h1 id="survey-report-generation-title">Đang chuẩn bị báo cáo của Anh/Chị</h1>
+            <p>CWI đang phân tích câu trả lời để dựng báo cáo phù hợp với bối cảnh doanh nghiệp. Trang này sẽ tự cập nhật ngay khi báo cáo sẵn sàng.</p>
+            <div aria-live="polite" className="survey-report-generation-stage">
+              <span aria-hidden="true" className="survey-report-generation-stage-pulse" />
+              {activeStep.label}
+            </div>
+          </div>
+          <div aria-hidden="true" className="survey-report-generation-loader">
+            <span className="survey-report-generation-loader-ripple is-first" />
+            <span className="survey-report-generation-loader-ripple is-second" />
+            <span className="survey-report-generation-loader-ripple is-third" />
+            <span className="survey-report-generation-loader-ripple is-fourth" />
+            <span className="survey-report-generation-loader-ripple is-fifth" />
+            <span className="survey-report-generation-loader-ripple is-sixth" />
+            <span className="survey-report-generation-loader-ripple is-seventh" />
+            <span className="survey-report-generation-loader-core"><span /></span>
+          </div>
+
+        </header>
+
+        <section aria-label="Tiến độ tạo báo cáo" className="survey-report-generation-progress">
+          <div aria-label="Tiến độ tạo báo cáo" className="survey-report-generation-progress-line" role="progressbar" aria-valuemax={100} aria-valuemin={0} aria-valuenow={(activeProgressIndex + 1) * 25}>
+            <motion.span animate={{ scaleX: (activeProgressIndex + 1) / reportProgressSteps.length }} initial={{ scaleX: .12 }} transition={{ duration: .45, ease: 'easeOut' }} />
+          </div>
+          <div className="survey-report-generation-steps" role="list">
+            {reportProgressSteps.map((step, index) => {
+              const done = index < activeProgressIndex
+              const active = index === activeProgressIndex
+              return (
+                <div className={cn('survey-report-generation-step', done && 'is-done', active && 'is-active')} key={step.label} role="listitem">
+                  <span aria-hidden="true">{done ? <Check size={15} strokeWidth={2.8} /> : String(index + 1).padStart(2, '0')}</span>
+                  <strong>{step.label}</strong>
+                </div>
+              )
+            })}
+          </div>
+          <div className="survey-report-generation-note" aria-live="polite">
+            <span aria-hidden="true" />
+            {pollTimedOut ? 'Báo cáo đang mất nhiều thời gian hơn dự kiến. Anh/Chị có thể kiểm tra lại mà không cần gửi lại khảo sát.' : 'Anh/Chị có thể giữ nguyên trang này. Hệ thống vẫn tiếp tục xử lý an toàn ở nền.'}
+          </div>
+          <section aria-labelledby="survey-report-generation-webinar-title" className="survey-report-generation-webinar">
+            <h2 id="survey-report-generation-webinar-title">Webinar: Làm sao để CEO và HRD hết lệch pha và không lỗi nhịp?</h2>
+            <div className="survey-report-generation-webinar-details">
+              <div>
+                <h3>Nội dung nổi bật</h3>
+                <ul>
+                  <li>“Độ lệch pha” CEO–CHRO qua dữ liệu khảo sát CWI</li>
+                  <li>Workforce Plus: Con người, AI, tự động hóa và hệ sinh thái</li>
+                  <li>Vai trò mới của CHRO trong kiến tạo và điều phối workforce</li>
+                  <li>Cách CEO và CHRO đi từ cùng hướng đến cùng nhịp trong thực thi</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Khách mời</h3>
+                <ul>
+                  <li>Bà Trần Phương Nga – CEO Tập đoàn Thiên Long</li>
+                  <li>Bà Đinh Kim Nhung – Giám đốc Nhân sự Nafoods</li>
+                  <li>Bà Phạm Thị Mỹ Lệ – Trưởng Ban Quản trị CEO Workforce Index</li>
+                  <li>Khách mời bí mật</li>
+                </ul>
+              </div>
+            </div>
+            <dl className="survey-report-generation-webinar-meta">
+              <div><dt>Thời gian</dt><dd>14:00–16:00 | 22/10/2026</dd></div>
+              <div><dt>Hình thức</dt><dd>Trực tuyến qua Zoom</dd></div>
+            </dl>
+            {webinarError ? <p className="survey-inline-error" role="alert">{webinarError}</p> : null}
+            {webinarRegistered ? <p className="survey-success-message">Đăng ký Webinar đã được ghi nhận{webinarRegisteredAt ? ` lúc ${new Date(webinarRegisteredAt).toLocaleString('vi-VN')}` : ''}.</p> : null}
+          </section>
+          {error ? <p className="survey-report-generation-error" role="alert">{error}</p> : null}
+          <div className="survey-report-generation-actions">
+            {pollTimedOut || error ? <button className="survey-outline-button" onClick={onRetry} type="button">Kiểm tra lại</button> : null}
+            <button className="survey-primary-button" onClick={onHome} type="button">Về trang chủ</button>
+            <button className="survey-primary-button" disabled={webinarRegistered || isWebinarRegistering} onClick={onRegisterWebinar} type="button">
+              {webinarRegistered ? 'Đã đăng ký Webinar' : isWebinarRegistering ? 'Đang đăng ký...' : 'Đăng ký tham dự Webinar'}
+            </button>
+          </div>
+        </section>
+
+        <ReportGenerationCarousel />
+      </div>
+    </section>
+  )
 }
 
 function prepareReportPreviewHtml(source: string) {

@@ -64,6 +64,10 @@ export type RoundtableRegistrationStatusResult = {
   registered: boolean
 }
 
+export type WebinarRegistrationPayload = RoundtableRegistrationPayload
+export type WebinarRegistrationResult = RoundtableRegistrationResult
+export type WebinarRegistrationStatusResult = RoundtableRegistrationStatusResult
+
 type ApiSuccess<T> = {
   data: T
 }
@@ -102,9 +106,14 @@ export function createRoundtableRegistrationIdempotencyKey() {
   return createClientIdempotencyKey('source4-roundtable')
 }
 
+export function createWebinarRegistrationIdempotencyKey() {
+  return createClientIdempotencyKey('source4-webinar')
+}
+
 function getFriendlyError(status: number, code: string, message: string) {
   if (status === 422) return 'Một số thông tin chưa đúng định dạng. Vui lòng kiểm tra lại và gửi lại.'
   if (status === 409 && code.startsWith('roundtable')) return 'Đăng ký CEO Roundtable này đã được ghi nhận trước đó.'
+  if (status === 409 && code.startsWith('webinar')) return 'Đăng ký Webinar này đã được ghi nhận trước đó.'
   if (status === 409) return 'Kết quả này đã được ghi nhận trước đó.'
   if (status >= 500) return 'Hệ thống đang bận, vui lòng thử gửi lại sau ít phút.'
   return message || 'Không thể gửi dữ liệu lúc này.'
@@ -204,6 +213,58 @@ export async function checkRoundtableRegistration(email: string, signal?: AbortS
     return await parseApiResponse<RoundtableRegistrationStatusResult>(response)
   } catch (error) {
     throw toNetworkError(error, 'Kiểm tra đăng ký quá thời gian chờ. Vui lòng thử lại.', 'Không thể kiểm tra đăng ký Roundtable lúc này.')
+  } finally {
+    signal?.removeEventListener('abort', abortFromCaller)
+    window.clearTimeout(timeoutId)
+  }
+}
+
+export async function submitWebinarRegistration(payload: WebinarRegistrationPayload, idempotencyKey: string): Promise<WebinarRegistrationResult> {
+  const controller = new AbortController()
+  const timeoutId = window.setTimeout(() => controller.abort(), Number.isFinite(submitTimeoutMs) ? submitTimeoutMs : 15000)
+
+  try {
+    const response = await fetch(apiUrl('/api/v1/webinar-registrations'), {
+      body: JSON.stringify({ ...payload, idempotencyKey }),
+      headers: {
+        'content-type': 'application/json',
+        'idempotency-key': idempotencyKey,
+        'x-cwi-source': 'source4',
+      },
+      method: 'POST',
+      signal: controller.signal,
+    })
+
+    return await parseApiResponse<WebinarRegistrationResult>(response)
+  } catch (error) {
+    throw toNetworkError(error, 'Gửi đăng ký quá thời gian chờ. Vui lòng thử lại.', 'Không kết nối được hệ thống đăng ký Webinar. Vui lòng kiểm tra kết nối và thử lại.')
+  } finally {
+    window.clearTimeout(timeoutId)
+  }
+}
+
+export async function checkWebinarRegistration(email: string, signal?: AbortSignal): Promise<WebinarRegistrationStatusResult> {
+  const controller = new AbortController()
+  const timeoutId = window.setTimeout(() => controller.abort(), Number.isFinite(submitTimeoutMs) ? submitTimeoutMs : 15000)
+  const abortFromCaller = () => controller.abort()
+  signal?.addEventListener('abort', abortFromCaller, { once: true })
+
+  try {
+    const response = await fetch(apiUrl('/api/v1/webinar-registrations/check'), {
+      body: JSON.stringify({ email }),
+      cache: 'no-store',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        'x-cwi-source': 'source4',
+      },
+      method: 'POST',
+      signal: controller.signal,
+    })
+
+    return await parseApiResponse<WebinarRegistrationStatusResult>(response)
+  } catch (error) {
+    throw toNetworkError(error, 'Kiểm tra đăng ký quá thời gian chờ. Vui lòng thử lại.', 'Không thể kiểm tra đăng ký Webinar lúc này.')
   } finally {
     signal?.removeEventListener('abort', abortFromCaller)
     window.clearTimeout(timeoutId)

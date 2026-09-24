@@ -26,3 +26,12 @@ dist-ssr
 .env.local
 .env.*.local
 !.env.example
+
+# Keep local camera originals out of Git; the production carousel uses WebP derivatives.
+src/assets/figma/carousel-result-loading/*
+!src/assets/figma/carousel-result-loading/web/
+!src/assets/figma/carousel-result-loading/web/*.webp
+
+# Local static export retained for reference only; it is not imported by the application.
+src/assets/figma/Nesso _ Admin.html
+src/assets/figma/Nesso _ Admin_files/
