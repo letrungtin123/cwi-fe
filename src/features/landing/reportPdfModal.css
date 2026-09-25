@@ -69,11 +69,17 @@
   }
 
   .report-pdf-mobile-pages { display: grid; gap: 18px; min-height: 100%; }
-  .report-pdf-modal-page { display: grid; justify-items: center; gap: 8px; min-width: 0; }
+  .report-pdf-modal-page { display: grid; align-content: start; justify-items: center; gap: 8px; min-width: 0; aspect-ratio: 210 / 297; background: #f7f9fc; box-shadow: 0 8px 22px rgb(7 26 53 / 10%); }
+  .report-pdf-modal-page[data-render-state='ready'] { aspect-ratio: auto; background: transparent; box-shadow: none; }
+  .report-pdf-modal-page[data-render-state='error']::after { padding: 18px; color: #9f2931; font-size: 13px; content: 'Không thể tải trang này.'; }
   .report-pdf-modal-page-label { color: #526982; font-size: 12px; font-weight: 650; }
   .report-pdf-modal-page canvas { display: block; max-width: 100%; height: auto !important; background: #fff; box-shadow: 0 8px 22px rgb(7 26 53 / 16%); }
   .report-pdf-mobile-status { position: absolute; z-index: 1; top: 84px; right: 0; left: 0; margin: 0; color: #36546f; font-size: 14px; font-weight: 650; text-align: center; }
-  .report-pdf-mobile-status.is-error { color: #b4232b; }
+  .report-pdf-mobile-fallback { position: absolute; z-index: 2; top: 84px; right: 20px; left: 20px; display: grid; gap: 14px; padding: 18px; color: #173c61; background: rgb(255 255 255 / 96%); border: 1px solid #cad9e8; border-radius: 8px; box-shadow: 0 12px 28px rgb(7 26 53 / 16%); }
+  .report-pdf-mobile-fallback p { margin: 0; font-size: 14px; font-weight: 650; line-height: 1.45; }
+  .report-pdf-mobile-fallback-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .report-pdf-mobile-fallback-actions a, .report-pdf-mobile-fallback-actions button { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; gap: 7px; padding: 8px 10px; color: #0d557f; font: inherit; font-size: 12px; font-weight: 700; text-align: center; text-decoration: none; cursor: pointer; background: #fff; border: 1px solid #aac8e0; border-radius: 6px; }
+  .report-pdf-mobile-fallback-actions button { color: #fff; background: #0b5d89; border-color: #0b5d89; }
   .report-pdf-modal-close {
     top: 12px;
     right: 12px;
