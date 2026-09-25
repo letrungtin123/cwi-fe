@@ -45,6 +45,37 @@
   outline-offset: 3px;
 }
 
+.report-pdf-modal-download {
+  position: absolute;
+  z-index: 1;
+  top: 16px;
+  right: 72px;
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: #0b274e;
+  text-decoration: none;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(11, 39, 78, 0.16);
+  border-radius: 50%;
+  box-shadow: 0 8px 22px rgba(0, 19, 47, 0.22);
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.report-pdf-modal-download:hover {
+  color: #008c87;
+  background: #fff;
+}
+
+.report-pdf-modal-download:focus-visible {
+  outline: 3px solid #13e6d0;
+  outline-offset: 3px;
+}
+
 .report-pdf-modal-document {
   display: block;
   width: 100%;
@@ -83,5 +114,10 @@
   .report-pdf-modal-close {
     top: 12px;
     right: 12px;
+  }
+
+  .report-pdf-modal-download {
+    top: 12px;
+    right: 68px;
   }
 }

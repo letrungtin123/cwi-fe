@@ -1,4 +1,4 @@
-import { ExternalLink, RefreshCw, X } from 'lucide-react'
+import { Download, ExternalLink, RefreshCw, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import reportPdf from '@/assets/figma/pdfbaocao/pdf-bao-cao-quy-3.pdf'
@@ -217,6 +217,15 @@ export function ReportPdfModal({ onClose, open }: ReportPdfModalProps) {
         <button aria-label="Đóng báo cáo" className="report-pdf-modal-close" onClick={onClose} ref={closeButtonRef} type="button">
           <X aria-hidden="true" size={22} strokeWidth={2} />
         </button>
+        <a
+          aria-label="Tải báo cáo PDF"
+          className="report-pdf-modal-download"
+          download="Bao-cao-CEO-Workforce-Index-Q3-2026.pdf"
+          href={reportPdf}
+          title="Tải báo cáo PDF"
+        >
+          <Download aria-hidden="true" size={20} strokeWidth={2} />
+        </a>
         {useMobileViewer
           ? <MobileReportPdfViewer key={mobileViewerAttempt} onRetry={() => setMobileViewerAttempt((attempt) => attempt + 1)} />
           : <iframe className="report-pdf-modal-document" src={`${reportPdf}#view=FitH`} title="Báo cáo Quý 3/2026" />}
