@@ -1,0 +1,7 @@
+.quarterly-report-page-state { display: grid; min-height: 100dvh; align-content: center; justify-items: center; gap: 12px; padding: 28px; color: #17436a; text-align: center; background: #e7eff7; }
+.quarterly-report-page-state h1, .quarterly-report-page-state p { margin: 0; }
+.quarterly-report-page-state h1 { color: #09254b; font-size: 26px; }
+.quarterly-report-page-state p { max-width: 480px; color: #60768c; line-height: 1.5; }
+.quarterly-report-page-state button { display: inline-flex; min-height: 42px; align-items: center; gap: 8px; padding: 0 16px; color: #17436a; font: inherit; font-size: 14px; font-weight: 750; cursor: pointer; background: #fff; border: 1px solid #cbd9e7; border-radius: 999px; }
+.quarterly-report-page-spinner { animation: quarterly-report-page-spin 1s linear infinite; color: #0a7986; }
+@keyframes quarterly-report-page-spin { to { transform: rotate(360deg); } }

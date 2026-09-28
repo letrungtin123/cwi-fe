@@ -1,0 +1,46 @@
+.quarterly-download-backdrop { position: fixed; z-index: 5100; inset: 0; display: grid; place-items: center; padding: 24px; background: rgb(4 20 43 / 68%); }
+.quarterly-download-modal { position: relative; width: min(680px, 100%); overflow: hidden; color: #14375e; background: #fff; border: 1px solid rgb(255 255 255 / 42%); border-radius: 16px; box-shadow: 0 30px 80px rgb(1 16 37 / 42%); }
+.quarterly-download-header { padding: 28px 56px 26px 32px; color: #fff; background: linear-gradient(120deg, #082c63, #0755a8 62%, #0a78b0); }
+.quarterly-download-header p { margin: 0 0 9px; font-size: 11px; font-weight: 800; letter-spacing: .12em; }
+.quarterly-download-header h2 { margin: 0 0 8px; font-size: clamp(26px, 4vw, 34px); line-height: 1.14; letter-spacing: 0; }
+.quarterly-download-header span { display: block; max-width: 520px; color: rgb(255 255 255 / 82%); font-size: 14px; line-height: 1.5; }
+.quarterly-download-close { position: absolute; z-index: 1; top: 18px; right: 18px; display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center; padding: 0; color: #fff; cursor: pointer; background: rgb(255 255 255 / 10%); border: 1px solid rgb(255 255 255 / 42%); border-radius: 50%; }
+.quarterly-download-close:hover:not(:disabled) { background: rgb(255 255 255 / 20%); }
+.quarterly-download-content { display: grid; gap: 20px; padding: 28px 32px 30px; }
+.quarterly-download-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 14px; }
+.quarterly-download-fields label { display: grid; gap: 7px; min-width: 0; color: #153d68; font-size: 13px; font-weight: 750; }
+.quarterly-download-fields label span b { color: #e62432; }
+.quarterly-download-fields input { width: 100%; min-height: 46px; padding: 0 13px; color: #12375f; font: inherit; font-size: 14px; background: #fbfdff; border: 1px solid #c9d9eb; border-radius: 7px; outline: none; }
+.quarterly-download-fields input:focus { background: #fff; border-color: #0abeb6; box-shadow: 0 0 0 3px rgb(10 190 182 / 13%); }
+.quarterly-download-fields input:disabled { color: #8496aa; cursor: wait; background: #f2f6fa; }
+.quarterly-download-position-field { display: grid; gap: 7px; min-width: 0; color: #153d68; font-size: 13px; font-weight: 750; }
+.quarterly-download-position-field > span b { color: #e62432; }
+.quarterly-download-position-picker { position: relative; z-index: 3; }
+.quarterly-download-position-picker > button { display: flex; width: 100%; min-height: 46px; align-items: center; justify-content: space-between; gap: 10px; padding: 0 13px; color: #7c90a8; cursor: pointer; font: inherit; font-size: 14px; font-weight: 650; text-align: left; background: #fbfdff; border: 1px solid #c9d9eb; border-radius: 7px; outline: none; transition: background .16s ease, border-color .16s ease, box-shadow .16s ease; }
+.quarterly-download-position-picker > button.has-value { color: #12375f; }
+.quarterly-download-position-picker > button:hover:not(:disabled), .quarterly-download-position-picker > button:focus-visible { background: #fff; border-color: #0abeb6; box-shadow: 0 0 0 3px rgb(10 190 182 / 13%); }
+.quarterly-download-position-picker > button svg { flex: 0 0 auto; color: #245784; transition: transform .18s ease; }
+.quarterly-download-position-picker > button[aria-expanded="true"] svg { transform: rotate(180deg); }
+.quarterly-download-position-picker > button:disabled { color: #8496aa; cursor: wait; background: #f2f6fa; }
+.quarterly-download-position-menu { position: fixed; z-index: 5201; display: grid; overflow-y: auto; padding: 5px; background: #fff; border: 1px solid #bed4e8; border-radius: 8px; box-shadow: 0 16px 34px rgb(12 48 86 / 18%); scrollbar-color: #91aec9 transparent; scrollbar-width: thin; }
+.quarterly-download-position-menu::-webkit-scrollbar { width: 5px; }
+.quarterly-download-position-menu::-webkit-scrollbar-thumb { background: #9db9d1; border-radius: 99px; }
+.quarterly-download-position-menu button { min-height: 38px; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 9px; color: #254b73; cursor: pointer; font: inherit; font-size: 13px; font-weight: 600; text-align: left; background: transparent; border: 0; border-radius: 5px; transition: background .14s ease, color .14s ease; }
+.quarterly-download-position-menu button:hover, .quarterly-download-position-menu button:focus-visible { color: #086e83; background: #edfafa; outline: 0; }
+.quarterly-download-position-menu button.is-selected { color: #087b7b; background: #ddf7f4; font-weight: 750; }
+.quarterly-download-position-menu button svg { flex: 0 0 auto; }
+.quarterly-download-other-position { grid-column: 1 / -1; }
+.quarterly-download-consent { display: flex; align-items: flex-start; gap: 10px; color: #657a91; font-size: 13px; line-height: 1.5; cursor: pointer; }
+.quarterly-download-consent input { width: 16px; height: 16px; flex: 0 0 auto; margin: 2px 0 0; accent-color: #0b679f; }
+.quarterly-download-error { margin: -5px 0 0; color: #bf2530; font-size: 13px; font-weight: 650; }
+.quarterly-download-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.quarterly-download-primary, .quarterly-download-secondary { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 8px; padding: 0 22px; font: inherit; font-size: 14px; font-weight: 750; cursor: pointer; border-radius: 999px; }
+.quarterly-download-primary { min-width: 168px; color: #fff; background: #ec2432; border: 1px solid #ec2432; box-shadow: 0 10px 22px rgb(236 36 50 / 22%); }
+.quarterly-download-primary:hover:not(:disabled) { background: #d91d2a; }
+.quarterly-download-secondary { color: #234a74; background: #fff; border: 1px solid #cbd9e7; }
+.quarterly-download-primary:disabled, .quarterly-download-secondary:disabled { cursor: default; opacity: .62; }
+.quarterly-download-success { display: grid; justify-items: center; gap: 8px; padding: 54px 28px; color: #12666b; text-align: center; }
+.quarterly-download-success h3, .quarterly-download-success p { margin: 0; }
+.quarterly-download-success h3 { color: #123b66; font-size: 21px; }
+.quarterly-download-success p { color: #6b7f93; font-size: 14px; }
+@media (max-width: 620px) { .quarterly-download-backdrop { align-items: end; padding: 0; } .quarterly-download-modal { width: 100%; max-height: min(94dvh, 760px); overflow: auto; border-width: 1px 0 0; border-radius: 16px 16px 0 0; } .quarterly-download-header { padding: 24px 58px 22px 20px; } .quarterly-download-header h2 { font-size: 26px; } .quarterly-download-header span { font-size: 13px; } .quarterly-download-close { top: 14px; right: 14px; width: 36px; height: 36px; } .quarterly-download-content { gap: 18px; padding: 22px 20px 26px; } .quarterly-download-fields { grid-template-columns: 1fr; gap: 13px; } .quarterly-download-other-position { grid-column: auto; } .quarterly-download-actions { flex-direction: column-reverse; } .quarterly-download-primary, .quarterly-download-secondary { width: 100%; } }

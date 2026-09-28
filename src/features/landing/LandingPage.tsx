@@ -24,7 +24,6 @@ import logoSectionCarouselCwi from '@/assets/figma/logo-section-carousel-cwi.png
 import mobileHeroBackground from '@/assets/figma/bg-mobile-banner.jpg'
 import mobileLogoStrip from '@/assets/figma/logo-website-mobile.png'
 import { LandingRoundtableModal } from './LandingRoundtableModal'
-import { ReportPdfModal } from './ReportPdfModal'
 import { WebinarInfoModal } from './WebinarInfoModal'
 import {
   associationLogos,
@@ -40,6 +39,7 @@ import {
 import './landing.css'
 
 type LandingAction = 'login' | 'survey' | 'roundtable' | 'unlock-report' | 'download-teaser'
+type PublicRegistration = 'roundtable' | 'webinar'
 
 const navTargets = ['#top', '#report', '#report-card', '#roundtable', '#about-cwi'] as const
 const legalLinks = [
@@ -168,6 +168,22 @@ const heroCarouselSlides: readonly HeroCarouselSlide[] = [
     },
   },
 ] as const
+
+function getPublicRegistrationFromLocation(): PublicRegistration | null {
+  if (typeof window === 'undefined') return null
+  const registration = new URLSearchParams(window.location.search).get('register')
+  return registration === 'roundtable' || registration === 'webinar' ? registration : null
+}
+
+function updatePublicRegistrationUrl(registration: PublicRegistration | null, mode: 'push' | 'replace') {
+  if (typeof window === 'undefined') return
+  const url = new URL(window.location.href)
+  if (registration) url.searchParams.set('register', registration)
+  else url.searchParams.delete('register')
+  const nextUrl = `${url.pathname}${url.search}${url.hash}`
+  if (mode === 'push') window.history.pushState(null, '', nextUrl)
+  else window.history.replaceState(null, '', nextUrl)
+}
 const figmaScrollTargets: Record<(typeof navTargets)[number], number> = {
   '#top': 0,
   '#report': 874,
@@ -682,11 +698,13 @@ function HeroLogoStrip({ className }: { className: string }) {
   )
 }
 
-function HeroSection() {
+function openQuarterlyReport() {
+  window.location.assign('/bao-cao-quy')
+}
+
+function HeroSection({ isWebinarOpen, onOpenWebinar }: { isWebinarOpen: boolean; onOpenWebinar: () => void }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [carouselCycle, setCarouselCycle] = useState(0)
-  const [reportPdfOpen, setReportPdfOpen] = useState(false)
-  const [webinarInfoOpen, setWebinarInfoOpen] = useState(false)
   const activeSlide = heroCarouselSlides[activeIndex]
   const restartCarouselCycle = () => setCarouselCycle((currentCycle) => currentCycle + 1)
   const showPreviousSlide = () => {
@@ -698,20 +716,15 @@ function HeroSection() {
     restartCarouselCycle()
   }
 
-  const closeReportPdf = () => {
-    setReportPdfOpen(false)
-    restartCarouselCycle()
-  }
-
   useEffect(() => {
-    if (reportPdfOpen || webinarInfoOpen) return
+    if (isWebinarOpen) return
 
     const intervalId = window.setInterval(() => {
       setActiveIndex((currentIndex) => (currentIndex + 1) % heroCarouselSlides.length)
     }, HERO_CAROUSEL_INTERVAL_MS)
 
     return () => window.clearInterval(intervalId)
-  }, [carouselCycle, reportPdfOpen, webinarInfoOpen])
+  }, [carouselCycle, isWebinarOpen])
 
   return (
     <m.section animate="show" className="figma-hero-section absolute left-0 top-0 h-[940px] w-full overflow-hidden" initial="hidden" variants={desktopHeroReveal} aria-labelledby="hero-title">
@@ -738,10 +751,8 @@ function HeroSection() {
       )}
       {activeSlide.copy && <HeroCarouselCopy copy={activeSlide.copy} />}
       {!activeSlide.showIntro && !activeSlide.copy && <h1 id="hero-title" className="sr-only">CEO Workforce Index</h1>}
-      <HeroCarouselButton onOpenReportPdf={() => setReportPdfOpen(true)} onOpenWebinarModal={() => setWebinarInfoOpen(true)} slide={activeSlide} />
+      <HeroCarouselButton onOpenReportPdf={openQuarterlyReport} onOpenWebinarModal={onOpenWebinar} slide={activeSlide} />
       <HeroCarouselNavigation onNext={showNextSlide} onPrevious={showPreviousSlide} />
-      <ReportPdfModal onClose={closeReportPdf} open={reportPdfOpen} />
-      <WebinarInfoModal onClose={() => { setWebinarInfoOpen(false); restartCarouselCycle() }} open={webinarInfoOpen} />
     </m.section>
   )
 }
@@ -1712,11 +1723,9 @@ function MobileHeroCarouselProgress({ activeIndex, onSelect }: { activeIndex: nu
   )
 }
 
-function MobileHeroCarousel() {
+function MobileHeroCarousel({ isWebinarOpen, onOpenWebinar }: { isWebinarOpen: boolean; onOpenWebinar: () => void }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [carouselCycle, setCarouselCycle] = useState(0)
-  const [reportPdfOpen, setReportPdfOpen] = useState(false)
-  const [webinarInfoOpen, setWebinarInfoOpen] = useState(false)
   const swipeStartRef = useRef<{ x: number; y: number; pointerId: number } | null>(null)
   const activeSlide = heroCarouselSlides[activeIndex]
   const restartCarouselCycle = () => setCarouselCycle((currentCycle) => currentCycle + 1)
@@ -1758,19 +1767,14 @@ function MobileHeroCarousel() {
   }
 
   useEffect(() => {
-    if (reportPdfOpen || webinarInfoOpen) return
+    if (isWebinarOpen) return
 
     const intervalId = window.setInterval(() => {
       setActiveIndex((currentIndex) => (currentIndex + 1) % heroCarouselSlides.length)
     }, HERO_CAROUSEL_INTERVAL_MS)
 
     return () => window.clearInterval(intervalId)
-  }, [carouselCycle, reportPdfOpen, webinarInfoOpen])
-
-  const closeReportPdf = () => {
-    setReportPdfOpen(false)
-    restartCarouselCycle()
-  }
+  }, [carouselCycle, isWebinarOpen])
 
   return (
     <section
@@ -1787,21 +1791,27 @@ function MobileHeroCarousel() {
       <AssetImage alt="" aria-hidden="true" asset="group9303" className="mobile-spark mobile-spark-2" loading="eager" />
       <div className={cn('mobile-hero-content', !activeSlide.showIntro && 'is-carousel-slide')} data-reveal key={activeSlide.image}>
         <MobileHeroCarouselContent copy={activeSlide.copy} showIntro={activeSlide.showIntro} />
-        <MobileHeroCarouselButton onOpenReportPdf={() => setReportPdfOpen(true)} onOpenWebinarModal={() => setWebinarInfoOpen(true)} slide={activeSlide} />
+        <MobileHeroCarouselButton onOpenReportPdf={openQuarterlyReport} onOpenWebinarModal={onOpenWebinar} slide={activeSlide} />
         <HeroLogoStrip className="mobile-hero-logo-strip" />
       </div>
       <MobileHeroCarouselProgress activeIndex={activeIndex} onSelect={selectSlide} />
-      <ReportPdfModal onClose={closeReportPdf} open={reportPdfOpen} />
-      <WebinarInfoModal onClose={() => { setWebinarInfoOpen(false); restartCarouselCycle() }} open={webinarInfoOpen} />
     </section>
   )
 }
 
-function MobileLandingPage({ onOpenRoundtable }: { onOpenRoundtable: () => void }) {
+function MobileLandingPage({
+  isWebinarOpen,
+  onOpenRoundtable,
+  onOpenWebinar,
+}: {
+  isWebinarOpen: boolean
+  onOpenRoundtable: () => void
+  onOpenWebinar: () => void
+}) {
 
   return (
     <main className="mobile-landing">
-      <MobileHeroCarousel />
+      <MobileHeroCarousel isWebinarOpen={isWebinarOpen} onOpenWebinar={onOpenWebinar} />
 
       <section className="mobile-section mobile-report-section" data-mobile-target="#report" aria-labelledby="mobile-report-title">
         <div className="spotlight-grid spotlight-grid-mobile" data-reveal>
@@ -1884,13 +1894,37 @@ function MobileLandingPage({ onOpenRoundtable }: { onOpenRoundtable: () => void 
   )
 }
 export function LandingPage() {
-  const [roundtableOpen, setRoundtableOpen] = useState(false)
+  const [roundtableOpen, setRoundtableOpen] = useState(() => getPublicRegistrationFromLocation() === 'roundtable')
+  const [webinarInfoOpen, setWebinarInfoOpen] = useState(() => getPublicRegistrationFromLocation() === 'webinar')
   const scale = useFigmaViewportScale()
   const responsiveStyle = {
     '--figma-scale': scale,
     '--figma-page-height': `${FIGMA_CANVAS_HEIGHT * scale}px`,
     '--figma-header-scale': scale,
   } as CSSProperties
+
+  useEffect(() => {
+    const syncRegistrationModal = () => {
+      const registration = getPublicRegistrationFromLocation()
+      setRoundtableOpen(registration === 'roundtable')
+      setWebinarInfoOpen(registration === 'webinar')
+    }
+
+    window.addEventListener('popstate', syncRegistrationModal)
+    return () => window.removeEventListener('popstate', syncRegistrationModal)
+  }, [])
+
+  const openRegistration = (registration: PublicRegistration) => {
+    setRoundtableOpen(registration === 'roundtable')
+    setWebinarInfoOpen(registration === 'webinar')
+    updatePublicRegistrationUrl(registration, 'push')
+  }
+
+  const closeRegistration = (registration: PublicRegistration) => {
+    if (registration === 'roundtable') setRoundtableOpen(false)
+    else setWebinarInfoOpen(false)
+    updatePublicRegistrationUrl(null, 'replace')
+  }
 
   return (
     <LazyMotion features={domAnimation}>
@@ -1899,11 +1933,11 @@ export function LandingPage() {
         <div className="figma-canvas-stage">
           <div className="figma-canvas-scale-box">
             <main id="top" className="figma-canvas" data-figma-file="R23rMZykc70t6C3YFqXyf9" data-figma-node="96:45">
-              <HeroSection />
+              <HeroSection isWebinarOpen={webinarInfoOpen} onOpenWebinar={() => openRegistration('webinar')} />
               <div className="absolute left-0 top-[793px] h-[1578px] w-[1440px] rounded-t-[60px] bg-white" />
               <ReportSection />
               <ReportStatsSection />
-              <RoundtableSection onOpenRoundtable={() => setRoundtableOpen(true)} />
+              <RoundtableSection onOpenRoundtable={() => openRegistration('roundtable')} />
               <AdvisorsSection />
               <AdvisorPeopleSection />
               <PartnersSection />
@@ -1911,8 +1945,13 @@ export function LandingPage() {
             </main>
           </div>
         </div>
-        <MobileLandingPage onOpenRoundtable={() => setRoundtableOpen(true)} />
-        <LandingRoundtableModal onClose={() => setRoundtableOpen(false)} open={roundtableOpen} />
+        <MobileLandingPage
+          isWebinarOpen={webinarInfoOpen}
+          onOpenRoundtable={() => openRegistration('roundtable')}
+          onOpenWebinar={() => openRegistration('webinar')}
+        />
+        <LandingRoundtableModal onClose={() => closeRegistration('roundtable')} open={roundtableOpen} />
+        <WebinarInfoModal onClose={() => closeRegistration('webinar')} open={webinarInfoOpen} />
       </div>
     </LazyMotion>
   )

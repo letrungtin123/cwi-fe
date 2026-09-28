@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { LandingPage } from '@/features/landing/LandingPage'
+import { QuarterlyReportPage } from '@/features/landing/QuarterlyReportPage'
 import { PrivacyPolicyPage } from '@/features/landing/PrivacyPolicyPage'
 import { TermsOfOperationPage } from '@/features/landing/TermsOfOperationPage'
 import { SurveyExperience } from '@/features/survey/SurveyExperience'
 import { clearSurveySession, hasSurveySession } from '@/features/survey/surveyPersistence'
 
-type AppMode = 'landing' | 'survey' | 'privacy' | 'terms'
+type AppMode = 'landing' | 'quarterlyReport' | 'survey' | 'privacy' | 'terms'
 type LandingActionEvent = CustomEvent<{ action?: string }>
 
 function isFreshSurveyEntry() {
@@ -13,11 +14,19 @@ function isFreshSurveyEntry() {
   return window.location.pathname === '/survey' && new URLSearchParams(window.location.search).get('entry') === 'qr'
 }
 
+function hasPublicRegistrationRequest() {
+  if (typeof window === 'undefined') return false
+  const registration = new URLSearchParams(window.location.search).get('register')
+  return registration === 'roundtable' || registration === 'webinar'
+}
+
 function getInitialMode(): AppMode {
   if (typeof window === 'undefined') return 'landing'
   if (window.location.pathname === '/privacy-policy') return 'privacy'
   if (window.location.pathname === '/terms-of-operation') return 'terms'
+  if (/^\/bao-cao-quy(?:\/q[1-4]-\d{4})?$/.test(window.location.pathname)) return 'quarterlyReport'
   if (window.location.pathname === '/survey') return 'survey'
+  if (hasPublicRegistrationRequest()) return 'landing'
   if (hasSurveySession()) return 'survey'
   return 'landing'
 }
@@ -56,6 +65,11 @@ function App() {
 
   if (mode === 'terms') {
     return <TermsOfOperationPage />
+  }
+
+  if (mode === 'quarterlyReport') {
+    const match = /^\/bao-cao-quy\/(q[1-4]-\d{4})$/.exec(window.location.pathname)
+    return <QuarterlyReportPage slug={match?.[1] ?? null} />
   }
 
   if (mode === 'survey') {
