@@ -20,7 +20,6 @@ const webinarHighlights = [
 ] as const
 
 const webinarGuests = [
-  'Bà Trần Phương Nga – CEO Tập đoàn Thiên Long',
   'Bà Đinh Kim Nhung – Giám đốc Nhân sự Nafoods',
   'Bà Phạm Thị Mỹ Lệ – Trưởng Ban Quản trị CEO Workforce Index',
   'Khách mời bí mật',
@@ -254,7 +253,7 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
               </section>
 
               <div className="webinar-info-modal-meta" aria-label="Thông tin thời gian và hình thức">
-                <div><Clock3 aria-hidden="true" size={19} /><span><strong>Thời gian</strong>14:00–16:00 | 22/10/2026</span></div>
+                <div><Clock3 aria-hidden="true" size={19} /><span><strong>Thời gian</strong>14:00 - 15:30 | 22/10/2026</span></div>
                 <div><Monitor aria-hidden="true" size={19} /><span><strong>Hình thức</strong>Trực tuyến qua Zoom</span></div>
               </div>
 
