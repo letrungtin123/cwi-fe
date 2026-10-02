@@ -3,6 +3,7 @@ import { Check, ChevronDown, Clock3, Monitor, X } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { createWebinarRegistrationIdempotencyKey, submitWebinarRegistration } from '../survey/surveyApi'
+import { isValidPhone } from '../survey/phoneValidation'
 import { jobTitleOptions } from '../survey/surveyData'
 import { validEmail } from '../survey/surveyScoring'
 import './webinarInfoModal.css'
@@ -26,13 +27,15 @@ const webinarGuests = [
 ] as const
 
 type WebinarContact = {
+  companyName: string
   email: string
   jobTitle: string
   jobTitleOther: string
   name: string
+  phone: string
 }
 
-const emptyContact: WebinarContact = { email: '', jobTitle: '', jobTitleOther: '', name: '' }
+const emptyContact: WebinarContact = { companyName: '', email: '', jobTitle: '', jobTitleOther: '', name: '', phone: '' }
 
 function getPositionIndex(position: string) {
   const index = jobTitleOptions.findIndex((option) => option === position)
@@ -167,8 +170,8 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
 
   const register = async () => {
     if (isSubmitting || registered) return
-    if (!contact.name.trim() || !validEmail(contact.email.trim()) || !contact.jobTitle || (contact.jobTitle === 'Khác' && !contact.jobTitleOther.trim())) {
-      setError('Vui lòng điền Họ tên, Email hợp lệ và Chức vụ để đăng ký Webinar.')
+    if (!contact.name.trim() || !validEmail(contact.email.trim()) || !isValidPhone(contact.phone) || !contact.companyName.trim() || !contact.jobTitle || (contact.jobTitle === 'Khác' && !contact.jobTitleOther.trim())) {
+      setError('Vui lòng điền Họ tên, Email hợp lệ, Số điện thoại, Tên công ty và Chức vụ để đăng ký Webinar.')
       return
     }
 
@@ -186,8 +189,10 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             userAgent: navigator.userAgent,
           },
+          companyName: contact.companyName.trim().replace(/\s+/g, ' '),
           email: contact.email.trim().toLowerCase(),
           fullName: contact.name.trim().replace(/\s+/g, ' '),
+          phone: contact.phone.trim(),
           position: normalizePosition(contact),
         },
         idempotencyKey,
@@ -294,6 +299,38 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
                       placeholder="name@company.com"
                       type="email"
                       value={contact.email}
+                    />
+                  </label>
+                  <label htmlFor="landing-webinar-phone">
+                    <span>Số điện thoại <b>*</b></span>
+                    <input
+                      autoComplete="tel"
+                      disabled={registered || isSubmitting}
+                      id="landing-webinar-phone"
+                      inputMode="tel"
+                      onChange={(event) => {
+                        const phone = event.currentTarget.value
+                        setContact((current) => ({ ...current, phone }))
+                        setError('')
+                      }}
+                      placeholder="090 123 4567"
+                      type="tel"
+                      value={contact.phone}
+                    />
+                  </label>
+                  <label className="webinar-info-modal-company-field" htmlFor="landing-webinar-company">
+                    <span>Tên công ty <b>*</b></span>
+                    <input
+                      autoComplete="organization"
+                      disabled={registered || isSubmitting}
+                      id="landing-webinar-company"
+                      onChange={(event) => {
+                        const companyName = event.currentTarget.value
+                        setContact((current) => ({ ...current, companyName }))
+                        setError('')
+                      }}
+                      placeholder="Nhập tên công ty"
+                      value={contact.companyName}
                     />
                   </label>
                   <div className={`webinar-info-modal-position-field${positionOpen ? ' is-open' : ''}`}>

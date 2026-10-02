@@ -64,7 +64,10 @@ export type RoundtableRegistrationStatusResult = {
   registered: boolean
 }
 
-export type WebinarRegistrationPayload = RoundtableRegistrationPayload
+export type WebinarRegistrationPayload = RoundtableRegistrationPayload & {
+  companyName?: string
+  phone?: string
+}
 export type WebinarRegistrationResult = RoundtableRegistrationResult
 export type WebinarRegistrationStatusResult = RoundtableRegistrationStatusResult
 

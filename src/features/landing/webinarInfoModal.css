@@ -105,6 +105,7 @@
 .webinar-info-modal-position-option[aria-selected="true"] { color: #08788a; font-weight: 700; }
 .webinar-info-modal-position-option svg { flex: 0 0 auto; color: #0aa69b; }
 .webinar-info-modal-form label:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.webinar-info-modal-company-field { grid-column: span 2; }
 .webinar-info-modal-registration-status { align-self: center; grid-column: 1 / -1; }
 .webinar-info-modal-registration-status p { margin: 0; font-size: 12px; line-height: 1.45; }
 .webinar-info-modal-registration-status .is-error { color: #b4232b; }
@@ -132,6 +133,7 @@
   .webinar-info-modal-registration { grid-column: auto; gap: 16px; padding: 18px; }
   .webinar-info-modal-form { grid-template-columns: 1fr; }
   .webinar-info-modal-form label:last-child:nth-child(odd) { grid-column: auto; }
+  .webinar-info-modal-company-field { grid-column: auto; }
   .webinar-info-modal-position-menu { top: auto; bottom: calc(100% + 8px); max-height: min(248px, 36dvh); }
   .webinar-info-modal-registration-status { grid-column: auto; }
   .webinar-info-modal-footer { display: grid; grid-template-columns: 1fr; min-height: 0; padding: 16px 24px 20px; }
