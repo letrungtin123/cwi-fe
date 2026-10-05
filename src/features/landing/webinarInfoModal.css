@@ -106,6 +106,15 @@
 .webinar-info-modal-position-option svg { flex: 0 0 auto; color: #0aa69b; }
 .webinar-info-modal-form label:last-child:nth-child(odd) { grid-column: 1 / -1; }
 .webinar-info-modal-company-field { grid-column: span 2; }
+.webinar-info-modal-form .webinar-info-modal-consent { position: relative; display: grid; grid-column: 1 / -1; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; padding: 12px 14px; border: 1px solid #d5e2ef; border-radius: 8px; background: #fff; color: #48627d; cursor: pointer; font-size: 12px; font-weight: 500; line-height: 1.5; transition: border-color .18s ease, background-color .18s ease, box-shadow .18s ease; }
+.webinar-info-modal-form .webinar-info-modal-consent:hover { border-color: #9ccbcf; background: #fbfefe; }
+.webinar-info-modal-form .webinar-info-modal-consent.is-checked { border-color: #83d2ca; background: #f3fcfa; box-shadow: 0 0 0 3px rgb(16 191 180 / 8%); }
+.webinar-info-modal-consent input { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
+.webinar-info-modal-form .webinar-info-modal-consent-box { display: inline-flex; width: 20px; height: 20px; min-height: 20px; align-items: center; justify-content: center; border: 1.5px solid #a9bbce; border-radius: 5px; background: #fff; color: #fff; transition: border-color .18s ease, background-color .18s ease; }
+.webinar-info-modal-form .webinar-info-modal-consent.is-checked .webinar-info-modal-consent-box { border-color: #0c9d91; background: #0c9d91; }
+.webinar-info-modal-consent input:focus-visible + .webinar-info-modal-consent-box { outline: 3px solid rgb(16 191 180 / 22%); outline-offset: 2px; }
+.webinar-info-modal-form .webinar-info-modal-consent-copy { min-height: 0; }
+.webinar-info-modal-consent:has(input:disabled) { cursor: not-allowed; opacity: .7; }
 .webinar-info-modal-registration-status { align-self: center; grid-column: 1 / -1; }
 .webinar-info-modal-registration-status p { margin: 0; font-size: 12px; line-height: 1.45; }
 .webinar-info-modal-registration-status .is-error { color: #b4232b; }

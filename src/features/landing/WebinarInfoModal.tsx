@@ -14,16 +14,18 @@ type WebinarInfoModalProps = {
 }
 
 const webinarHighlights = [
-  '“Độ lệch pha” CEO–CHRO qua dữ liệu khảo sát CWI',
-  'Workforce Plus: Con người, AI, tự động hóa và hệ sinh thái',
-  'Vai trò mới của CHRO trong kiến tạo và điều phối workforce',
-  'Cách CEO và CHRO đi từ cùng hướng đến cùng nhịp trong thực thi',
+  'Nhận diện lệch pha CEO–HRD trong phát triển lãnh đạo.',
+  'Biết khi nào CEO hỗ trợ, khi nào trở thành điểm nghẽn.',
+  'Thu hẹp chênh lệch CEO–HRD trong đánh giá mức độ sẵn sàng của đội ngũ kế nhiệm.',
+  'Làm rõ vai trò: CEO chốt – HRD thiết kế – lãnh đạo đơn vị chịu trách nhiệm.',
+  'Xây dựng khung hành động 90 ngày: quyết định – người thử sức – bằng chứng – rà soát.',
 ] as const
 
 const webinarGuests = [
-  'Bà Đinh Kim Nhung – Giám đốc Nhân sự Nafoods',
-  'Bà Phạm Thị Mỹ Lệ – Trưởng Ban Quản trị CEO Workforce Index',
-  'Khách mời bí mật',
+  'Ông Võ Hoàng Lâm – Tổng Giám đốc Coteccons',
+  'Ông Mitchell Pham – Đồng sáng lập, Thành viên Hội đồng Quản trị CodeHQ',
+  'Bà Đinh Kim Nhung – Giám đốc Nhân sự Tập đoàn Nafoods',
+  'Bà Phạm Thị Mỹ Lệ – Trưởng Ban Quản trị CEO Workforce Index, Chủ tịch L&A Holdings',
 ] as const
 
 type WebinarContact = {
@@ -54,6 +56,7 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
   const positionControlRef = useRef<HTMLDivElement>(null)
   const positionButtonRef = useRef<HTMLButtonElement>(null)
   const [contact, setContact] = useState(emptyContact)
+  const [dataCollectionConsented, setDataCollectionConsented] = useState(false)
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [registered, setRegistered] = useState(false)
@@ -66,6 +69,7 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
     if (!open) return
 
     setContact(emptyContact)
+    setDataCollectionConsented(false)
     setError('')
     setIsSubmitting(false)
     setRegistered(false)
@@ -174,6 +178,10 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
       setError('Vui lòng điền Họ tên, Email hợp lệ, Số điện thoại, Tên công ty và Chức vụ để đăng ký Webinar.')
       return
     }
+    if (!dataCollectionConsented) {
+      setError('Vui lòng đồng ý thu thập và xử lý dữ liệu cá nhân để đăng ký Webinar.')
+      return
+    }
 
     setIsSubmitting(true)
     setError('')
@@ -188,6 +196,7 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
             referrer: document.referrer || null,
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             userAgent: navigator.userAgent,
+            webinarDataCollectionConsent: true,
           },
           companyName: contact.companyName.trim().replace(/\s+/g, ' '),
           email: contact.email.trim().toLowerCase(),
@@ -258,7 +267,7 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
               </section>
 
               <div className="webinar-info-modal-meta" aria-label="Thông tin thời gian và hình thức">
-                <div><Clock3 aria-hidden="true" size={19} /><span><strong>Thời gian</strong>14:00 - 15:30 | 22/10/2026</span></div>
+                <div><Clock3 aria-hidden="true" size={19} /><span><strong>Thời gian</strong>14:00 - 16:00 | 22/10/2026</span></div>
                 <div><Monitor aria-hidden="true" size={19} /><span><strong>Hình thức</strong>Trực tuyến qua Zoom</span></div>
               </div>
 
@@ -393,6 +402,22 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
                       />
                     </label>
                   ) : null}
+                  <label className={`webinar-info-modal-consent${dataCollectionConsented ? ' is-checked' : ''}`} htmlFor="landing-webinar-data-consent">
+                    <input
+                      checked={dataCollectionConsented}
+                      disabled={registered || isSubmitting}
+                      id="landing-webinar-data-consent"
+                      onChange={(event) => {
+                        setDataCollectionConsented(event.currentTarget.checked)
+                        setError('')
+                      }}
+                      type="checkbox"
+                    />
+                    <span aria-hidden="true" className="webinar-info-modal-consent-box">
+                      {dataCollectionConsented ? <Check size={15} strokeWidth={3} /> : null}
+                    </span>
+                    <span className="webinar-info-modal-consent-copy">Tôi đồng ý để Ban tổ chức CEO Workforce Index thu thập, lưu trữ và xử lý dữ liệu cá nhân nhằm phục vụ đăng ký và tham dự Webinar.</span>
+                  </label>
                   {error || registered ? (
                     <div aria-live="polite" className="webinar-info-modal-registration-status">
                       {error ? <p className="is-error" role="alert">{error}</p> : null}
@@ -404,7 +429,7 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
             </div>
 
             <footer className="webinar-info-modal-footer">
-              <button className="webinar-info-modal-register webinar-info-modal-register--footer" disabled={registered || isSubmitting} onClick={() => { void register() }} type="button">
+              <button className="webinar-info-modal-register webinar-info-modal-register--footer" disabled={registered || isSubmitting || !dataCollectionConsented} onClick={() => { void register() }} type="button">
                 {registered ? 'Đã đăng ký' : isSubmitting ? 'Đang đăng ký...' : 'Đăng ký tham dự'}
               </button>
               <button className="webinar-info-modal-dismiss" onClick={onClose} type="button">Đóng</button>
