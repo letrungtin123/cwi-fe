@@ -267,7 +267,7 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
               </section>
 
               <div className="webinar-info-modal-meta" aria-label="Thông tin thời gian và hình thức">
-                <div><Clock3 aria-hidden="true" size={19} /><span><strong>Thời gian</strong>14:00 - 16:00 | 22/10/2026</span></div>
+                <div><Clock3 aria-hidden="true" size={19} /><span><strong>Thời gian</strong>14:00 - 15:30 | 22/10/2026</span></div>
                 <div><Monitor aria-hidden="true" size={19} /><span><strong>Hình thức</strong>Trực tuyến qua Zoom</span></div>
               </div>
 
