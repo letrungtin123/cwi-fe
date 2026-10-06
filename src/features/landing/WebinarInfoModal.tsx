@@ -22,7 +22,7 @@ const webinarHighlights = [
 ] as const
 
 const webinarGuests = [
-  'Ông Võ Hoàng Lâm – Tổng Giám đốc Coteccons',
+  'Ông Võ Hoàng Lâm – Phó Tổng Giám đốc Coteccons',
   'Ông Mitchell Pham – Đồng sáng lập, Thành viên Hội đồng Quản trị CodeHQ',
   'Bà Đinh Kim Nhung – Giám đốc Nhân sự Tập đoàn Nafoods',
   'Bà Phạm Thị Mỹ Lệ – Trưởng Ban Quản trị CEO Workforce Index, Chủ tịch L&A Holdings',
