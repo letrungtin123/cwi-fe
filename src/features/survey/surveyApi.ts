@@ -67,6 +67,7 @@ export type RoundtableRegistrationStatusResult = {
 export type WebinarRegistrationPayload = RoundtableRegistrationPayload & {
   companyName?: string
   phone?: string
+  speakerQuestion?: string
 }
 export type WebinarRegistrationResult = RoundtableRegistrationResult
 export type WebinarRegistrationStatusResult = RoundtableRegistrationStatusResult

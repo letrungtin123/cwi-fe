@@ -1926,6 +1926,11 @@ export function LandingPage() {
     updatePublicRegistrationUrl(null, 'replace')
   }
 
+  const continueFromWebinarToSurvey = () => {
+    closeRegistration('webinar')
+    emitLandingAction('survey')
+  }
+
   return (
     <LazyMotion features={domAnimation}>
       <div className="design-page-shell" style={responsiveStyle}>
@@ -1951,7 +1956,7 @@ export function LandingPage() {
           onOpenWebinar={() => openRegistration('webinar')}
         />
         <LandingRoundtableModal onClose={() => closeRegistration('roundtable')} open={roundtableOpen} />
-        <WebinarInfoModal onClose={() => closeRegistration('webinar')} open={webinarInfoOpen} />
+        <WebinarInfoModal onClose={() => closeRegistration('webinar')} onContinueToSurvey={continueFromWebinarToSurvey} open={webinarInfoOpen} />
       </div>
     </LazyMotion>
   )

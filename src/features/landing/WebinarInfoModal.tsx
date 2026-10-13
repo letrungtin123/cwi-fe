@@ -10,6 +10,7 @@ import './webinarInfoModal.css'
 
 type WebinarInfoModalProps = {
   onClose: () => void
+  onContinueToSurvey: () => void
   open: boolean
 }
 
@@ -35,9 +36,10 @@ type WebinarContact = {
   jobTitleOther: string
   name: string
   phone: string
+  speakerQuestion: string
 }
 
-const emptyContact: WebinarContact = { companyName: '', email: '', jobTitle: '', jobTitleOther: '', name: '', phone: '' }
+const emptyContact: WebinarContact = { companyName: '', email: '', jobTitle: '', jobTitleOther: '', name: '', phone: '', speakerQuestion: '' }
 
 function getPositionIndex(position: string) {
   const index = jobTitleOptions.findIndex((option) => option === position)
@@ -50,17 +52,17 @@ function normalizePosition(contact: WebinarContact) {
     : contact.jobTitle).trim()
 }
 
-export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
+export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarInfoModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
   const nameInputRef = useRef<HTMLInputElement>(null)
   const positionControlRef = useRef<HTMLDivElement>(null)
   const positionButtonRef = useRef<HTMLButtonElement>(null)
+  const successContinueRef = useRef<HTMLButtonElement>(null)
   const [contact, setContact] = useState(emptyContact)
   const [dataCollectionConsented, setDataCollectionConsented] = useState(false)
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [registered, setRegistered] = useState(false)
-  const [registeredFromExisting, setRegisteredFromExisting] = useState(false)
   const [idempotencyKey, setIdempotencyKey] = useState(() => createWebinarRegistrationIdempotencyKey())
   const [positionOpen, setPositionOpen] = useState(false)
   const [positionActiveIndex, setPositionActiveIndex] = useState(0)
@@ -73,11 +75,15 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
     setError('')
     setIsSubmitting(false)
     setRegistered(false)
-    setRegisteredFromExisting(false)
     setIdempotencyKey(createWebinarRegistrationIdempotencyKey())
     setPositionOpen(false)
     setPositionActiveIndex(0)
   }, [open])
+
+  useEffect(() => {
+    if (!registered) return
+    window.requestAnimationFrame(() => successContinueRef.current?.focus())
+  }, [registered])
 
   useEffect(() => {
     if (!open) return
@@ -92,7 +98,7 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
       }
       if (event.key !== 'Tab' || !dialogRef.current) return
 
-      const focusable = Array.from(dialogRef.current.querySelectorAll<HTMLElement>('button, input, select, [href], [tabindex]:not([tabindex="-1"])'))
+      const focusable = Array.from(dialogRef.current.querySelectorAll<HTMLElement>('button, input, textarea, select, [href], [tabindex]:not([tabindex="-1"])'))
       if (!focusable.length) return
       const first = focusable[0]
       const last = focusable[focusable.length - 1]
@@ -186,7 +192,7 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
     setIsSubmitting(true)
     setError('')
     try {
-      const result = await submitWebinarRegistration(
+      await submitWebinarRegistration(
         {
           clientMeta: {
             action: 'landing_webinar_registration',
@@ -203,10 +209,10 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
           fullName: contact.name.trim().replace(/\s+/g, ' '),
           phone: contact.phone.trim(),
           position: normalizePosition(contact),
+          speakerQuestion: contact.speakerQuestion.trim() || undefined,
         },
         idempotencyKey,
       )
-      setRegisteredFromExisting(result.deduplicated)
       setRegistered(true)
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Không thể đăng ký Webinar. Vui lòng thử lại.')
@@ -222,7 +228,7 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
       {open ? (
         <m.div
           animate={{ opacity: 1 }}
-          className="webinar-info-modal-backdrop"
+          className={`webinar-info-modal-backdrop${registered ? ' is-success' : ''}`}
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
           onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}
@@ -230,10 +236,10 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
         >
           <m.section
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            aria-describedby="webinar-info-modal-description"
+            aria-describedby={registered ? 'webinar-success-description' : 'webinar-info-modal-description'}
             aria-labelledby="webinar-info-modal-title"
             aria-modal="true"
-            className="webinar-info-modal"
+            className={`webinar-info-modal${registered ? ' webinar-info-modal--success' : ''}`}
             exit={{ opacity: 0, scale: .98, y: 18 }}
             initial={{ opacity: 0, scale: .98, y: 18 }}
             ref={dialogRef}
@@ -242,13 +248,26 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
             transition={{ duration: .22, ease: [0.22, 1, 0.36, 1] }}
           >
             <div aria-hidden="true" className="webinar-info-modal-topline" />
-            <button aria-label="Đóng thông tin webinar" className="webinar-info-modal-close" onClick={onClose} type="button">
+            <button aria-label={registered ? 'Đóng thông báo đăng ký thành công' : 'Đóng thông tin webinar'} className="webinar-info-modal-close" onClick={onClose} type="button">
               <X aria-hidden="true" size={20} strokeWidth={2} />
             </button>
 
+            {registered ? (
+              <div className="webinar-info-modal-success">
+                <div aria-hidden="true" className="webinar-info-modal-success-mark">
+                  <span><Check size={30} strokeWidth={3} /></span>
+                </div>
+                <h2 id="webinar-info-modal-title">Đăng ký thành công</h2>
+                <div className="webinar-info-modal-success-copy" id="webinar-success-description">
+                  <p>Cảm ơn Anh/Chị đã đăng ký tham dự webinar <strong>“CEO &amp; HRD – Từ lệch pha đến cùng hướng, cùng nhịp”</strong>.</p>
+                  <p>Để có thêm dữ liệu tham khảo trước khi tham dự Webinar, Anh/Chị vui lòng dành 7 phút thực hiện khảo sát để nhận báo cáo đối chiếu giữa CEO – HRD.</p>
+                </div>
+                <button className="webinar-info-modal-success-continue" onClick={onContinueToSurvey} ref={successContinueRef} type="button">Tiếp tục</button>
+              </div>
+            ) : <>
             <header className="webinar-info-modal-header">
               <p>WEBINAR CEO WORKFORCE INDEX</p>
-              <h2 id="webinar-info-modal-title">Webinar: Làm sao để CEO và HRD hết lệch pha và không lỗi nhịp?</h2>
+              <h2 id="webinar-info-modal-title">Webinar CEO &amp; HRD – Từ lệch pha đến cùng hướng, cùng nhịp</h2>
             </header>
 
             <div className="webinar-info-modal-content" id="webinar-info-modal-description">
@@ -402,6 +421,22 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
                       />
                     </label>
                   ) : null}
+                  <label className="webinar-info-modal-question-field" htmlFor="landing-webinar-speaker-question">
+                    <span>Anh/Chị muốn đặt câu hỏi gì cho diễn giả? <em>Không bắt buộc</em></span>
+                    <textarea
+                      disabled={isSubmitting}
+                      id="landing-webinar-speaker-question"
+                      maxLength={1000}
+                      onChange={(event) => {
+                        const speakerQuestion = event.currentTarget.value
+                        setContact((current) => ({ ...current, speakerQuestion }))
+                        setError('')
+                      }}
+                      placeholder="Nhập câu hỏi Anh/Chị muốn gửi đến diễn giả"
+                      rows={3}
+                      value={contact.speakerQuestion}
+                    />
+                  </label>
                   <label className={`webinar-info-modal-consent${dataCollectionConsented ? ' is-checked' : ''}`} htmlFor="landing-webinar-data-consent">
                     <input
                       checked={dataCollectionConsented}
@@ -418,10 +453,9 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
                     </span>
                     <span className="webinar-info-modal-consent-copy">Tôi đồng ý để Ban tổ chức CEO Workforce Index thu thập, lưu trữ và xử lý dữ liệu cá nhân nhằm phục vụ đăng ký và tham dự Webinar.</span>
                   </label>
-                  {error || registered ? (
+                  {error ? (
                     <div aria-live="polite" className="webinar-info-modal-registration-status">
                       {error ? <p className="is-error" role="alert">{error}</p> : null}
-                      {registered ? <p className="is-success">{registeredFromExisting ? 'Email này đã được đăng ký tham dự Webinar.' : 'Đăng ký Webinar của Anh/Chị đã được ghi nhận.'}</p> : null}
                     </div>
                   ) : null}
                 </div>
@@ -429,11 +463,12 @@ export function WebinarInfoModal({ onClose, open }: WebinarInfoModalProps) {
             </div>
 
             <footer className="webinar-info-modal-footer">
-              <button className="webinar-info-modal-register webinar-info-modal-register--footer" disabled={registered || isSubmitting || !dataCollectionConsented} onClick={() => { void register() }} type="button">
-                {registered ? 'Đã đăng ký' : isSubmitting ? 'Đang đăng ký...' : 'Đăng ký tham dự'}
+              <button className="webinar-info-modal-register webinar-info-modal-register--footer" disabled={isSubmitting || !dataCollectionConsented} onClick={() => { void register() }} type="button">
+                {isSubmitting ? 'Đang đăng ký...' : 'Đăng ký tham dự'}
               </button>
               <button className="webinar-info-modal-dismiss" onClick={onClose} type="button">Đóng</button>
             </footer>
+            </>}
           </m.section>
         </m.div>
       ) : null}
