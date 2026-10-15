@@ -16,10 +16,9 @@ import workforceCardIcon from '@/assets/figma/he-cong-luc.png'
 import carouselCwiBackground from '@/assets/figma/carousel-cwi.png'
 import reportCarouselBackground from '@/assets/figma/carousel-baocaoquy3.png'
 import roundtableCarouselBackground from '@/assets/figma/carousel-dauanbantron.jpg'
-import webinarCarouselBackground from '@/assets/figma/carousel-webinar.png'
+import webinarCarouselBackground from '@/assets/figma/carousel-webinar.jpg'
 import mobileReportCarouselBackground from '@/assets/figma/carousel-baocaoquy3-mobile.png'
 import mobileRoundtableCarouselBackground from '@/assets/figma/carousel-dauanbantron-mobile.png'
-import mobileWebinarCarouselBackground from '@/assets/figma/carousel-webinar-mobile.png'
 import logoSectionCarouselCwi from '@/assets/figma/logo-section-carousel-cwi.png'
 import mobileHeroBackground from '@/assets/figma/bg-mobile-banner.jpg'
 import mobileLogoStrip from '@/assets/figma/logo-website-mobile.png'
@@ -153,16 +152,16 @@ const heroCarouselSlides: readonly HeroCarouselSlide[] = [
   {
     image: webinarCarouselBackground,
     ctaLabel: 'Đăng kí ngay',
-    mobileImage: mobileWebinarCarouselBackground,
+    mobileImage: webinarCarouselBackground,
     opensWebinarModal: true,
     copy: {
       heading: [
-        { compact: true, segments: [{ accent: true, text: 'Webinar:' }] },
-        { segments: [{ text: 'Làm sao để ' }, { accent: true, text: 'CEO và HRD' }] },
-        { segments: [{ text: 'hết lệch pha và không lỗi nhịp?' }] },
+        { segments: [{ text: 'CEO & ' }, { accent: true, text: 'HRD' }] },
+        { compact: true, segments: [{ text: 'Từ lệch pha đến cùng hướng, cùng nhịp' }] },
       ],
       description: [
-        'Đăng ký ngay để nhận bộ quà 3 - in 1 gồm báo cáo Q3,\nbáo cáo cá nhân hóa và quyền tham dự webinar.',
+        '14:00 – 15:30 | 22/10/2026',
+        'Trực tuyến qua Zoom',
       ],
       variant: 'webinar',
     },
