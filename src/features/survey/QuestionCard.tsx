@@ -115,6 +115,7 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, on
                     aria-label={`Nội dung khác cho câu ${question.n}`}
                     aria-invalid={Boolean(checked && error)}
                     className={cn('survey-other-input', checked && 'is-visible')}
+                    maxLength={500}
                     onChange={(event) => onOtherAnswer(question, event.currentTarget.value)}
                     placeholder="Nhập nội dung khác"
                     readOnly={readOnly}

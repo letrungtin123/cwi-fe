@@ -1,6 +1,6 @@
 import type { ContactState, ConsentChoice, ReportMode } from './surveyPersistence'
 import { normalizeWebsiteValue, OTHER_OPTION, hasQuestionAnswer, type Answers } from './surveyScoring'
-import { partOneQuestions, partTwoQuestions, type SurveyQuestion } from './surveyData'
+import { partOneQuestions, partTwoQuestions, SURVEY_VERSION, type SurveyQuestion } from './surveyData'
 
 export type SubmissionStatus = 'part1_only' | 'part2_refused_privacy' | 'full_private_report'
 export type PrivacyConsent = 'yes' | 'no' | 'not_applicable'
@@ -30,6 +30,7 @@ export type SurveySubmissionPayload = {
   }
   statusNote: string
   submissionStatus: SubmissionStatus
+  surveyVersion: string
 }
 
 type BuildSurveySubmissionPayloadInput = {
@@ -77,6 +78,7 @@ function buildAnswer(question: SurveyQuestion, answers: Answers, otherAnswers: A
     if (rawAnswer === OTHER_OPTION) {
       const otherText = otherAnswers[question.n]?.trim()
       if (!otherText) throw new Error(`Câu ${question.n} cần nhập nội dung khác.`)
+      if (otherText.length < 2) throw new Error(`Nội dung khác ở câu ${question.n} cần ít nhất 2 ký tự.`)
       return { answer: OTHER_OPTION, idx: question.n, otherText }
     }
 
@@ -150,5 +152,6 @@ export function buildSurveySubmissionPayload(input: BuildSurveySubmissionPayload
       : undefined,
     statusNote: statusNotes[status],
     submissionStatus: status,
+    surveyVersion: SURVEY_VERSION,
   }
 }

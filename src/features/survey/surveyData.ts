@@ -31,34 +31,38 @@ export const jobTitleOptions = [
   'Khác',
 ] as const
 
+// Question set of the 2026Q4 edition. Text must match the backend and the CWI AI
+// registry character for character; the backend rejects any other wording.
+export const SURVEY_VERSION = '2026Q4'
+
 export const partOneQuestions: SurveyQuestion[] = [
-  { n: 1, type: 'likert', q: 'Doanh nghiệp của chúng tôi có đủ năng lực nhân sự để đạt mục tiêu tăng trưởng mong muốn trong 2–3 năm tới.' },
-  { n: 2, type: 'likert', q: 'Đội ngũ quản lý của chúng tôi chuyển hóa chiến lược thành kết quả một cách hiệu quả.' },
-  { n: 3, type: 'likert', q: 'Tôi tin tưởng vào năng lực của đội ngũ quản lý.' },
-  { n: 4, type: 'likert', q: 'Đội ngũ quản lý hiện tại đủ sức hỗ trợ kế hoạch tăng trưởng mà CEO mong đợi.' },
-  { n: 5, type: 'likert', q: 'Chúng tôi giữ chân được nhân tài quan trọng.' },
-  { n: 6, type: 'likert', q: 'Tôi tin Hệ cộng lực (bao gồm con người, AI, tự động hóa, hệ sinh thái) hiện tại sẽ tạo lợi thế cạnh tranh trong 3 năm tới.' },
-  { n: 7, type: 'likert', q: 'Đội ngũ quản lý của chúng tôi có thể chuyển các ưu tiên chiến lược thành hành động nhất quán trong đơn vị mình phụ trách.' },
-  { n: 8, type: 'likert', q: 'Các quản lý có đủ quyền và năng lực để tự ra quyết định trong phạm vi trách nhiệm mà không phải phụ thuộc quá nhiều vào cấp trên.' },
-  { n: 9, type: 'likert', q: 'Các quản lý chủ động phát triển đội ngũ kế cận thay vì chỉ tập trung hoàn thành mục tiêu ngắn hạn.' },
-  { n: 10, type: 'likert', q: 'Nếu một quản lý chủ chốt rời khỏi doanh nghiệp trong hôm nay, chúng tôi có người đủ năng lực để thay thế trong thời gian hợp lý.' },
-  { n: 11, type: 'likert', q: 'Chúng tôi có khả năng xác định sớm những nhân sự có tiềm năng trở thành lãnh đạo trong tương lai.' },
-  { n: 12, type: 'likert', q: 'Các chương trình phát triển lãnh đạo đã tạo ra sự cải thiện rõ rệt trong chất lượng quản lý và kết quả kinh doanh.' },
-  { n: 13, type: 'likert', q: 'Đội ngũ quản lý của chúng tôi thích nghi nhanh với những thay đổi về công nghệ, dữ liệu và cách thức làm việc mới.' },
-  { n: 14, type: 'likert', q: 'CEO và Giám đốc nhân sự có cùng quan điểm về chất lượng đội ngũ quản lý và các ưu tiên phát triển trong 12 tháng tới.' },
-  { n: 15, type: 'likert', q: 'Khi doanh nghiệp mở rộng quy mô hoặc triển khai chiến lược mới, đội ngũ quản lý hiện tại đủ năng lực để dẫn dắt sự thay đổi.' },
-  { n: 16, type: 'likert', q: 'Những quản lý giỏi nhất trong doanh nghiệp đang giúp nhân rộng năng lực cho tổ chức, thay vì chỉ tạo ra kết quả trong phạm vi đội ngũ của mình.' },
+  { n: 1, type: 'likert', q: 'Chúng tôi có đủ năng lực để thích ứng nhanh trước thay đổi của thị trường.' },
+  { n: 2, type: 'likert', q: 'AI và công nghệ đang giúp cải thiện hiệu quả quản trị.' },
+  { n: 3, type: 'likert', q: 'Người quản lý có đủ dữ liệu để ra quyết định kịp thời.' },
+  { n: 4, type: 'likert', q: 'Các phòng ban phối hợp hiệu quả để đạt mục tiêu chung.' },
+  { n: 5, type: 'likert', q: 'Chúng tôi có thể mở rộng quy mô mà không phụ thuộc quá nhiều vào một vài cá nhân chủ chốt.' },
+  { n: 6, type: 'likert', q: 'Văn hóa doanh nghiệp hỗ trợ hiệu suất cao.' },
+  { n: 7, type: 'likert', q: 'Ban điều hành của chúng tôi có tầm nhìn rõ ràng và hiểu sâu sắc về cách AI sẽ thay đổi mô hình kinh doanh của doanh nghiệp.' },
+  { n: 8, type: 'likert', q: 'Chúng tôi đã thiết lập các chính sách và nguyên tắc quản trị (governance) rõ ràng để bảo đảm việc sử dụng dữ liệu và AI an toàn, đạo đức.' },
+  { n: 9, type: 'likert', q: 'Đội ngũ quản lý và nhân viên của chúng tôi đang chủ động ứng dụng công nghệ/AI để nâng cao hiệu suất làm việc hàng ngày.' },
+  { n: 10, type: 'likert', q: 'Chúng tôi nhận diện rõ những kỹ năng nào sắp lỗi thời và đang chủ động đào tạo lại (reskill/upskill) cho lực lượng lao động.' },
+  { n: 11, type: 'likert', q: 'Đội ngũ của chúng tôi có tư duy cởi mở, không e ngại sự thay đổi và học hỏi rất nhanh các phương thức làm việc mới.' },
+  { n: 12, type: 'likert', q: 'Cơ cấu tổ chức của chúng tôi tinh gọn, ít tầng nấc quan liêu, cho phép ra quyết định và hành động nhanh chóng.' },
+  { n: 13, type: 'likert', q: 'Các phòng ban trong công ty có khả năng phá vỡ ranh giới (silo) để phối hợp chéo một cách linh hoạt khi có dự án hoặc chiến lược mới.' },
+  { n: 14, type: 'likert', q: 'Chu kỳ lập kế hoạch chiến lược và phân bổ nguồn lực của chúng tôi đủ nhanh để bắt kịp những biến động bất ngờ của thị trường.' },
+  { n: 15, type: 'likert', q: 'Chúng tôi đang ưu tiên đầu tư xây dựng các năng lực mới cho tương lai (emerging skills) thay vì chỉ tuyển dụng để lấp đầy các vị trí hiện tại.' },
+  { n: 16, type: 'likert', q: 'AI và công nghệ đang mở ra cơ hội đột phá về mô hình vận hành cho doanh nghiệp, chứ không chỉ dừng lại ở việc cắt giảm chi phí.' },
   {
     n: 17,
     type: 'mcq',
-    q: 'Trong 12 tháng tới, rủi ro lớn nhất đối với tăng trưởng của doanh nghiệp liên quan đến đội ngũ quản lý là gì?',
-    options: ['Thiếu năng lực quản lý', 'Thiếu người kế nhiệm', 'Khó tuyển quản lý giỏi', 'Quản lý chưa theo kịp AI/chuyển đổi số', 'CEO và Nhân sự chưa thống nhất', 'Mục khác:'],
+    q: 'Trong 12 tháng tới, rủi ro lớn nhất cản trở doanh nghiệp của anh/chị trở nên sẵn sàng cho tương lai (Future-Ready) là gì?',
+    options: ['Ban điều hành thiếu tầm nhìn và tư duy về AI.', 'Đội ngũ thiếu kỹ năng và e ngại sự thay đổi.', 'Cơ cấu tổ chức cồng kềnh, phản ứng chậm.', 'Nguồn lực hạn chế để đầu tư chuyển đổi.', 'Thiếu hụt các nhân tài có kỹ năng mới (Strategic Skills).', 'Khác.'],
   },
   {
     n: 18,
     type: 'mcq',
-    q: 'Nếu chỉ được đầu tư vào một ưu tiên duy nhất trong năm tới, anh/chị sẽ chọn điều gì?',
-    options: ['Phát triển năng lực quản lý', 'Xây dựng đội ngũ kế nhiệm', 'Nâng cao năng lực lãnh đạo trong chuyển đổi', 'AI cho đội ngũ quản lý', 'Coaching và phát triển nhân tài', 'Mục khác:'],
+    q: 'Nếu chỉ được đầu tư vào một ưu tiên duy nhất để xây dựng lực lượng lao động tương lai, anh/chị sẽ chọn điều gì?',
+    options: ['Đào tạo kỹ năng AI và năng lực số cho toàn hệ thống.', 'Tái cấu trúc tổ chức để tăng tốc độ và sự linh hoạt.', 'Đưa AI vào quá trình ra quyết định của Ban điều hành.', 'Xây dựng văn hóa đổi mới sáng tạo và thử nghiệm.', 'Xây dựng hệ thống quản trị dữ liệu (Data Governance).', 'Khác.'],
   },
 ]
 
@@ -66,47 +70,42 @@ export const partTwoQuestions: SurveyQuestion[] = [
   {
     n: 19,
     type: 'mcq',
-    q: 'Khi doanh nghiệp cần đưa ra một quyết định quan trọng trong vòng 48 giờ, điều nào mô tả đúng nhất?',
-    options: ['CEO là người ra quyết định cuối cùng trong hầu hết trường hợp', 'Ban điều hành cùng thống nhất trước khi quyết định', 'Business Unit có quyền quyết định trong phạm vi của mình', 'Quyền quyết định đã được phân cấp rõ đến các cấp quản lý.', 'Mục khác:'],
+    q: 'Khi thị trường biến động mạnh hoặc xuất hiện công nghệ đột phá, phản ứng của tổ chức anh/chị thường diễn ra như thế nào?',
+    options: ['Chờ chỉ đạo từ Ban điều hành rồi mới lập kế hoạch ứng phó.', 'Mất nhiều tháng để điều chỉnh quy trình và phân bổ lại nguồn lực.', 'Các phòng ban phối hợp chậm chạp, có xu hướng đùn đẩy trách nhiệm.', 'Nhanh chóng lập các nhóm phản ứng nhanh (cross-functional) để xử lý.', 'Tổ chức tự điều chỉnh rất linh hoạt mà không cần chỉ đạo gắt gao.'],
   },
   {
     n: 20,
     type: 'mcq',
-    q: 'Nếu ngày mai doanh nghiệp mở thêm một chi nhánh, nhà máy hoặc đơn vị kinh doanh mới, điều gì sẽ là thách thức lớn nhất trong 90 ngày đầu?',
-    options: ['Tìm người quản lý đủ năng lực', 'Đảm bảo các đơn vị phối hợp nhất quán', 'Chuẩn hóa quy trình và cách làm', 'Tuyển đủ nhân sự', 'Tôi tin doanh nghiệp đã sẵn sàng để mở rộng', 'Mục khác:'],
+    q: 'Đối với việc ứng dụng AI và tự động hóa, chiến lược hiện tại của doanh nghiệp anh/chị nghiêng về hướng nào nhất?',
+    options: ['Chúng tôi vẫn đang quan sát, chưa có ưu tiên đầu tư rõ ràng.', 'Ứng dụng nhỏ lẻ ở một vài phòng ban (như Marketing, IT) theo nhu cầu tự phát.', 'Chủ yếu ứng dụng để cắt giảm chi phí và thay thế các tác vụ thủ công.', 'Triển khai có hệ thống để nâng cao năng suất và ra quyết định.', 'AI là trọng tâm chiến lược để chuyển đổi hoàn toàn mô hình kinh doanh.'],
   },
   {
     n: 21,
     type: 'mcq',
-    q: 'Nếu anh/chị vắng mặt trong ba tháng, điều gì khiến anh/chị lo ngại nhất?',
-    options: ['Các quyết định quan trọng sẽ chậm lại', 'Chiến lược sẽ khó được triển khai nhất quán', 'Thiếu người đủ năng lực để thay thế', 'Các đơn vị sẽ phối hợp kém', 'Tôi không quá lo vì đội ngũ đã đủ trưởng thành', 'Mục khác:'],
+    q: 'Khi nghĩ về nguồn nhân lực cho 3 năm tới (đặc biệt trước làn sóng AI), rào cản nào khiến anh/chị lo ngại nhất?',
+    options: ['Nhân viên hiện tại thiếu kỹ năng số/AI và e ngại sự thay đổi.', 'Rất khó tuyển dụng được nhân tài có các kỹ năng công nghệ mới.', 'Cấu trúc tổ chức hiện tại quá cứng nhắc để tích hợp công nghệ mới.', 'Chúng tôi không có dữ liệu để đánh giá năng lực thực sự của đội ngũ.', 'Tôi không lo ngại vì đã có lộ trình nâng cấp năng lực rõ ràng.'],
   },
   {
     n: 22,
     type: 'mcq',
-    q: 'Hiện nay, điều gì đang giới hạn khả năng tăng trưởng của doanh nghiệp nhiều nhất?',
-    options: ['Thị trường', 'Nguồn vốn', 'Năng lực đội ngũ quản lý', 'Khả năng thực thi', 'Hệ thống và quy trình', 'Tôi chưa thấy có rào cản lớn', 'Mục khác:'],
+    q: 'Hiện tại, các quyết định điều hành của doanh nghiệp dựa nhiều nhất vào yếu tố nào?',
+    options: ['Chủ yếu dựa vào kinh nghiệm và trực giác của người quản lý.', 'Dữ liệu bị phân mảnh, phòng ban nào dùng số liệu của phòng ban đó.', 'Có hệ thống báo cáo nhưng thường chậm trễ, chỉ phản ánh dữ liệu quá khứ.', 'Hệ thống dữ liệu cập nhật theo thời gian thực (real-time) để hỗ trợ quyết định.', 'Đang ứng dụng AI và phân tích dự báo (predictive) để chủ động định hướng.'],
   },
   {
     n: 23,
     type: 'mcq',
-    q: 'Quy mô doanh thu của công ty hiện nay',
-    instruction: '*Lựa chọn 1 đáp án phù hợp nhất',
-    options: ['Dưới 100 tỷ VND', 'Từ 100 - <300 tỷ VND', 'Từ 300 - <1,000 tỷ VND', 'Từ 1,000 - <5,000 tỷ VND', 'Từ 5,000 - <10,000 tỷ VND', 'Trên 10,000 tỷ VND'],
+    q: 'Quy mô doanh thu của công ty hiện nay:',
+    options: ['Dưới 100 tỉ VND', 'Từ 100 - <300 tỉ VND', 'Từ 300 - <1000 tỉ VND', 'Từ 1000 - <5000 tỉ VND', 'Từ 5000 - <10000 tỉ VND', 'Từ 10000 tỉ VND trở lên'],
   },
-  { n: 24, type: 'text', q: 'Website công ty' },
+  { n: 24, type: 'text', q: 'Website chính thức của công ty' },
 ]
 
-export const surveyDomains = [
-  { name: 'Thực thi chiến lược', questionNumbers: [2, 7, 15] },
-  { name: 'Năng lực quản lý', questionNumbers: [3, 4, 8, 16] },
-  { name: 'Kế nhiệm & nhân tài', questionNumbers: [5, 9, 10, 11, 12] },
-  { name: 'Thích nghi & Hệ cộng lực', questionNumbers: [1, 6, 13] },
-  { name: 'CEO–Nhân sự Alignment', questionNumbers: [14] },
-] as const
+// The 2026Q4 edition has no local domain grouping; CWI AI computes its
+// weighted indexes inside the generated report.
+export const surveyDomains: ReadonlyArray<{ name: string; questionNumbers: readonly number[] }> = []
 
 export const introCopy = {
-  eyebrow: 'Phần 1 / 3 · Khảo sát CEO Workforce Index 2026Q3',
+  eyebrow: 'Phần 1 / 3 · Khảo sát CEO Workforce Index 2026Q4',
   title: 'Năng lực Lãnh đạo',
   emphasis: 'cho Tăng trưởng',
   paragraphs: [
