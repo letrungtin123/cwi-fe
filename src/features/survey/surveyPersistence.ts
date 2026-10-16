@@ -1,6 +1,8 @@
 import type { Answers } from './surveyScoring'
 
-export const SURVEY_SESSION_STORAGE_KEY = 'cwi:survey-session:v1'
+// Bump the key with every question-set release so a draft answered against the
+// previous edition is never restored onto different questions.
+export const SURVEY_SESSION_STORAGE_KEY = 'cwi:survey-session:2026Q4'
 
 export type SurveyScreen = 'intro' | 'part1' | 'part2' | 'contact1' | 'contact2' | 'loading' | 'report' | 'result'
 export type ReportMode = 'part1' | 'private'

@@ -115,6 +115,7 @@ export function createWebinarRegistrationIdempotencyKey() {
 }
 
 function getFriendlyError(status: number, code: string, message: string) {
+  if (code === 'survey_version_mismatch') return 'Bộ câu hỏi khảo sát vừa được cập nhật. Vui lòng tải lại trang và thực hiện lại khảo sát.'
   if (status === 422) return 'Một số thông tin chưa đúng định dạng. Vui lòng kiểm tra lại và gửi lại.'
   if (status === 409 && code.startsWith('roundtable')) return 'Đăng ký CEO Roundtable này đã được ghi nhận trước đó.'
   if (status === 409 && code.startsWith('webinar')) return 'Đăng ký Webinar này đã được ghi nhận trước đó.'

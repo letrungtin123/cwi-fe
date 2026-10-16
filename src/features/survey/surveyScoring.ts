@@ -2,7 +2,7 @@ import { surveyDomains, type SurveyQuestion } from './surveyData'
 
 export type Answers = Record<number, string>
 
-export const OTHER_OPTION = 'Mục khác:'
+export const OTHER_OPTION = 'Khác.'
 
 export function validEmail(value: string) {
   return /^\S+@\S+\.\S+$/.test(value)
