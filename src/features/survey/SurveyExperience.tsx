@@ -814,15 +814,10 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
           reportJobId && reportAccessToken ? (
             <ReportGenerationScreen
               error={reportError}
-              isWebinarRegistering={webinarSubmitting}
               onHome={backToLanding}
-              onRegisterWebinar={() => void registerWebinarFromResult()}
               onRetry={retryReportPolling}
               pollTimedOut={reportPollingTimedOut}
               reportStatus={reportStatus}
-              webinarError={webinarError}
-              webinarRegistered={webinarRegistered}
-              webinarRegisteredAt={webinarRegisteredAt}
             />
           ) : <LoadingScreen reportMode={reportMode} step={loadingStep} />
         ) : null}

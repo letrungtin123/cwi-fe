@@ -935,18 +935,13 @@ function reportEmailLabel(status: ReportEmailStatus) {
 
 type ReportGenerationScreenProps = {
   error: string
-  isWebinarRegistering: boolean
   onHome: () => void
-  onRegisterWebinar: () => void
   onRetry: () => void
   pollTimedOut: boolean
   reportStatus: ReportJobStatusValue | ''
-  webinarError: string
-  webinarRegistered: boolean
-  webinarRegisteredAt: string
 }
 
-function ReportGenerationCarousel() {
+function ReportGenerationCarousel({ onHome }: { onHome: () => void }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const [carouselCycle, setCarouselCycle] = useState(0)
@@ -1062,7 +1057,10 @@ function ReportGenerationCarousel() {
               <span>sự quan tâm của các báo kinh tế uy tín</span>
             </span>
           </h2>
-          <a className="survey-primary-button survey-report-generation-recap-link" href="https://cafebiz.vn/dieu-gi-dang-can-tro-doanh-nghiep-tang-truong-176260922103948402.chn" rel="noopener noreferrer" target="_blank">Xem chi tiết</a>
+          <div className="survey-report-generation-recap-actions">
+            <a className="survey-primary-button survey-report-generation-recap-link" href="https://cafebiz.vn/dieu-gi-dang-can-tro-doanh-nghiep-tang-truong-176260922103948402.chn" rel="noopener noreferrer" target="_blank">Xem chi tiết</a>
+            <button className="survey-primary-button survey-report-generation-recap-link" onClick={onHome} type="button">Về trang chủ</button>
+          </div>
         </div>
         <span aria-live="polite" className="survey-report-generation-gallery-index">
           {String(activeIndex + 1).padStart(2, '0')} <i /> {String(imageCount).padStart(2, '0')}
@@ -1125,7 +1123,7 @@ function ReportGenerationCarousel() {
   )
 }
 
-export function ReportGenerationScreen({ error, isWebinarRegistering, onHome, onRegisterWebinar, onRetry, pollTimedOut, reportStatus, webinarError, webinarRegistered, webinarRegisteredAt }: ReportGenerationScreenProps) {
+export function ReportGenerationScreen({ error, onHome, onRetry, pollTimedOut, reportStatus }: ReportGenerationScreenProps) {
   const activeProgressIndex = reportProgressIndex(reportStatus)
   const activeStep = reportProgressSteps[activeProgressIndex] ?? reportProgressSteps[0]
 
@@ -1177,46 +1175,15 @@ export function ReportGenerationScreen({ error, isWebinarRegistering, onHome, on
             <span aria-hidden="true" />
             {pollTimedOut ? 'Báo cáo đang mất nhiều thời gian hơn dự kiến. Anh/Chị có thể kiểm tra lại mà không cần gửi lại khảo sát.' : 'Anh/Chị có thể giữ nguyên trang này. Hệ thống vẫn tiếp tục xử lý an toàn ở nền.'}
           </div>
-          <section aria-labelledby="survey-report-generation-webinar-title" className="survey-report-generation-webinar">
-            <h2 id="survey-report-generation-webinar-title">Webinar: Làm sao để CEO và HRD hết lệch pha và không lỗi nhịp?</h2>
-            <div className="survey-report-generation-webinar-details">
-              <div>
-                <h3>Nội dung nổi bật</h3>
-                <ul>
-                  <li>“Độ lệch pha” CEO–CHRO qua dữ liệu khảo sát CWI</li>
-                  <li>Workforce Plus: Con người, AI, tự động hóa và hệ sinh thái</li>
-                  <li>Vai trò mới của CHRO trong kiến tạo và điều phối workforce</li>
-                  <li>Cách CEO và CHRO đi từ cùng hướng đến cùng nhịp trong thực thi</li>
-                </ul>
-              </div>
-              <div>
-                <h3>Khách mời</h3>
-                <ul>
-                  <li>Bà Trần Phương Nga – CEO Tập đoàn Thiên Long</li>
-                  <li>Bà Đinh Kim Nhung – Giám đốc Nhân sự Nafoods</li>
-                  <li>Bà Phạm Thị Mỹ Lệ – Trưởng Ban Quản trị CEO Workforce Index</li>
-                  <li>Khách mời bí mật</li>
-                </ul>
-              </div>
-            </div>
-            <dl className="survey-report-generation-webinar-meta">
-              <div><dt>Thời gian</dt><dd>14:00–16:00 | 22/10/2026</dd></div>
-              <div><dt>Hình thức</dt><dd>Trực tuyến qua Zoom</dd></div>
-            </dl>
-            {webinarError ? <p className="survey-inline-error" role="alert">{webinarError}</p> : null}
-            {webinarRegistered ? <p className="survey-success-message">Đăng ký Webinar đã được ghi nhận{webinarRegisteredAt ? ` lúc ${new Date(webinarRegisteredAt).toLocaleString('vi-VN')}` : ''}.</p> : null}
-          </section>
           {error ? <p className="survey-report-generation-error" role="alert">{error}</p> : null}
-          <div className="survey-report-generation-actions">
-            {pollTimedOut || error ? <button className="survey-outline-button" onClick={onRetry} type="button">Kiểm tra lại</button> : null}
-            <button className="survey-primary-button" onClick={onHome} type="button">Về trang chủ</button>
-            <button className="survey-primary-button" disabled={webinarRegistered || isWebinarRegistering} onClick={onRegisterWebinar} type="button">
-              {webinarRegistered ? 'Đã đăng ký Webinar' : isWebinarRegistering ? 'Đang đăng ký...' : 'Đăng ký tham dự Webinar'}
-            </button>
-          </div>
+          {pollTimedOut || error ? (
+            <div className="survey-report-generation-actions">
+              <button className="survey-outline-button" onClick={onRetry} type="button">Kiểm tra lại</button>
+            </div>
+          ) : null}
         </section>
 
-        <ReportGenerationCarousel />
+        <ReportGenerationCarousel onHome={onHome} />
       </div>
     </section>
   )
