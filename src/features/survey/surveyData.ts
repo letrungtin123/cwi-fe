@@ -106,12 +106,12 @@ export const surveyDomains: ReadonlyArray<{ name: string; questionNumbers: reado
 
 export const introCopy = {
   eyebrow: 'Phần 1 / 3 · Khảo sát CEO Workforce Index 2026Q4',
-  title: 'Năng lực Lãnh đạo',
-  emphasis: 'cho Tăng trưởng',
+  title: 'Nhân lực sẵn sàng',
+  emphasis: 'cho Tương lai',
   paragraphs: [
-    'CEO Workforce Index (CWI) là dự án nghiên cứu và đối chuẩn Hệ cộng lực — kết nối con người, AI, công nghệ và hệ sinh thái thành một khối năng lực để hiện thực hóa chiến lược và phát triển bền vững. Mục tiêu của sáng kiến phi lợi nhuận này là cùng cộng đồng CEO xây dựng bộ dữ liệu đối chuẩn đầu tiên về "Hệ cộng lực" và bắt đầu bằng "Năng lực Lãnh đạo cho Tăng trưởng" (Leadership Capacity to Scale) của doanh nghiệp Việt Nam.',
-    'Ngay trong mùa đầu tiên, Ban Tổ chức không triển khai khảo sát đại trà mà lựa chọn một Nhóm CEO Đồng kiến tạo gồm những nhà lãnh đạo đại diện cho nhiều ngành nghề và quy mô doanh nghiệp khác nhau. Quý Anh/Chị là một trong những CEO được Ban Tổ chức trân trọng mời tham gia Nhóm đồng kiến tạo này.',
-    'Sau khi dữ liệu được tổng hợp và phân tích, Quý Anh/Chị sẽ nhận được Báo cáo Chẩn đoán Năng lực Lãnh đạo cho Tăng trưởng, được chia làm hai phần:',
+    'CEO Workforce Index (CWI) là sáng kiến nghiên cứu và đối chuẩn phi lợi nhuận, hướng tới xây dựng bộ dữ liệu đối chuẩn đầu tiên tại Việt Nam về Hệ cộng lực (Workforce Plus) — năng lực kết hợp con người, AI, tự động hóa và nguồn lực hệ sinh thái để hiện thực hóa chiến lược và thúc đẩy phát triển bền vững.',
+    'Sau khảo sát “Năng lực Lãnh đạo cho Tăng trưởng” triển khai trong Q3/2026, CWI tiếp tục thực hiện khảo sát “Nhân lực sẵn sàng cho tương lai” dành cho lãnh đạo cấp C trong Q4/2026. Dữ liệu khảo sát sẽ được chuyển hóa thành những góc nhìn thực tiễn, làm cơ sở cho đối thoại và kiểm chứng cùng cộng đồng doanh nghiệp.',
+    'Sau khi dữ liệu được tổng hợp và phân tích, Quý Anh/Chị sẽ nhận được Báo cáo Chẩn đoán Nhân lực sẵn sàng cho tương lai, được chia làm hai phần:',
     'Mỗi phản hồi của Quý Anh/Chị sẽ góp phần tạo nên một chuẩn tham chiếu mới cho cộng đồng doanh nghiệp Việt Nam và giúp bản thân thấy rõ và có biện pháp can thiệp sớm cho riêng doanh nghiệp mình.',
   ],
 }
@@ -151,15 +151,5 @@ export const roundtableCopy = {
   paragraphs: [
     'Sau khi hoàn tất quá trình phân tích dữ liệu, Quý Anh/Chị sẽ được trân trọng mời tham dự CEO Roundtable – phiên đối thoại giới hạn dành riêng cho các CEO Đồng kiến tạo.',
     'Tại đây, Quý Anh/Chị sẽ là một trong những người đầu tiên tiếp cận những phát hiện nổi bật của nghiên cứu, cùng trao đổi với các CEO khác về những thách thức và cơ hội trong việc xây dựng năng lực lãnh đạo, phát triển tổ chức và ứng dụng AI để tạo lợi thế cạnh tranh bền vững.',
-  ],
-  details: [
-    {
-      label: 'Thời gian',
-      value: '8:00 – 10:00, Thứ năm ngày 17/09/2026',
-    },
-    {
-      label: 'Địa điểm',
-      value: 'Tòa nhà VCCI, 171 Võ Thị Sáu, Phường Xuân Hòa, TP. HCM',
-    },
   ],
 }

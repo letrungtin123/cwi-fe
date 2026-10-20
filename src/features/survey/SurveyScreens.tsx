@@ -9,11 +9,12 @@ import { getAnswerDisplay, type Answers, validEmail } from './surveyScoring'
 import { isValidPhone } from './phoneValidation'
 import { SurveyBrandMark, SurveyEyebrow, SurveyForwardArrow } from './SurveyChrome'
 import type { ReportEmailStatus, ReportJobStatusValue } from './surveyApi'
+import { useRoundtableEventDetails } from './useRoundtableEvent'
 import reportCarouselFallback from '@/assets/figma/carousel-baocaoquy3.png'
 import roundtableCarouselFallback from '@/assets/figma/carousel-dauanbantron.jpg'
 import webinarCarouselFallback from '@/assets/figma/carousel-webinar.png'
 
-type ContactState = { email: string; name: string; phone: string; jobTitle: string; jobTitleOther: string }
+type ContactState = { companyName: string; email: string; name: string; phone: string; jobTitle: string; jobTitleOther: string }
 type ConsentChoice = 'yes' | 'no' | ''
 type ScoreSet = {
   domains: Array<{ name: string; value: number }>
@@ -182,9 +183,9 @@ function getContactRequirementMessage(contact: ContactState) {
 
   if (!contact.name.trim()) requirements.push('Họ tên')
   if (!email) {
-    requirements.push('Email công ty cá nhân')
+    requirements.push('Email')
   } else if (!validEmail(email)) {
-    requirements.push('Email công ty cá nhân hợp lệ')
+    requirements.push('Email hợp lệ')
   }
   if (!contact.phone.trim()) {
     requirements.push('Số điện thoại')
@@ -192,6 +193,7 @@ function getContactRequirementMessage(contact: ContactState) {
     requirements.push('Số điện thoại hợp lệ')
   }
   if (!contact.jobTitle.trim()) requirements.push('Chức vụ')
+  if (!contact.companyName.trim()) requirements.push('Tên công ty')
 
   return requirements.length ? `*Vui lòng bổ sung: ${requirements.join(', ')}.` : ''
 }
@@ -199,7 +201,7 @@ function getContactRequirementMessage(contact: ContactState) {
 export function ContactScreen({ consent, contact, dataCollectionConsent = false, error, mode, onBack, onConsentChange, onDataCollectionConsentChange, onContactChange, onSkipPrivate, onSubmit }: ContactScreenProps) {
   const isPrivate = mode === 'private'
   const selectedTitle = contact.jobTitle.trim()
-  const isContactReady = Boolean(contact.name.trim() && validEmail(contact.email.trim()) && isValidPhone(contact.phone) && selectedTitle)
+  const isContactReady = Boolean(contact.name.trim() && validEmail(contact.email.trim()) && isValidPhone(contact.phone) && selectedTitle && contact.companyName.trim())
   const isSubmitDisabled = !isContactReady || (!isPrivate && !dataCollectionConsent) || (isPrivate && consent === 'no')
   const privacyParagraphs = isPrivate ? contactCopy.privatePrivacy : [contactCopy.anonymousPrivacy]
   const contactRequirementMessage = getContactRequirementMessage(contact)
@@ -223,7 +225,7 @@ export function ContactScreen({ consent, contact, dataCollectionConsent = false,
             <input autoComplete="name" id="survey-contact-name" onChange={(event) => onContactChange({ ...contact, name: event.currentTarget.value })} placeholder="Họ và tên" value={contact.name} />
           </label>
           <label htmlFor="survey-contact-email">
-            <span>Email công ty cá nhân <b className="survey-required-mark">*</b></span>
+            <span>Email <b className="survey-required-mark">*</b></span>
             <input autoComplete="email" id="survey-contact-email" onChange={(event) => onContactChange({ ...contact, email: event.currentTarget.value })} placeholder="name@company.com" inputMode="email" type="text" value={contact.email} />
           </label>
           <label htmlFor="survey-contact-title">
@@ -236,6 +238,10 @@ export function ContactScreen({ consent, contact, dataCollectionConsent = false,
           <label htmlFor="survey-contact-phone">
             <span>Số điện thoại <b className="survey-required-mark">*</b></span>
             <input autoComplete="tel" id="survey-contact-phone" inputMode="tel" onChange={(event) => onContactChange({ ...contact, phone: event.currentTarget.value })} placeholder="+84" type="tel" value={contact.phone} />
+          </label>
+          <label className="survey-form-grid-wide" htmlFor="survey-contact-company">
+            <span>Tên công ty <b className="survey-required-mark">*</b></span>
+            <input autoComplete="organization" id="survey-contact-company" maxLength={200} onChange={(event) => onContactChange({ ...contact, companyName: event.currentTarget.value })} placeholder="Tên công ty" value={contact.companyName} />
           </label>
         </div>
         {!isPrivate ? (
@@ -295,10 +301,10 @@ export function ContactScreen({ consent, contact, dataCollectionConsent = false,
   )
 }
 
-function ConsentOption({ checked, disabled, id, label, onChange }: { checked: boolean; disabled: boolean; id: string; label: string; onChange: () => void }) {
+function ConsentOption({ checked, disabled, id, label, name = 'survey-consent', onChange }: { checked: boolean; disabled: boolean; id: string; label: string; name?: string; onChange: () => void }) {
   return (
     <div className={cn('survey-consent-option', checked && 'is-selected', disabled && 'is-disabled')}>
-      <input checked={checked} disabled={disabled} id={id} name="survey-consent" onChange={onChange} type="radio" />
+      <input checked={checked} disabled={disabled} id={id} name={name} onChange={onChange} type="radio" />
       <label htmlFor={id}>
         <span className="survey-consent-radio" aria-hidden="true" />
         {label}
@@ -448,6 +454,7 @@ type ResultScreenProps = {
 
 export function ResultScreen({ answers, isWebinarRegistering, mode, onBackHome, onOpenRoundtable, onRegisterWebinar, otherAnswers, scores, webinarError, webinarRegistered, webinarRegisteredAt }: ResultScreenProps) {
   const isPrivate = mode === 'private'
+  const roundtableDetails = useRoundtableEventDetails(true)
 
   return (
     <section className="survey-result-screen" aria-labelledby="survey-result-title">
@@ -470,7 +477,7 @@ export function ResultScreen({ answers, isWebinarRegistering, mode, onBackHome, 
         <h2>Đăng kí tham dự CEO Roundtable</h2>
         {roundtableCopy.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
         <ul aria-label="Thông tin chương trình" className="survey-round-meta">
-          {roundtableCopy.details.map((detail) => (
+          {roundtableDetails.map((detail) => (
             <li key={detail.label}><strong>{detail.label}:</strong> {detail.value}</li>
           ))}
         </ul>
@@ -776,25 +783,26 @@ function PrivateAnalysisSection({ answers, otherAnswers }: { answers: Answers; o
   )
 }
 
+export type RoundtableChoice = 'yes' | 'no' | ''
+
 type RoundtableModalProps = {
-  contact: ContactState
+  choice: RoundtableChoice
   error?: string
-  isChecking?: boolean
   isRegistering?: boolean
   isSubmitting?: boolean
-  onChange: (next: ContactState) => void
+  onChoiceChange: (choice: Exclude<RoundtableChoice, ''>) => void
   onClose: () => void
-  onContinue: () => void
-  onRegister: () => void
-  onSkip: () => void
+  onConfirm: () => void
   open: boolean
-  registered: boolean
-  registeredFromExisting?: boolean
 }
 
-export function RoundtableModal({ contact, error, isChecking = false, isRegistering = false, isSubmitting = false, onChange, onClose, onContinue, onRegister, onSkip, open, registered, registeredFromExisting = false }: RoundtableModalProps) {
+// The survey contact details are reused for the registration, so the modal only
+// asks whether to attend. Duplicates within a quarter are resolved by the backend.
+export function RoundtableModal({ choice, error, isRegistering = false, isSubmitting = false, onChoiceChange, onClose, onConfirm, open }: RoundtableModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
   const initialFocusRef = useRef<HTMLButtonElement>(null)
+  const eventDetails = useRoundtableEventDetails(open)
+  const isBusy = isRegistering || isSubmitting
 
   useEffect(() => {
     if (!open) return
@@ -845,30 +853,26 @@ export function RoundtableModal({ contact, error, isChecking = false, isRegister
           <h2 id="survey-roundtable-title">{roundtableCopy.title}</h2>
           {roundtableCopy.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
           <ul aria-label="Thông tin chương trình" className="survey-round-meta">
-            {roundtableCopy.details.map((detail) => (
+            {eventDetails.map((detail) => (
               <li key={detail.label}><strong>{detail.label}:</strong> {detail.value}</li>
             ))}
           </ul>
         </div>
         <div className="survey-modal-body">
-          <div className="survey-form-grid">
-<label htmlFor="survey-roundtable-name"><span>Họ tên <b className="survey-required-mark">*</b></span><input autoComplete="name" disabled={registered || isChecking || isRegistering || isSubmitting} id="survey-roundtable-name" onChange={(event) => onChange({ ...contact, name: event.currentTarget.value })} value={contact.name} /></label>
-<label htmlFor="survey-roundtable-email"><span>Email công ty cá nhân <b className="survey-required-mark">*</b></span><input autoComplete="email" disabled={registered || isChecking || isRegistering || isSubmitting} id="survey-roundtable-email" onChange={(event) => onChange({ ...contact, email: event.currentTarget.value })} inputMode="email" type="text" value={contact.email} /></label>
-          </div>
+          <fieldset className="survey-roundtable-choice">
+            <legend>Anh/Chị có muốn đăng ký tham dự CEO Roundtable không?</legend>
+            <div className="survey-consent-grid">
+              <ConsentOption checked={choice === 'yes'} disabled={isBusy} id="survey-roundtable-yes" label="Đồng ý" name="survey-roundtable-choice" onChange={() => onChoiceChange('yes')} />
+              <ConsentOption checked={choice === 'no'} disabled={isBusy} id="survey-roundtable-no" label="Không đồng ý" name="survey-roundtable-choice" onChange={() => onChoiceChange('no')} />
+            </div>
+            <p className="survey-roundtable-note">Đăng ký dùng Họ tên, Email, Số điện thoại, Chức vụ và Tên công ty Anh/Chị đã nhập ở bước trước.</p>
+          </fieldset>
           {error ? <p className="survey-inline-error" role="alert">{error}</p> : null}
-          {registered ? <p className="survey-success-message">✓ {registeredFromExisting ? 'Email này đã được đăng ký tham dự CEO Roundtable.' : 'Anh/Chị đã đăng ký tham dự CEO Roundtable thành công.'}</p> : null}
           <div className="survey-modal-actions">
-            {registered ? (
-              <button className="survey-primary-button" disabled={isRegistering || isSubmitting} onClick={onContinue} type="button">{isSubmitting ? 'Đang gửi kết quả...' : '\u0054\u0069\u1ebfp \u0074\u1ee5c \u0067\u1eedi \u006b\u1ebft \u0071\u0075\u1ea3'}</button>
-            ) : (
-              <>
-                <button className="survey-primary-button" disabled={isChecking || isRegistering || isSubmitting} onClick={onRegister} type="button">
-                  {isChecking ? 'Đang kiểm tra...' : isRegistering ? 'Đang đăng ký...' : 'Đăng ký tham dự'}
-                  {isChecking || isRegistering ? null : <SurveyForwardArrow />}
-                </button>
-                <button className="survey-outline-button" disabled={isRegistering || isSubmitting} onClick={onSkip} type="button">{isSubmitting ? 'Đang gửi kết quả...' : '\u0042\u1ecf \u0071\u0075\u0061 & \u0067\u1eedi \u006b\u1ebft \u0071\u0075\u1ea3'}</button>
-              </>
-            )}
+            <button className="survey-primary-button" disabled={isBusy || !choice} onClick={onConfirm} type="button">
+              {isRegistering ? 'Đang đăng ký...' : isSubmitting ? 'Đang gửi kết quả...' : 'Tiếp tục gửi kết quả'}
+              {isBusy ? null : <SurveyForwardArrow />}
+            </button>
           </div>
         </div>
       </div>
@@ -1327,6 +1331,7 @@ export function SurveyAnswersReviewModal({ answers, contact, onClose, open, othe
               <div><span>Họ tên</span><strong>{contact.name || 'Chưa cập nhật'}</strong></div>
               <div><span>Email</span><strong>{contact.email || 'Chưa cập nhật'}</strong></div>
               <div><span>Chức vụ</span><strong>{position}</strong></div>
+              <div><span>Tên công ty</span><strong>{contact.companyName || 'Chưa cập nhật'}</strong></div>
               <div><span>Roundtable</span><strong>{roundtableRegistered ? 'Đã đăng ký' : 'Chưa đăng ký'}</strong></div>
             </div>
           </section>

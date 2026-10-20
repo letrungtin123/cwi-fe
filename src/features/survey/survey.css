@@ -488,7 +488,11 @@
 .survey-modal-body .survey-inline-error { background: #fff5f4; border: 1px solid #f2c5c1; border-left-width: 2px; border-radius: var(--survey-radius-sm); margin-top: 18px; padding: 12px 14px; }
 .survey-modal-body .survey-success-message { background: #eefaf5; border: 1px solid #b8e6d4; border-radius: var(--survey-radius-sm); margin-top: 18px; padding: 12px 14px; }
 .survey-modal-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 24px; }
-.survey-modal-actions .survey-primary-button, .survey-modal-actions .survey-outline-button { width: 100%; }
+.survey-form-grid-wide { grid-column: 1 / -1; }
+.survey-roundtable-choice { border: 0; margin: 0; min-width: 0; padding: 0; }
+.survey-roundtable-choice legend { color: var(--survey-ink); font-size: 16px; font-weight: 650; line-height: 1.45; padding: 0; }
+.survey-roundtable-choice .survey-consent-grid { margin-top: 14px; }
+.survey-roundtable-note { color: var(--survey-ink-muted); font-size: 13px; line-height: 1.5; margin: 12px 0 0; }.survey-modal-actions .survey-primary-button, .survey-modal-actions .survey-outline-button { width: 100%; }
 
 @media (max-width: 1023px) {
   .survey-shell { padding-top: 42px; }

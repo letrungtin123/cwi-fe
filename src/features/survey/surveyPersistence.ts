@@ -7,7 +7,7 @@ export const SURVEY_SESSION_STORAGE_KEY = 'cwi:survey-session:2026Q4'
 export type SurveyScreen = 'intro' | 'part1' | 'part2' | 'contact1' | 'contact2' | 'loading' | 'report' | 'result'
 export type ReportMode = 'part1' | 'private'
 export type ConsentChoice = 'yes' | 'no' | ''
-export type ContactState = { email: string; name: string; phone: string; jobTitle: string; jobTitleOther: string }
+export type ContactState = { companyName: string; email: string; name: string; phone: string; jobTitle: string; jobTitleOther: string }
 
 export type SurveySession = {
   activeQuestion: number
@@ -50,6 +50,7 @@ export type SurveySession = {
 
 function normalizeContactState(value: Partial<ContactState> | null | undefined): ContactState {
   return {
+    companyName: value?.companyName ?? '',
     email: value?.email ?? '',
     name: value?.name ?? '',
     phone: value?.phone ?? '',

@@ -15,6 +15,7 @@ export type SurveySubmissionPayload = {
   answers: SurveySubmissionAnswer[]
   clientMeta: Record<string, unknown>
   participant: {
+    companyName: string
     email: string
     fullName: string
     phone: string
@@ -115,14 +116,15 @@ export function buildSurveySubmissionPayload(input: BuildSurveySubmissionPayload
   if (status !== 'part1_only') assertAnswered(partTwoQuestions, input.answers, input.otherAnswers, 'Phần 2')
 
   const participant = {
+    companyName: input.contact.companyName.trim().replace(/\s+/g, ' '),
     email: input.contact.email.trim().toLowerCase(),
     fullName: input.contact.name.trim().replace(/\s+/g, ' '),
     phone: input.contact.phone.trim(),
     position: normalizePosition(input.contact),
   }
 
-  if (!participant.fullName || !participant.email || !participant.phone || !participant.position) {
-    throw new Error('Vui lòng điền đầy đủ Họ tên, Email, Số điện thoại và Chức vụ trước khi gửi kết quả.')
+  if (!participant.fullName || !participant.email || !participant.phone || !participant.position || !participant.companyName) {
+    throw new Error('Vui lòng điền đầy đủ Họ tên, Email, Số điện thoại, Chức vụ và Tên công ty trước khi gửi kết quả.')
   }
 
   const roundtableName = input.roundtableContact.name.trim().replace(/\s+/g, ' ') || participant.fullName
