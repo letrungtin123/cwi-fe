@@ -313,7 +313,7 @@ export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarI
                     />
                   </label>
                   <label htmlFor="landing-webinar-email">
-                    <span>Email công ty cá nhân <b>*</b></span>
+                    <span>Email <b>*</b></span>
                     <input
                       autoComplete="email"
                       disabled={registered || isSubmitting}

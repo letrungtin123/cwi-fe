@@ -45,12 +45,19 @@ export type SurveySubmitResult = {
   submittedAt: string
 }
 
-export type RoundtableRegistrationPayload = {
+type EventRegistrationPayload = {
   clientMeta: Record<string, unknown>
   email: string
   fullName: string
   position?: string
   surveySubmissionIdempotencyKey?: string
+}
+
+// Every Roundtable registration carries phone and company, from the landing
+// form or from the survey contact details.
+export type RoundtableRegistrationPayload = EventRegistrationPayload & {
+  companyName: string
+  phone: string
 }
 
 export type RoundtableRegistrationResult = {
@@ -61,10 +68,17 @@ export type RoundtableRegistrationResult = {
 }
 
 export type RoundtableRegistrationStatusResult = {
+  quarter?: string
   registered: boolean
 }
 
-export type WebinarRegistrationPayload = RoundtableRegistrationPayload & {
+export type RoundtableEvent = {
+  eventLocation: string | null
+  eventTime: string | null
+  quarter: string
+}
+
+export type WebinarRegistrationPayload = EventRegistrationPayload & {
   companyName?: string
   phone?: string
   speakerQuestion?: string
@@ -222,6 +236,16 @@ export async function checkRoundtableRegistration(email: string, signal?: AbortS
     signal?.removeEventListener('abort', abortFromCaller)
     window.clearTimeout(timeoutId)
   }
+}
+
+// Time and location entered by an admin for the Roundtable open for registration.
+export async function getRoundtableEvent(signal?: AbortSignal): Promise<RoundtableEvent> {
+  const response = await fetch(apiUrl('/api/v1/roundtable-registrations/event'), {
+    cache: 'no-store',
+    headers: { accept: 'application/json', 'x-cwi-source': 'source4' },
+    signal,
+  })
+  return parseApiResponse<RoundtableEvent>(response)
 }
 
 export async function submitWebinarRegistration(payload: WebinarRegistrationPayload, idempotencyKey: string): Promise<WebinarRegistrationResult> {

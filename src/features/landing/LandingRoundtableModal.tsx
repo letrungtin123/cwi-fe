@@ -5,11 +5,13 @@ import { figmaAssets } from './figmaAssets'
 import { roundtableCopy } from '../survey/surveyData'
 import { createRoundtableRegistrationIdempotencyKey, submitRoundtableRegistration, SurveyApiError } from '../survey/surveyApi'
 import { jobTitleOptions } from '../survey/surveyData'
+import { isValidPhone } from '../survey/phoneValidation'
 import { validEmail } from '../survey/surveyScoring'
 import type { ContactState } from '../survey/surveyPersistence'
+import { useRoundtableEventDetails } from '../survey/useRoundtableEvent'
 import './roundtableModal.css'
 
-const emptyContact: ContactState = { email: '', name: '', phone: '', jobTitle: '', jobTitleOther: '' }
+const emptyContact: ContactState = { companyName: '', email: '', name: '', phone: '', jobTitle: '', jobTitleOther: '' }
 
 function getPositionIndex(position: string) {
   const index = jobTitleOptions.findIndex((option) => option === position)
@@ -36,8 +38,10 @@ function clientMeta() {
 function validateContact(contact: ContactState) {
   if (!contact.name.trim()) return 'Vui lòng nhập Họ tên.'
   if (!validEmail(contact.email.trim())) return 'Vui lòng nhập Email hợp lệ.'
+  if (!isValidPhone(contact.phone)) return 'Vui lòng nhập Số điện thoại hợp lệ, ví dụ 0901234567.'
   if (!contact.jobTitle.trim()) return 'Vui lòng chọn Chức vụ.'
   if (contact.jobTitle === 'Khác' && !contact.jobTitleOther.trim()) return 'Vui lòng nhập Chức vụ khác.'
+  if (!contact.companyName.trim()) return 'Vui lòng nhập Tên công ty.'
   return ''
 }
 
@@ -51,6 +55,8 @@ export function LandingRoundtableModal({ onClose, open }: LandingRoundtableModal
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [completed, setCompleted] = useState(false)
+  const [alreadyRegistered, setAlreadyRegistered] = useState(false)
+  const eventDetails = useRoundtableEventDetails(open)
   const [positionOpen, setPositionOpen] = useState(false)
   const [positionActiveIndex, setPositionActiveIndex] = useState(0)
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -66,6 +72,7 @@ export function LandingRoundtableModal({ onClose, open }: LandingRoundtableModal
     setContact(emptyContact)
     setError('')
     setCompleted(false)
+    setAlreadyRegistered(false)
     setPositionOpen(false)
     setPositionActiveIndex(0)
     attemptRef.current = null
@@ -174,8 +181,10 @@ export function LandingRoundtableModal({ onClose, open }: LandingRoundtableModal
 
     const payload = {
       clientMeta: clientMeta(),
+      companyName: contact.companyName.trim().replace(/\s+/g, ' '),
       email: contact.email.trim().toLowerCase(),
       fullName: contact.name.trim().replace(/\s+/g, ' '),
+      phone: contact.phone.trim(),
       position: normalizePosition(contact),
     }
     const serializedPayload = JSON.stringify(payload)
@@ -188,7 +197,9 @@ export function LandingRoundtableModal({ onClose, open }: LandingRoundtableModal
     setSubmitting(true)
     setError('')
     try {
-      await submitRoundtableRegistration(payload, attempt.key)
+      const result = await submitRoundtableRegistration(payload, attempt.key)
+      // One registration per email per quarter: an existing one is returned as deduplicated.
+      setAlreadyRegistered(result.deduplicated)
       setCompleted(true)
     } catch (submitError) {
       setError(submitError instanceof SurveyApiError || submitError instanceof Error
@@ -229,9 +240,11 @@ export function LandingRoundtableModal({ onClose, open }: LandingRoundtableModal
             {completed ? (
               <div className="landing-roundtable-modal-success">
                 <div className="landing-roundtable-modal-success-icon"><CheckCircle2 aria-hidden="true" size={34} /></div>
-                <p className="landing-roundtable-modal-kicker">ĐĂNG KÝ THÀNH CÔNG</p>
+                <p className="landing-roundtable-modal-kicker">{alreadyRegistered ? 'ĐÃ ĐĂNG KÝ' : 'ĐĂNG KÝ THÀNH CÔNG'}</p>
                 <h2 id="landing-roundtable-title">Hẹn gặp Anh/Chị tại CEO Roundtable</h2>
-                <p>Thông tin đăng ký của Anh/Chị đã được ghi nhận. Ban Tổ chức sẽ gửi thư xác nhận khi có đầy đủ thông tin chương trình.</p>
+                <p>{alreadyRegistered
+                  ? 'Email này đã đăng ký tham dự CEO Roundtable quý này. Mỗi email chỉ cần đăng ký một lần cho mỗi quý.'
+                  : 'Thông tin đăng ký của Anh/Chị đã được ghi nhận. Ban Tổ chức sẽ gửi thư xác nhận khi có đầy đủ thông tin chương trình.'}</p>
                 <button className="landing-roundtable-modal-primary" onClick={close} type="button">Đóng</button>
               </div>
             ) : (
@@ -242,13 +255,14 @@ export function LandingRoundtableModal({ onClose, open }: LandingRoundtableModal
                   <p className="landing-roundtable-modal-lead">Khai mở góc nhìn, kết nối lãnh đạo và cùng kiến tạo năng lực tăng trưởng.</p>
                 </div>
                 <ul aria-label="Thông tin chương trình" className="landing-roundtable-modal-details">
-                  {roundtableCopy.details.map((detail) => (
+                  {eventDetails.map((detail) => (
                     <li key={detail.label}><strong>{detail.label}:</strong> {detail.value}</li>
                   ))}
                 </ul>
                 <div className="landing-roundtable-modal-form">
                   <label htmlFor="landing-roundtable-name"><span>Họ tên <b>*</b></span><input ref={nameInputRef} autoComplete="name" id="landing-roundtable-name" onChange={(event) => { setContact({ ...contact, name: event.currentTarget.value }); setError('') }} placeholder="Nguyễn Văn An" value={contact.name} /></label>
                   <label htmlFor="landing-roundtable-email"><span>Email <b>*</b></span><input autoComplete="email" id="landing-roundtable-email" inputMode="email" onChange={(event) => { setContact({ ...contact, email: event.currentTarget.value }); setError('') }} placeholder="name@company.com" type="email" value={contact.email} /></label>
+                  <label htmlFor="landing-roundtable-phone"><span>Số điện thoại <b>*</b></span><input autoComplete="tel" id="landing-roundtable-phone" inputMode="tel" onChange={(event) => { setContact({ ...contact, phone: event.currentTarget.value }); setError('') }} placeholder="0901234567" type="tel" value={contact.phone} /></label>
                   <div className={`landing-roundtable-modal-position-field${positionOpen ? ' is-open' : ''}`}>
                     <span id="landing-roundtable-position-label">Chức vụ <b>*</b></span>
                     <div className="landing-roundtable-modal-position-control" ref={positionControlRef}>
@@ -293,6 +307,7 @@ export function LandingRoundtableModal({ onClose, open }: LandingRoundtableModal
                     </div>
                   </div>
                   {contact.jobTitle === 'Khác' ? <label htmlFor="landing-roundtable-other-position"><span>Chức vụ cụ thể <b>*</b></span><input id="landing-roundtable-other-position" onChange={(event) => { setContact({ ...contact, jobTitleOther: event.currentTarget.value }); setError('') }} placeholder="Nhập chức vụ" value={contact.jobTitleOther} /></label> : null}
+                  <label htmlFor="landing-roundtable-company"><span>Tên công ty <b>*</b></span><input autoComplete="organization" id="landing-roundtable-company" maxLength={200} onChange={(event) => { setContact({ ...contact, companyName: event.currentTarget.value }); setError('') }} placeholder="Tên công ty" value={contact.companyName} /></label>
                 </div>
                 {error ? <p className="landing-roundtable-modal-error" role="alert">{error}</p> : null}
                 <div className="landing-roundtable-modal-actions">
