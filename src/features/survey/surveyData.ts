@@ -106,12 +106,12 @@ export const surveyDomains: ReadonlyArray<{ name: string; questionNumbers: reado
 
 export const introCopy = {
   eyebrow: 'Phần 1 / 3 · Khảo sát CEO Workforce Index 2026Q4',
-  title: 'Nhân lực sẵn sàng',
+  title: 'Hệ cộng lực sẵn sàng',
   emphasis: 'cho Tương lai',
   paragraphs: [
     'CEO Workforce Index (CWI) là sáng kiến nghiên cứu và đối chuẩn phi lợi nhuận, hướng tới xây dựng bộ dữ liệu đối chuẩn đầu tiên tại Việt Nam về Hệ cộng lực (Workforce Plus) — năng lực kết hợp con người, AI, tự động hóa và nguồn lực hệ sinh thái để hiện thực hóa chiến lược và thúc đẩy phát triển bền vững.',
-    'Sau khảo sát “Năng lực Lãnh đạo cho Tăng trưởng” triển khai trong Q3/2026, CWI tiếp tục thực hiện khảo sát “Nhân lực sẵn sàng cho tương lai” dành cho lãnh đạo cấp C trong Q4/2026. Dữ liệu khảo sát sẽ được chuyển hóa thành những góc nhìn thực tiễn, làm cơ sở cho đối thoại và kiểm chứng cùng cộng đồng doanh nghiệp.',
-    'Sau khi dữ liệu được tổng hợp và phân tích, Quý Anh/Chị sẽ nhận được Báo cáo Chẩn đoán Nhân lực sẵn sàng cho tương lai, được chia làm hai phần:',
+    'Sau khảo sát “Năng lực Lãnh đạo cho Tăng trưởng” triển khai trong Q3/2026, CWI tiếp tục thực hiện khảo sát “Hệ cộng lực sẵn sàng cho tương lai” dành cho lãnh đạo cấp C trong Q4/2026. Dữ liệu khảo sát sẽ được chuyển hóa thành những góc nhìn thực tiễn, làm cơ sở cho đối thoại và kiểm chứng cùng cộng đồng doanh nghiệp.',
+    'Sau khi dữ liệu được tổng hợp và phân tích, Quý Anh/Chị sẽ nhận được Báo cáo Chẩn đoán Hệ cộng lực sẵn sàng cho tương lai, được chia làm hai phần:',
     'Mỗi phản hồi của Quý Anh/Chị sẽ góp phần tạo nên một chuẩn tham chiếu mới cho cộng đồng doanh nghiệp Việt Nam và giúp bản thân thấy rõ và có biện pháp can thiệp sớm cho riêng doanh nghiệp mình.',
   ],
 }
