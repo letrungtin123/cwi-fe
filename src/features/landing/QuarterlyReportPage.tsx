@@ -1,5 +1,6 @@
 import { ArrowLeft, FileWarning, LoaderCircle } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { t } from '@/i18n'
 import { QuarterlyReportDownloadModal } from './QuarterlyReportDownloadModal'
 import { ReportPdfModal } from './ReportPdfModal'
 import { getActiveQuarterlyReport, getQuarterlyReport, QuarterlyReportApiError, type QuarterlyReportPublic } from './quarterlyReportsApi'
@@ -28,7 +29,7 @@ export function QuarterlyReportPage({ slug }: QuarterlyReportPageProps) {
         setReport(slug ? await getQuarterlyReport(slug, controller.signal) : await getActiveQuarterlyReport(controller.signal))
       } catch (loadError) {
         if (controller.signal.aborted) return
-        setError(loadError instanceof QuarterlyReportApiError ? loadError.message : 'Không thể tải báo cáo quý. Vui lòng thử lại.')
+        setError(loadError instanceof QuarterlyReportApiError ? loadError.message : t('Không thể tải báo cáo quý. Vui lòng thử lại.'))
       }
     }
     void load()
@@ -39,15 +40,15 @@ export function QuarterlyReportPage({ slug }: QuarterlyReportPageProps) {
     return (
       <main className="quarterly-report-page-state">
         <FileWarning aria-hidden="true" size={38} />
-        <h1>Chưa thể mở báo cáo</h1>
+        <h1>{t('Chưa thể mở báo cáo')}</h1>
         <p>{error}</p>
-        <button onClick={goHome} type="button"><ArrowLeft aria-hidden="true" size={17} /> Về trang chủ</button>
+        <button onClick={goHome} type="button"><ArrowLeft aria-hidden="true" size={17} /> {t('Về trang chủ')}</button>
       </main>
     )
   }
 
   if (!report) {
-    return <main aria-live="polite" className="quarterly-report-page-state"><LoaderCircle aria-hidden="true" className="quarterly-report-page-spinner" size={34} /><p>Đang chuẩn bị báo cáo...</p></main>
+    return <main aria-live="polite" className="quarterly-report-page-state"><LoaderCircle aria-hidden="true" className="quarterly-report-page-spinner" size={34} /><p>{t('Đang chuẩn bị báo cáo...')}</p></main>
   }
 
   return (

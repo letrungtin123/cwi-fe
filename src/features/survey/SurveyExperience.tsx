@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { t } from '@/i18n'
 import type { Answers } from './surveyScoring'
 import { getSurveyScores, hasQuestionAnswer, isValidWebsite, OTHER_OPTION, validEmail } from './surveyScoring'
 import { partOneQuestions, partTwoQuestions, type SurveyQuestion } from './surveyData'
@@ -32,7 +33,7 @@ function countAnswers(questions: SurveyQuestion[], hasAnswer: (question: SurveyQ
 function isContactValid(contact: ContactState) {
   const title = contact.jobTitle.trim()
   if (!contact.name.trim() || !validEmail(contact.email.trim()) || !isValidPhone(contact.phone) || !title || !contact.companyName.trim()) {
-    return 'Vui lòng điền đầy đủ Họ tên, Email hợp lệ, Số điện thoại, Chức vụ và Tên công ty.'
+    return t('Vui lòng điền đầy đủ Họ tên, Email hợp lệ, Số điện thoại, Chức vụ và Tên công ty.')
   }
   return ''
 }
@@ -228,7 +229,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
     const stopWithTimeout = () => {
       if (cancelled) return
       setReportPollingTimedOut(true)
-      setReportError('Báo cáo đang mất nhiều thời gian hơn dự kiến. Anh/Chị có thể thử kiểm tra lại sau.')
+      setReportError(t('Báo cáo đang mất nhiều thời gian hơn dự kiến. Anh/Chị có thể thử kiểm tra lại sau.'))
     }
 
     const schedule = (delayMs: number) => {
@@ -250,7 +251,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
         return
       }
       if (Number.isFinite(accessTokenExpiryMs) && Date.now() >= accessTokenExpiryMs) {
-        setReportError('Liên kết xem báo cáo đã hết hạn. Anh/Chị vui lòng quay lại trang chủ và thực hiện lại khảo sát.')
+        setReportError(t('Liên kết xem báo cáo đã hết hạn. Anh/Chị vui lòng quay lại trang chủ và thực hiện lại khảo sát.'))
         return
       }
       if (document.visibilityState !== 'visible') {
@@ -282,7 +283,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
         }
 
         if (status.status === 'failed') {
-          setReportError('Không thể tạo báo cáo lần này. Anh/Chị vui lòng thử lại sau.')
+          setReportError(t('Không thể tạo báo cáo lần này. Anh/Chị vui lòng thử lại sau.'))
           return
         }
 
@@ -291,11 +292,11 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
         if (cancelled || (error instanceof DOMException && error.name === 'AbortError')) return
 
         if (error instanceof SurveyApiError && [401, 403, 404].includes(error.status)) {
-          setReportError('Liên kết xem báo cáo đã hết hạn. Anh/Chị vui lòng quay lại trang chủ và thực hiện lại khảo sát.')
+          setReportError(t('Liên kết xem báo cáo đã hết hạn. Anh/Chị vui lòng quay lại trang chủ và thực hiện lại khảo sát.'))
           return
         }
 
-        if (attempt >= 3) setReportError('Hệ thống đang xử lý báo cáo. Màn hình sẽ tự cập nhật khi có kết quả.')
+        if (attempt >= 3) setReportError(t('Hệ thống đang xử lý báo cáo. Màn hình sẽ tự cập nhật khi có kết quả.'))
         schedule(nextReportPollingDelay(currentAttempt))
       } finally {
         inFlight = false
@@ -379,7 +380,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
 
     if (missing.length) {
       setMissingQuestionNumbers(missing)
-      setQuestionError(`Anh/Chị còn ${missing.length} câu chưa hoàn thành: ${missing.join(', ')}.`)
+      setQuestionError(t('Anh/Chị còn {count} câu chưa hoàn thành: {list}.', { count: missing.length, list: missing.join(', ') }))
       return
     }
 
@@ -395,7 +396,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
 
     if (missing.length) {
       setMissingQuestionNumbers(missing)
-      setQuestionError(`Anh/Chị chưa hoàn thành PHẦN 2 - KHẢO SÁT ĐỊNH DANH. Vui lòng hoàn tất các câu: ${missing.join(', ')}.`)
+      setQuestionError(t('Anh/Chị chưa hoàn thành PHẦN 2 - KHẢO SÁT ĐỊNH DANH. Vui lòng hoàn tất các câu: {list}.', { list: missing.join(', ') }))
       return
     }
 
@@ -403,7 +404,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
     const websiteQuestion = partTwoQuestions.find((question) => question.type === 'text')
     if (websiteQuestion && !isValidWebsite(answers[websiteQuestion.n] ?? '')) {
       setMissingQuestionNumbers([websiteQuestion.n])
-      setQuestionError('Website công ty ở câu 24 chưa đúng định dạng. Ví dụ: example.com hoặc https://example.com')
+      setQuestionError(t('Website công ty ở câu 24 chưa đúng định dạng. Ví dụ: example.com hoặc https://example.com'))
       return
     }
 
@@ -425,7 +426,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
       }
 
       if (!dataCollectionConsent) {
-        setFormError('Vui lòng đồng ý cho dự án CEO Workforce Index xử lý dữ liệu trước khi gửi kết quả Phần 1.')
+        setFormError(t('Vui lòng đồng ý cho dự án CEO Workforce Index xử lý dữ liệu trước khi gửi kết quả Phần 1.'))
         return
       }
 
@@ -439,12 +440,12 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
     }
 
     if (!consent) {
-      setFormError('Vui lòng chọn “Đồng ý” hoặc “Không đồng ý” trước khi tiếp tục.')
+      setFormError(t('Vui lòng chọn “Đồng ý” hoặc “Không đồng ý” trước khi tiếp tục.'))
       return
     }
 
     if (consent === 'no') {
-      setFormError('Vui lòng chọn “Đồng ý” để nhận Báo cáo Riêng tư.')
+      setFormError(t('Vui lòng chọn “Đồng ý” để nhận Báo cáo Riêng tư.'))
       return
     }
 
@@ -500,7 +501,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
   const registerRoundtable = async () => {
     if (roundtableSubmitting) return null
     if (isContactValid(roundtableContact)) {
-      setRoundtableError('Vui lòng hoàn tất thông tin liên hệ trước khi đăng ký CEO Roundtable.')
+      setRoundtableError(t('Vui lòng hoàn tất thông tin liên hệ trước khi đăng ký CEO Roundtable.'))
       return null
     }
 
@@ -526,7 +527,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
       setRoundtableRegistered(true)
       return result.registrationId
     } catch (error) {
-      setRoundtableError(error instanceof Error ? error.message : 'Không thể đăng ký CEO Roundtable. Vui lòng thử lại.')
+      setRoundtableError(error instanceof Error ? error.message : t('Không thể đăng ký CEO Roundtable. Vui lòng thử lại.'))
       return null
     } finally {
       setRoundtableSubmitting(false)
@@ -564,7 +565,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
   const registerWebinarFromResult = async () => {
     if (webinarSubmitting || webinarRegistered) return
     if (!contact.name.trim() || !validEmail(contact.email.trim())) {
-      setWebinarError('Không tìm thấy Họ tên và Email hợp lệ từ khảo sát để đăng ký Webinar.')
+      setWebinarError(t('Không tìm thấy Họ tên và Email hợp lệ từ khảo sát để đăng ký Webinar.'))
       return
     }
 
@@ -585,7 +586,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
       setWebinarRegisteredAt(result.registeredAt)
       setWebinarRegistered(true)
     } catch (error) {
-      setWebinarError(error instanceof Error ? error.message : 'Không thể đăng ký Webinar. Vui lòng thử lại.')
+      setWebinarError(error instanceof Error ? error.message : t('Không thể đăng ký Webinar. Vui lòng thử lại.'))
     } finally {
       setWebinarSubmitting(false)
     }
@@ -634,7 +635,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
       closeRoundtable()
       window.requestAnimationFrame(scrollToTop)
     } catch (error) {
-      setSubmissionError(error instanceof Error ? error.message : 'Không thể gửi kết quả khảo sát. Vui lòng thử lại.')
+      setSubmissionError(error instanceof Error ? error.message : t('Không thể gửi kết quả khảo sát. Vui lòng thử lại.'))
     } finally {
       setSubmitting(false)
     }
@@ -699,7 +700,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
         onJump={navigateToQuestion}
         open={drawerOpen && canOpenDrawer}
         questions={drawerQuestions}
-        title={screen === 'part2' ? 'Phần 2 · Khảo sát định danh' : 'Phần 1 · Khảo sát khuyết danh'}
+        title={screen === 'part2' ? t('Phần 2 · Khảo sát định danh') : t('Phần 1 · Khảo sát khuyết danh')}
       />
 
       <div className={'survey-shell' + (canOpenDrawer ? ' survey-shell--with-question-panel' : '')}>
@@ -717,7 +718,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
             answers={answers}
             completedCount={partOneCompleted}
             error={questionError}
-            intro="18 câu hỏi được hiển thị liên tục trên cùng một trang để Anh/Chị có thể đọc, trả lời và xem lại nhanh."
+            intro={t('18 câu hỏi được hiển thị liên tục trên cùng một trang để Anh/Chị có thể đọc, trả lời và xem lại nhanh.')}
             missingQuestionNumbers={missingQuestionNumbers}
             onAnswer={handleAnswer}
             onNext={isSubmittedReview ? (partTwoCompleted === partTwoQuestions.length ? reviewPartTwoAnswers : () => goToScreen('report')) : continuePartOne}
@@ -725,10 +726,10 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
             onPrevious={isSubmittedReview ? () => goToScreen('report') : () => goToScreen('intro')}
             otherAnswers={otherAnswers}
             part={1}
-            primaryLabel={isSubmittedReview ? (partTwoCompleted === partTwoQuestions.length ? 'Xem Phần 2' : 'Về báo cáo') : 'Tiếp theo'}
+            primaryLabel={isSubmittedReview ? (partTwoCompleted === partTwoQuestions.length ? t('Xem Phần 2') : t('Về báo cáo')) : t('Tiếp theo')}
             questions={partOneQuestions}
             readOnly={isSubmittedReview}
-            subtitle={'Lựa chọn câu trả lời phù hợp:\n1 - Hoàn toàn không đồng ý, 2- Không đồng ý, 3 - Bình thường, 4 - Đồng ý, 5 - Hoàn toàn đồng ý'}
+            subtitle={t('Lựa chọn câu trả lời phù hợp:\n1 - Hoàn toàn không đồng ý, 2- Không đồng ý, 3 - Bình thường, 4 - Đồng ý, 5 - Hoàn toàn đồng ý')}
           />
         ) : null}
 
@@ -736,9 +737,9 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
           <SurveyQuestionPage
             answers={answers}
             completedCount={partTwoCompleted}
-            endNote="Nhấn “Gửi kết quả” để nhận Báo cáo Khuyết danh Phần 1 hoặc Báo cáo toàn phần (Phần 1 + Phần 2), tùy theo phần khảo sát Anh/Chị đã hoàn thành."
+            endNote={t('Nhấn “Gửi kết quả” để nhận Báo cáo Khuyết danh Phần 1 hoặc Báo cáo toàn phần (Phần 1 + Phần 2), tùy theo phần khảo sát Anh/Chị đã hoàn thành.')}
             error={questionError}
-            intro="Các câu tiếp theo giúp hiểu sâu sắc về chính doanh nghiệp của Anh/Chị từ đó tăng độ chính xác khi phân tích vấn đề và khuyến nghị hành động trong Báo cáo Riêng tư."
+            intro={t('Các câu tiếp theo giúp hiểu sâu sắc về chính doanh nghiệp của Anh/Chị từ đó tăng độ chính xác khi phân tích vấn đề và khuyến nghị hành động trong Báo cáo Riêng tư.')}
             missingQuestionNumbers={missingQuestionNumbers}
             onAnswer={handleAnswer}
             onNext={isSubmittedReview ? () => goToScreen('report') : (partTwoCompleted > 0 ? continuePartTwo : skipPrivateReport)}
@@ -747,10 +748,10 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
             onSecondary={isSubmittedReview ? undefined : clearPartTwoAnswers}
             otherAnswers={otherAnswers}
             part={2}
-            primaryLabel={isSubmittedReview ? 'Về báo cáo' : (partTwoCompleted > 0 ? '\u0047\u1eedi \u006b\u1ebft qu\u1ea3' : '\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1')}
+            primaryLabel={isSubmittedReview ? t('Về báo cáo') : (partTwoCompleted > 0 ? t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3') : t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1'))}
             questions={partTwoQuestions}
             readOnly={isSubmittedReview}
-            subtitle="Đây là phần có thông tin riêng và nhạy cảm, nếu Anh/Chị không muốn tham gia khảo sát Phần 2 này, vui lòng nhấn nút “Gửi kết quả Phần 1” bên dưới để nhận Báo cáo Khuyết danh từ Phần 1."
+            subtitle={t('Đây là phần có thông tin riêng và nhạy cảm, nếu Anh/Chị không muốn tham gia khảo sát Phần 2 này, vui lòng nhấn nút “Gửi kết quả Phần 1” bên dưới để nhận Báo cáo Khuyết danh từ Phần 1.')}
           />
         ) : null}
 

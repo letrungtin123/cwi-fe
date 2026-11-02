@@ -1,4 +1,5 @@
-import { surveyDomains, type SurveyQuestion } from './surveyData'
+import { t } from '@/i18n'
+import { partOneQuestions, partTwoQuestions, surveyDomains, type SurveyQuestion } from './surveyData'
 
 export type Answers = Record<number, string>
 
@@ -40,11 +41,14 @@ export function hasQuestionAnswer(question: SurveyQuestion, answers: Answers, ot
   return answer !== undefined && answer !== ''
 }
 
+// Display text only: MCQ options are stored in Vietnamese and translated here;
+// scores, websites and free "other" text are shown as entered.
 export function getAnswerDisplay(number: number, answers: Answers, otherAnswers: Answers) {
   const value = answers[number]
   if (!value) return '—'
-  if (value === OTHER_OPTION) return otherAnswers[number] || value
-  return value
+  if (value === OTHER_OPTION) return otherAnswers[number] || t(value)
+  const question = [...partOneQuestions, ...partTwoQuestions].find((item) => item.n === number)
+  return question?.type === 'mcq' && question.options.includes(value) ? t(value) : value
 }
 
 function scoreFor(questionNumbers: readonly number[], answers: Answers) {

@@ -80,6 +80,13 @@
   opacity: 1;
 }
 
+.figma-header-language-toggle {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+}
+
 .figma-button-red {
   cursor: pointer;
   user-select: none;
@@ -1005,6 +1012,11 @@
     gap: 10px;
     color: rgba(255, 255, 255, 0.9);
     font-size: 15px;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
   }
 
   .mobile-menu-language img {
@@ -3533,4 +3545,104 @@
   .mobile-hero[data-mobile-target="#top"] {
     touch-action: pan-y;
   }
+}
+
+/* English only (html[lang='en']). Vietnamese keeps the Figma positions above. */
+@media (min-width: 901px) {
+  /* The VI nav items sit in fixed left/width slots (headerNavSpecs); "About CWI" is wider than its
+     76px slot and "Home" leaves a wide hole. Lay EN out as a row with the ~32px gaps VI shows. */
+  html[lang='en'] .figma-header-nav {
+    display: flex;
+    gap: 32px;
+  }
+
+  html[lang='en'] .figma-header-nav > a {
+    position: static;
+    left: auto !important;
+    width: auto !important;
+  }
+}
+
+/* "Organizing Committee" (171px) runs into the side rules placed for "Ban tổ chức" (91px):
+   move the rules out so the 20px gap on each side is kept. */
+html[lang='en'] .about-cwi-people-section .figma-section-label-frame > img:first-child {
+  left: 300px !important;
+}
+
+html[lang='en'] .about-cwi-people-section .figma-section-label-frame > img:last-child {
+  left: 714px !important;
+}
+
+/* Advisor fields: "Board of Directors" (104px) and "Research & Development" (142px) do not fit the
+   102px / 138px boxes and would wrap onto the name. The boxes are anchored at their right edge
+   (translateX(-100%)), so a wider box only grows to the left. */
+html[lang='en'] .figma-advisor-card > p:nth-of-type(2) {
+  width: 150px !important;
+}
+
+/* Partner group labels: the text boxes and side rules are placed for the Vietnamese widths, and
+   "Under the patronage of" (174px) overflows its 116px box onto the right rule. Lay EN out as
+   rule – label – rule, centred, with the ~22px gaps VI shows. */
+html[lang='en'] .partners-section .figma-section-label-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+}
+
+html[lang='en'] .partners-section .figma-section-label-frame > * {
+  position: static;
+}
+
+html[lang='en'] .partners-section .figma-section-label-text {
+  width: auto !important;
+}
+
+/* Hero logo strip, English: label-free strip images with the group labels set as text
+   (HeroLogoStrip). The frame takes the image's aspect ratio so % positions and cqw font sizes
+   follow the drawn image; sizes match the baked-in labels (13.07px on the 1656px strip, checked by
+   overlaying the original; 29px on the 1080px mobile strip, from the same ink-width ratio). Labels
+   sit on their baseline: with line-height 1.15 the last baseline is 0.21em above the box bottom. */
+.hero-logo-strip-en-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1656 / 104;
+  container-type: inline-size;
+}
+
+.hero-logo-strip-en-frame picture,
+.hero-logo-strip-en-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-logo-strip-label {
+  position: absolute;
+  top: var(--label-y);
+  left: var(--label-x);
+  color: #fff;
+  font-size: 0.789cqw;
+  font-weight: 400;
+  line-height: 1.15;
+  text-align: center;
+  white-space: pre;
+  transform: translate(-50%, calc(-100% + 0.21em));
+}
+
+@media (max-width: 900px) {
+  .hero-logo-strip-en-frame {
+    aspect-ratio: 1080 / 1920;
+  }
+
+  .hero-logo-strip-label {
+    top: var(--label-y-mobile);
+    left: var(--label-x-mobile);
+    font-size: 2.69cqw;
+  }
+}
+
+/* "CEO Roundtable highlights" at 68px is 867px wide; the 820px box would wrap it to a third line. */
+html[lang='en'] .hero-carousel-copy--roundtable .hero-carousel-heading {
+  max-width: 900px;
 }

@@ -2,6 +2,7 @@ import { ChevronDown, ChevronUp, Download, Minus, Plus, RefreshCw, X } from 'luc
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { PDFDocumentProxy } from 'pdfjs-dist/types/src/pdf'
+import { t, tx } from '@/i18n'
 import type { QuarterlyReportPublic } from './quarterlyReportsApi'
 import './reportPdfModal.css'
 
@@ -217,7 +218,7 @@ function ReportPdfViewer({ onPageChange, onPageCountChange, onRetry, pdfUrl, zoo
           pageFrame.style.width = `${firstPageLayout.cssWidth}px`
           pageFrame.style.minHeight = `${firstPageLayout.cssHeight + 28}px`
           pageLabel.className = 'report-pdf-modal-page-label'
-          pageLabel.textContent = `Trang ${pageNumber}`
+          pageLabel.textContent = t('Trang {n}', { n: pageNumber })
           pageFrame.append(pageLabel)
           pagesContainer.append(pageFrame)
         }
@@ -272,11 +273,11 @@ function ReportPdfViewer({ onPageChange, onPageCountChange, onRetry, pdfUrl, zoo
 
   return (
     <div aria-busy={status === 'loading'} className="report-pdf-viewer" ref={viewerRef}>
-      {status === 'loading' ? <p className="report-pdf-status" role="status">Đang tải báo cáo...</p> : null}
+      {status === 'loading' ? <p className="report-pdf-status" role="status">{t('Đang tải báo cáo...')}</p> : null}
       {status === 'error' ? (
         <div className="report-pdf-fallback" role="alert">
-          <p>Trình đọc chưa tải được báo cáo trên thiết bị này.</p>
-          <button onClick={onRetry} type="button"><RefreshCw aria-hidden="true" size={16} /> Thử lại</button>
+          <p>{t('Trình đọc chưa tải được báo cáo trên thiết bị này.')}</p>
+          <button onClick={onRetry} type="button"><RefreshCw aria-hidden="true" size={16} /> {t('Thử lại')}</button>
         </div>
       ) : null}
       <div className="report-pdf-pages" ref={pagesRef} />
@@ -326,7 +327,7 @@ export function ReportPdfModal({ onClose, onRequestDownload, open, report }: Rep
 
   if (!open || typeof document === 'undefined') return null
 
-  const pageCountLabel = pageCount ? `${currentPage} / ${pageCount}` : 'Đang tải'
+  const pageCountLabel = pageCount ? `${currentPage} / ${pageCount}` : t('Đang tải')
   const collapseChrome = () => {
     setIsChromeCollapsed(true)
     window.requestAnimationFrame(() => expandButtonRef.current?.focus())
@@ -338,42 +339,42 @@ export function ReportPdfModal({ onClose, onRequestDownload, open, report }: Rep
         <div aria-hidden={isChromeCollapsed} className="report-pdf-reader-chrome">
           <header className="report-pdf-modal-header">
             <div className="report-pdf-modal-copy">
-              <p className="report-pdf-modal-eyebrow">BẢN PDF ĐẦY ĐỦ · {pageCount ? `${pageCount} TRANG` : 'ĐANG TẢI'}</p>
+              <p className="report-pdf-modal-eyebrow">{t('BẢN PDF ĐẦY ĐỦ')} · {pageCount ? t('{n} TRANG', { n: pageCount }) : t('ĐANG TẢI')}</p>
               <h2 id="report-pdf-modal-title">{report.title}</h2>
               <p>{report.subtitle}</p>
             </div>
             <div className="report-pdf-modal-actions">
-              <button aria-label="Tải báo cáo PDF" className="report-pdf-modal-download" onClick={onRequestDownload} type="button">
-                <span>Tải báo cáo</span>
+              <button aria-label={t('Tải báo cáo PDF')} className="report-pdf-modal-download" onClick={onRequestDownload} type="button">
+                <span>{t('Tải báo cáo')}</span>
                 <Download aria-hidden="true" size={18} strokeWidth={2} />
               </button>
-              <button aria-label="Đóng báo cáo" className="report-pdf-modal-close" onClick={onClose} ref={closeButtonRef} type="button">
+              <button aria-label={t('Đóng báo cáo')} className="report-pdf-modal-close" onClick={onClose} ref={closeButtonRef} type="button">
                 <X aria-hidden="true" size={22} strokeWidth={2} />
               </button>
             </div>
           </header>
-          <div aria-label="Điều khiển trình đọc báo cáo" className="report-pdf-modal-toolbar" role="toolbar">
-            <p className="report-pdf-page-count">Trang {pageCountLabel}</p>
-            <p className="report-pdf-scroll-hint">Cuộn để đọc toàn bộ báo cáo</p>
+          <div aria-label={t('Điều khiển trình đọc báo cáo')} className="report-pdf-modal-toolbar" role="toolbar">
+            <p className="report-pdf-page-count">{t('Trang {n}', { n: pageCountLabel })}</p>
+            <p className="report-pdf-scroll-hint">{t('Cuộn để đọc toàn bộ báo cáo')}</p>
             <div className="report-pdf-toolbar-actions">
               <div className="report-pdf-zoom-controls">
-                <button aria-label="Thu nhỏ báo cáo" disabled={zoom <= MIN_ZOOM} onClick={() => setZoom((currentZoom) => Math.max(MIN_ZOOM, currentZoom - ZOOM_STEP))} type="button">
+                <button aria-label={tx('reportPdf', 'Thu nhỏ báo cáo')} disabled={zoom <= MIN_ZOOM} onClick={() => setZoom((currentZoom) => Math.max(MIN_ZOOM, currentZoom - ZOOM_STEP))} type="button">
                   <Minus aria-hidden="true" size={17} strokeWidth={2} />
                 </button>
-                <output aria-label={`Mức phóng to ${zoom}%`}>{zoom}%</output>
-                <button aria-label="Phóng to báo cáo" disabled={zoom >= MAX_ZOOM} onClick={() => setZoom((currentZoom) => Math.min(MAX_ZOOM, currentZoom + ZOOM_STEP))} type="button">
+                <output aria-label={t('Mức phóng to {zoom}%', { zoom })}>{zoom}%</output>
+                <button aria-label={tx('reportPdf', 'Phóng to báo cáo')} disabled={zoom >= MAX_ZOOM} onClick={() => setZoom((currentZoom) => Math.min(MAX_ZOOM, currentZoom + ZOOM_STEP))} type="button">
                   <Plus aria-hidden="true" size={17} strokeWidth={2} />
                 </button>
               </div>
-              <button aria-label="Thu gọn tiêu đề báo cáo" className="report-pdf-collapse-button" onClick={collapseChrome} type="button">
+              <button aria-label={t('Thu gọn tiêu đề báo cáo')} className="report-pdf-collapse-button" onClick={collapseChrome} type="button">
                 <ChevronUp aria-hidden="true" size={18} strokeWidth={2} />
               </button>
             </div>
           </div>
         </div>
-        <button aria-expanded={!isChromeCollapsed} aria-label="Hiện tiêu đề báo cáo" className="report-pdf-expand-button" onClick={() => setIsChromeCollapsed(false)} ref={expandButtonRef} type="button">
+        <button aria-expanded={!isChromeCollapsed} aria-label={t('Hiện tiêu đề báo cáo')} className="report-pdf-expand-button" onClick={() => setIsChromeCollapsed(false)} ref={expandButtonRef} type="button">
           <ChevronDown aria-hidden="true" size={19} strokeWidth={2} />
-          <span>Hiện thông tin báo cáo</span>
+          <span>{t('Hiện thông tin báo cáo')}</span>
         </button>
         <ReportPdfViewer
           key={viewerAttempt}

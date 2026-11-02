@@ -1,6 +1,7 @@
 import { useEffect, useRef, type RefObject } from 'react'
 import { Menu } from 'lucide-react'
 import { cn } from '@/lib/cn'
+import { t } from '@/i18n'
 import type { SurveyQuestion } from './surveyData'
 
 export const surveyPersistentQuestionPanelMediaQuery = '(min-width: 1200px)'
@@ -30,15 +31,15 @@ export function MobileQuestionNav({
   return (
     <nav
       className="survey-mobile-question-nav"
-      aria-label={title + '. Câu ' + position + ' trên ' + questions.length + '. Đã hoàn tất ' + completedCount + ' câu.'}
+      aria-label={t('{title}. Câu {position} trên {total}. Đã hoàn tất {completed} câu.', { completed: completedCount, position, title, total: questions.length })}
     >
       <div className="survey-mobile-question-nav-head">
         <span>{title}</span>
         <strong>{formatQuestionNumber(position)} / {formatQuestionNumber(questions.length)}</strong>
-        <small>{completedCount} hoàn tất</small>
-        <button aria-label="Mở danh sách câu hỏi" onClick={onOpenNavigator} type="button">
+        <small>{t('{completed} hoàn tất', { completed: completedCount })}</small>
+        <button aria-label={t('Mở danh sách câu hỏi')} onClick={onOpenNavigator} type="button">
           <Menu aria-hidden="true" size={17} />
-          <span>Câu hỏi</span>
+          <span>{t('Câu hỏi')}</span>
         </button>
       </div>
       <div className="survey-mobile-question-nav-track" aria-hidden="true">
@@ -103,9 +104,9 @@ export function QuestionDrawer({ activeQuestion, hasAnswer, onClose, onJump, ope
         <div className="survey-drawer-handle" aria-hidden="true" />
         <div className="survey-drawer-head">
           <div>
-            <span id="survey-drawer-title">Danh sách câu hỏi</span>
+            <span id="survey-drawer-title">{t('Danh sách câu hỏi')}</span>
             <strong>{title}</strong>
-            <small>{completed}/{questions.length} đã trả lời</small>
+            <small>{t('{completed}/{total} đã trả lời', { completed, total: questions.length })}</small>
           </div>
         </div>
         <QuestionList activeItemRef={activeItemRef} activeQuestion={activeQuestion} hasAnswer={hasAnswer} onJump={onJump} questions={questions} />
@@ -119,16 +120,17 @@ function QuestionList({ activeItemRef, activeQuestion, hasAnswer, onJump, questi
     <div className="survey-question-list" role="list">
       {questions.map((question) => {
         const answered = hasAnswer?.(question) ?? false
+        const label = t('Câu {n}: {question}', { n: question.n, question: t(question.q) })
 
         return (
           <button
             aria-current={activeQuestion === question.n ? 'step' : undefined}
-            aria-label={'Câu ' + question.n + ': ' + question.q}
+            aria-label={label}
             className={cn('survey-question-dot-button', answered && 'is-answered', activeQuestion === question.n && 'is-active')}
             key={question.n}
             onClick={() => onJump?.(question.n)}
             ref={activeQuestion === question.n ? activeItemRef : undefined}
-            title={'Câu ' + question.n + ': ' + question.q}
+            title={label}
             type="button"
           >
             <span className="survey-question-dot" aria-hidden="true">{formatQuestionNumber(question.n)}</span>

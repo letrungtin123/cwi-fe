@@ -186,6 +186,20 @@
 .survey-header-home:disabled { color: var(--survey-ink-muted); opacity: .7; }
 .survey-header-menu { justify-self: end; }
 .survey-header-spacer { display: block; min-width: 44px; }
+.survey-header-actions-row { align-items: center; display: inline-flex; gap: 4px; justify-content: flex-end; }
+.survey-header-lang {
+  background: transparent;
+  border: 0;
+  color: var(--survey-ink-secondary);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 8px;
+}
+.survey-header-lang:hover { color: var(--survey-navy); }
 
 .survey-intro-screen { margin: 0 auto; max-width: 920px; padding: 4px 0 16px; }
 .survey-intro-brand { align-items: flex-start; display: grid; gap: 12px; margin-bottom: 34px; }
