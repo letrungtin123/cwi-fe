@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/cn'
+import { t } from '@/i18n'
 import { isValidWebsite, OTHER_OPTION, type Answers } from './surveyScoring'
 import type { SurveyQuestion } from './surveyData'
 
@@ -18,15 +19,15 @@ type QuestionCardProps = {
 export function QuestionCard({ answer, error, isMissing = false, onAnswer, onOtherAnswer, otherAnswer = '', part, question, readOnly = false }: QuestionCardProps) {
   const [websiteTouched, setWebsiteTouched] = useState(false)
   const websiteError = question.type === 'text' && websiteTouched && Boolean(answer?.trim()) && !isValidWebsite(answer ?? '')
-    ? 'Website công ty chưa đúng định dạng. Ví dụ: example.com hoặc https://example.com'
+    ? t('Website công ty chưa đúng định dạng. Ví dụ: example.com hoặc https://example.com')
     : undefined
   const fieldError = websiteError ?? error
   const describedBy = fieldError ? `survey-question-${question.n}-error` : undefined
 
   return (
     <article aria-readonly={readOnly} className={cn(isMissing && 'is-missing', readOnly && 'is-read-only', 'survey-question-card', `is-${question.type}`)} data-question={question.n} id={`survey-q-${question.n}`}>
-      <div className="survey-question-number">Câu {question.n}</div>
-      <h1 className="survey-question-title" id={`survey-question-${question.n}`}>{question.q}</h1>
+      <div className="survey-question-number">{t('Câu {n}', { n: question.n })}</div>
+      <h1 className="survey-question-title" id={`survey-question-${question.n}`}>{t(question.q)}</h1>
       <QuestionInput
         answer={answer}
         describedBy={describedBy}
@@ -55,7 +56,7 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, on
 
   if (question.type === 'likert') {
     return (
-      <fieldset aria-describedby={describedBy} aria-invalid={Boolean(error)} aria-label="Mức độ đồng ý" className="survey-question-fieldset">
+      <fieldset aria-describedby={describedBy} aria-invalid={Boolean(error)} aria-label={t('Mức độ đồng ý')} className="survey-question-fieldset">
         <div className="survey-likert-grid">
           {[1, 2, 3, 4, 5].map((value) => {
             const option = String(value)
@@ -84,7 +85,7 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, on
   if (question.type === 'mcq') {
     return (
       <fieldset aria-describedby={describedBy} aria-invalid={Boolean(error)} className="survey-question-fieldset">
-        <legend className="survey-question-hint">{question.instruction || '*lựa chọn 1 đáp án phù hợp nhất'}</legend>
+        <legend className="survey-question-hint">{question.instruction ? t(question.instruction) : t('*lựa chọn 1 đáp án phù hợp nhất')}</legend>
         <div className="survey-options">
           {question.options.map((option, index) => {
             const id = `survey-p${part}-q${question.n}-o${index}`
@@ -108,16 +109,16 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, on
                 />
                 <label htmlFor={id}>
                   <span className="survey-option-dot" aria-hidden="true" />
-                  <span>{isOther ? 'Khác' : option}</span>
+                  <span>{isOther ? t('Khác') : t(option)}</span>
                 </label>
                 {isOther ? (
                   <input
-                    aria-label={`Nội dung khác cho câu ${question.n}`}
+                    aria-label={t('Nội dung khác cho câu {n}', { n: question.n })}
                     aria-invalid={Boolean(checked && error)}
                     className={cn('survey-other-input', checked && 'is-visible')}
                     maxLength={500}
                     onChange={(event) => onOtherAnswer(question, event.currentTarget.value)}
-                    placeholder="Nhập nội dung khác"
+                    placeholder={t('Nhập nội dung khác')}
                     readOnly={readOnly}
                     ref={otherInputRef}
                     type="text"
@@ -135,7 +136,7 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, on
   const inputId = `survey-p${part}-q${question.n}-text`
   return (
     <div className="survey-text-question">
-      <label htmlFor={inputId}>Website công ty</label>
+      <label htmlFor={inputId}>{t('Website công ty')}</label>
       <input
         aria-describedby={describedBy}
         aria-invalid={Boolean(error)}
@@ -147,7 +148,7 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, on
         inputMode="url"
         onBlur={onWebsiteBlur}
         onChange={(event) => onAnswer(question, event.currentTarget.value)}
-        placeholder="example.com hoặc https://example.com"
+        placeholder={t('example.com hoặc https://example.com')}
         readOnly={readOnly}
         type="url"
         value={answer || ''}

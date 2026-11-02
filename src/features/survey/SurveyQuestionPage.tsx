@@ -1,4 +1,5 @@
 import { AlertCircle, ArrowLeft } from 'lucide-react'
+import { t } from '@/i18n'
 import type { Answers } from './surveyScoring'
 import { QuestionCard } from './QuestionCard'
 import { SurveyEyebrow, SurveyForwardArrow } from './SurveyChrome'
@@ -46,23 +47,23 @@ export function SurveyQuestionPage({
   primaryLabel,
   questions,
   readOnly = false,
-  secondaryLabel = 'Xóa hết câu trả lời',
+  secondaryLabel = t('Xóa hết câu trả lời'),
   subtitle,
 }: SurveyQuestionPageProps) {
   const completionProgress = Math.round((completedCount / questions.length) * 100)
-  const pageTitle = part === 1 ? 'PHẦN 1 - KHẢO SÁT KHUYẾT DANH' : 'PHẦN 2 - KHẢO SÁT ĐỊNH DANH'
+  const pageTitle = part === 1 ? t('PHẦN 1 - KHẢO SÁT KHUYẾT DANH') : t('PHẦN 2 - KHẢO SÁT ĐỊNH DANH')
 
   return (
     <section className="survey-question-page" aria-labelledby={'survey-question-page-' + part}>
       <div
         className="survey-question-progress"
-        aria-label={'Đã hoàn tất ' + completedCount + ' trên ' + questions.length + ' câu hỏi.'}
+        aria-label={t('Đã hoàn tất {completed} trên {total} câu hỏi.', { completed: completedCount, total: questions.length })}
       >
         <div className="survey-question-progress-head">
-          <span>PHẦN {part} / 3</span>
+          <span>{t('PHẦN {part} / 3', { part })}</span>
           <div className="survey-question-progress-meta">
             <strong>{formatQuestionNumber(completedCount)} / {formatQuestionNumber(questions.length)}</strong>
-            <small>{completedCount} câu hoàn tất</small>
+            <small>{t('{completed} câu hoàn tất', { completed: completedCount })}</small>
           </div>
         </div>
         <div className="survey-question-progress-track" aria-hidden="true">
@@ -104,7 +105,7 @@ export function SurveyQuestionPage({
         <div className="survey-question-actions">
           <button className="survey-previous-button" onClick={onPrevious} type="button">
             <ArrowLeft aria-hidden="true" size={17} />
-            Quay lại
+            {t('Quay lại')}
           </button>
           <div className="survey-question-action-end">
             {onSecondary && !readOnly ? <button className="survey-text-button survey-question-secondary-action" onClick={onSecondary} type="button">{secondaryLabel}</button> : null}

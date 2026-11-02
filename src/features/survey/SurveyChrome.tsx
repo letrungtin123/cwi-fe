@@ -1,5 +1,7 @@
 import { ArrowLeft, Menu } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { t } from '@/i18n'
+import { LanguageToggle } from '@/i18n/LanguageToggle'
 import { figmaAssets } from '../landing/figmaAssets'
 
 export type SurveyBrandMarkVariant = 'header' | 'intro' | 'trust' | 'report'
@@ -39,21 +41,24 @@ export function SurveyHeader({ canGoBack = true, canOpenDrawer, onBackHome, onOp
     <header className="survey-app-header">
       <div className="survey-header-inner">
         <div className="survey-header-leading">
-          <button aria-label="Quay lại" className="survey-header-home" disabled={!canGoBack} onClick={onBackHome} type="button">
+          <button aria-label={t('Quay lại')} className="survey-header-home" disabled={!canGoBack} onClick={onBackHome} type="button">
             <ArrowLeft aria-hidden="true" size={18} />
-            <span>Quay lại</span>
+            <span>{t('Quay lại')}</span>
           </button>
         </div>
         <div className="survey-header-logo">
           <SurveyBrandMark variant="header" />
         </div>
         <div className="survey-header-actions">
-          {canOpenDrawer ? (
-            <button aria-label="Mở danh sách câu hỏi" className="survey-header-menu" onClick={onOpenDrawer} type="button">
-              <Menu aria-hidden="true" size={18} />
-              <span>Danh sách câu hỏi</span>
-            </button>
-          ) : <span aria-hidden="true" className="survey-header-spacer" />}
+          <div className="survey-header-actions-row">
+            <LanguageToggle className="survey-header-lang" />
+            {canOpenDrawer ? (
+              <button aria-label={t('Mở danh sách câu hỏi')} className="survey-header-menu" onClick={onOpenDrawer} type="button">
+                <Menu aria-hidden="true" size={18} />
+                <span>{t('Danh sách câu hỏi')}</span>
+              </button>
+            ) : <span aria-hidden="true" className="survey-header-spacer" />}
+          </div>
         </div>
       </div>
     </header>

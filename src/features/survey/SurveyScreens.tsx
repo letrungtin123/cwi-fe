@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, Download, LockKeyhole, Maximize2, Minimize2, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
+import { dateLocale, t, tx } from '@/i18n'
 import { contactCopy, introCopy, jobTitleOptions, partOneQuestions, partTwoQuestions, reportParts, roundtableCopy } from './surveyData'
 import { marketBenchmarkData, type MarketBenchmarkData } from './surveyReportData'
 import { getAnswerDisplay, type Answers, validEmail } from './surveyScoring'
@@ -31,32 +32,32 @@ export function IntroScreen({ onStart }: IntroScreenProps) {
     <section className="survey-intro-screen">
 
       <div className="survey-intro-copy">
-        <SurveyEyebrow>{introCopy.eyebrow}</SurveyEyebrow>
+        <SurveyEyebrow>{t(introCopy.eyebrow)}</SurveyEyebrow>
         <h1>
-          <span>{introCopy.title}</span>
-          <span>{introCopy.emphasis}</span>
+          <span>{t(introCopy.title)}</span>
+          <span>{t(introCopy.emphasis)}</span>
         </h1>
         <div className="survey-intro-paragraphs">
-          {introCopy.paragraphs.slice(0, 3).map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+          {introCopy.paragraphs.slice(0, 3).map((paragraph) => <p key={paragraph}>{t(paragraph)}</p>)}
         </div>
       </div>
-      <div className="survey-report-box" aria-label="Các phần của báo cáo">
+      <div className="survey-report-box" aria-label={t('Các phần của báo cáo')}>
         {reportParts.map((part) => (
           <article key={part.kicker}>
-            <small>{part.kicker}</small>
+            <small>{t(part.kicker)}</small>
             <div>
-              <strong>{part.title}</strong>
+              <strong>{t(part.title)}</strong>
               <ul>
-                {part.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}
+                {part.bullets.map((bullet) => <li key={bullet}>{t(bullet)}</li>)}
               </ul>
             </div>
           </article>
         ))}
       </div>
-      <p className="survey-intro-last">{introCopy.paragraphs[3]}</p>
+      <p className="survey-intro-last">{t(introCopy.paragraphs[3])}</p>
       <div className="survey-intro-actions">
         <button className="survey-primary-button survey-primary-button--hero" onClick={onStart} type="button">
-          <span>Bắt đầu khảo sát</span>
+          <span>{t('Bắt đầu khảo sát')}</span>
           <SurveyForwardArrow />
         </button>
       </div>
@@ -138,11 +139,11 @@ function JobTitleSelect({ onChange, value }: { onChange: (value: string) => void
         ref={triggerRef}
         type="button"
       >
-        <span>{value || 'Chọn chức vụ'}</span>
+        <span>{value ? t(value) : t('Chọn chức vụ')}</span>
         <ChevronDown aria-hidden="true" size={18} />
       </button>
       {open ? (
-        <div aria-label="Chọn chức vụ" className="survey-job-title-menu" id="survey-job-title-options" role="listbox">
+        <div aria-label={t('Chọn chức vụ')} className="survey-job-title-menu" id="survey-job-title-options" role="listbox">
           {options.map((option, index) => (
             <button
               aria-selected={value === option}
@@ -154,7 +155,7 @@ function JobTitleSelect({ onChange, value }: { onChange: (value: string) => void
               role="option"
               type="button"
             >
-              <span>{option || 'Chọn chức vụ'}</span>
+              <span>{option ? t(option) : t('Chọn chức vụ')}</span>
               {value === option ? <Check aria-hidden="true" size={16} /> : null}
             </button>
           ))}
@@ -181,21 +182,21 @@ function getContactRequirementMessage(contact: ContactState) {
   const requirements: string[] = []
   const email = contact.email.trim()
 
-  if (!contact.name.trim()) requirements.push('Họ tên')
+  if (!contact.name.trim()) requirements.push(t('Họ tên'))
   if (!email) {
     requirements.push('Email')
   } else if (!validEmail(email)) {
-    requirements.push('Email hợp lệ')
+    requirements.push(t('Email hợp lệ'))
   }
   if (!contact.phone.trim()) {
-    requirements.push('Số điện thoại')
+    requirements.push(t('Số điện thoại'))
   } else if (!isValidPhone(contact.phone)) {
-    requirements.push('Số điện thoại hợp lệ')
+    requirements.push(t('Số điện thoại hợp lệ'))
   }
-  if (!contact.jobTitle.trim()) requirements.push('Chức vụ')
-  if (!contact.companyName.trim()) requirements.push('Tên công ty')
+  if (!contact.jobTitle.trim()) requirements.push(t('Chức vụ'))
+  if (!contact.companyName.trim()) requirements.push(t('Tên công ty'))
 
-  return requirements.length ? `*Vui lòng bổ sung: ${requirements.join(', ')}.` : ''
+  return requirements.length ? t('*Vui lòng bổ sung: {list}.', { list: requirements.join(', ') }) : ''
 }
 
 export function ContactScreen({ consent, contact, dataCollectionConsent = false, error, mode, onBack, onConsentChange, onDataCollectionConsentChange, onContactChange, onSkipPrivate, onSubmit }: ContactScreenProps) {
@@ -208,9 +209,9 @@ export function ContactScreen({ consent, contact, dataCollectionConsent = false,
 
   return (
     <section className="survey-form-screen" aria-labelledby="survey-contact-title">
-      <SurveyEyebrow>{isPrivate ? '\u0050\u0048\u1ea6\u004e 2 - \u004b\u0048\u1ea2\u004f S\u00c1T \u0110\u1eca\u004e\u0048 \u0044\u0041\u004e\u0048 \u00b7 \u004e\u0068\u1ead\u006e \u0062\u00e1o c\u00e1o' : '\u0050\u0048\u1ea6\u004e 1 - \u004b\u0048\u1ea2\u004f S\u00c1T \u004b\u0048\u0055\u0059\u1ebe\u0054 \u0044\u0041\u004e\u0048 \u00b7 \u004e\u0068\u1ead\u006e \u0062\u00e1o c\u00e1o'}</SurveyEyebrow>
-      <h1 id="survey-contact-title">{isPrivate ? '\u004e\u0068\u1ead\u006e B\u00e1o c\u00e1o Ri\u00eang t\u01b0' : '\u004e\u0068\u1ead\u006e B\u00e1o c\u00e1o Khuy\u1ebft danh'}</h1>
-      <p className="survey-thankyou">{contactCopy.thankYou}</p>
+      <SurveyEyebrow>{isPrivate ? t('\u0050\u0048\u1ea6\u004e 2 - \u004b\u0048\u1ea2\u004f S\u00c1T \u0110\u1eca\u004e\u0048 \u0044\u0041\u004e\u0048 \u00b7 \u004e\u0068\u1ead\u006e \u0062\u00e1o c\u00e1o') : t('\u0050\u0048\u1ea6\u004e 1 - \u004b\u0048\u1ea2\u004f S\u00c1T \u004b\u0048\u0055\u0059\u1ebe\u0054 \u0044\u0041\u004e\u0048 \u00b7 \u004e\u0068\u1ead\u006e \u0062\u00e1o c\u00e1o')}</SurveyEyebrow>
+      <h1 id="survey-contact-title">{isPrivate ? t('\u004e\u0068\u1ead\u006e B\u00e1o c\u00e1o Ri\u00eang t\u01b0') : t('\u004e\u0068\u1ead\u006e B\u00e1o c\u00e1o Khuy\u1ebft danh')}</h1>
+      <p className="survey-thankyou">{t(contactCopy.thankYou)}</p>
 
       <form
         className="survey-contact-form"
@@ -221,27 +222,27 @@ export function ContactScreen({ consent, contact, dataCollectionConsent = false,
       >
         <div className="survey-form-grid">
           <label htmlFor="survey-contact-name">
-            <span>Họ tên <b className="survey-required-mark">*</b></span>
-            <input autoComplete="name" id="survey-contact-name" onChange={(event) => onContactChange({ ...contact, name: event.currentTarget.value })} placeholder="Họ và tên" value={contact.name} />
+            <span>{t('Họ tên')} <b className="survey-required-mark">*</b></span>
+            <input autoComplete="name" id="survey-contact-name" onChange={(event) => onContactChange({ ...contact, name: event.currentTarget.value })} placeholder={t('Họ và tên')} value={contact.name} />
           </label>
           <label htmlFor="survey-contact-email">
             <span>Email <b className="survey-required-mark">*</b></span>
             <input autoComplete="email" id="survey-contact-email" onChange={(event) => onContactChange({ ...contact, email: event.currentTarget.value })} placeholder="name@company.com" inputMode="email" type="text" value={contact.email} />
           </label>
           <label htmlFor="survey-contact-title">
-            <span>Chức vụ <b className="survey-required-mark">*</b></span>
+            <span>{t('Chức vụ')} <b className="survey-required-mark">*</b></span>
             <JobTitleSelect
               onChange={(value) => onContactChange({ ...contact, jobTitle: value, jobTitleOther: '' })}
               value={contact.jobTitle}
             />
           </label>
           <label htmlFor="survey-contact-phone">
-            <span>Số điện thoại <b className="survey-required-mark">*</b></span>
+            <span>{t('Số điện thoại')} <b className="survey-required-mark">*</b></span>
             <input autoComplete="tel" id="survey-contact-phone" inputMode="tel" onChange={(event) => onContactChange({ ...contact, phone: event.currentTarget.value })} placeholder="+84" type="tel" value={contact.phone} />
           </label>
           <label className="survey-form-grid-wide" htmlFor="survey-contact-company">
-            <span>Tên công ty <b className="survey-required-mark">*</b></span>
-            <input autoComplete="organization" id="survey-contact-company" maxLength={200} onChange={(event) => onContactChange({ ...contact, companyName: event.currentTarget.value })} placeholder="Tên công ty" value={contact.companyName} />
+            <span>{t('Tên công ty')} <b className="survey-required-mark">*</b></span>
+            <input autoComplete="organization" id="survey-contact-company" maxLength={200} onChange={(event) => onContactChange({ ...contact, companyName: event.currentTarget.value })} placeholder={t('Tên công ty')} value={contact.companyName} />
           </label>
         </div>
         {!isPrivate ? (
@@ -258,7 +259,7 @@ export function ContactScreen({ consent, contact, dataCollectionConsent = false,
               <span aria-hidden="true" className="survey-data-consent-box">
                 {dataCollectionConsent ? <Check aria-hidden="true" size={14} strokeWidth={2.5} /> : null}
               </span>
-              <span className="survey-data-consent-copy">Đồng ý cho dự án CEO Workforce Index thu thập, lưu trữ, xử lý dữ liệu cá nhân và gửi báo cáo khảo sát</span>
+              <span className="survey-data-consent-copy">{t('Đồng ý cho dự án CEO Workforce Index thu thập, lưu trữ, xử lý dữ liệu cá nhân và gửi báo cáo khảo sát')}</span>
             </label>
           </div>
         ) : null}
@@ -270,19 +271,19 @@ export function ContactScreen({ consent, contact, dataCollectionConsent = false,
           <section className="survey-privacy-section" aria-labelledby="survey-privacy-title">
             <div className="survey-privacy-heading">
               <LockKeyhole aria-hidden="true" size={18} />
-              <h2 id="survey-privacy-title">THÔNG TIN BẢO MẬT</h2>
+              <h2 id="survey-privacy-title">{t('THÔNG TIN BẢO MẬT')}</h2>
             </div>
             <div className="survey-privacy-copy">
-              {privacyParagraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+              {privacyParagraphs.map((paragraph) => <p key={paragraph}>{t(paragraph)}</p>)}
             </div>
-            <div aria-disabled={!isContactReady} className="survey-consent-grid" role="radiogroup" aria-label="Đồng ý">
-              <ConsentOption checked={consent === 'yes'} disabled={!isContactReady} id="survey-consent-yes" label="Đồng ý" onChange={() => onConsentChange('yes')} />
-              <ConsentOption checked={consent === 'no'} disabled={!isContactReady} id="survey-consent-no" label="Không đồng ý" onChange={() => onConsentChange('no')} />
+            <div aria-disabled={!isContactReady} className="survey-consent-grid" role="radiogroup" aria-label={t('Đồng ý')}>
+              <ConsentOption checked={consent === 'yes'} disabled={!isContactReady} id="survey-consent-yes" label={t('Đồng ý')} onChange={() => onConsentChange('yes')} />
+              <ConsentOption checked={consent === 'no'} disabled={!isContactReady} id="survey-consent-no" label={t('Không đồng ý')} onChange={() => onConsentChange('no')} />
             </div>
             {consent === 'no' ? (
               <div className="survey-consent-warning" role="alert">
-                <p>Để nhận được báo cáo vui lòng chọn "Đồng ý" để cấp quyền cho chúng tôi xử lý dữ liệu của Anh/Chị.</p>
-                <button className="survey-text-button" onClick={onSkipPrivate} type="button">Bỏ qua Phần 2 và nhận báo cáo Phần 1</button>
+                <p>{t('Để nhận được báo cáo vui lòng chọn "Đồng ý" để cấp quyền cho chúng tôi xử lý dữ liệu của Anh/Chị.')}</p>
+                <button className="survey-text-button" onClick={onSkipPrivate} type="button">{t('Bỏ qua Phần 2 và nhận báo cáo Phần 1')}</button>
               </div>
             ) : null}
           </section>
@@ -291,10 +292,10 @@ export function ContactScreen({ consent, contact, dataCollectionConsent = false,
         {error ? <p className="survey-inline-error" role="alert">{error}</p> : null}
         <div className="survey-form-actions">
           <button className="survey-primary-button" disabled={isSubmitDisabled} type="submit">
-            {isPrivate ? '\u0047\u1eedi \u006b\u1ebft qu\u1ea3' : '\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1'}
+            {isPrivate ? t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3') : t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1')}
             <SurveyForwardArrow />
           </button>
-          <button className="survey-outline-button" onClick={onBack} type="button">Xem lại câu trả lời</button>
+          <button className="survey-outline-button" onClick={onBack} type="button">{t('Xem lại câu trả lời')}</button>
         </div>
       </form>
     </section>
@@ -315,10 +316,10 @@ function ConsentOption({ checked, disabled, id, label, name = 'survey-consent', 
 
 export function LoadingScreen({ reportMode, step }: { reportMode: 'part1' | 'private'; step: number }) {
   const steps = ['Tổng hợp câu trả lời', 'Đối chiếu dữ liệu', 'Phân tích các nhóm năng lực', 'Tạo báo cáo']
-  const title = reportMode === 'private' ? 'Đang tạo Báo cáo Riêng tư...' : 'Đang tạo Báo cáo Khuyết danh...'
+  const title = reportMode === 'private' ? t('Đang tạo Báo cáo Riêng tư...') : t('Đang tạo Báo cáo Khuyết danh...')
   const description = reportMode === 'private'
-    ? 'Tổng hợp kết quả PHẦN 1 - KHẢO SÁT KHUYẾT DANH và 6 câu PHẦN 2 - KHẢO SÁT ĐỊNH DANH.'
-    : 'Tổng hợp 18 câu PHẦN 1 - KHẢO SÁT KHUYẾT DANH.'
+    ? t('Tổng hợp kết quả PHẦN 1 - KHẢO SÁT KHUYẾT DANH và 6 câu PHẦN 2 - KHẢO SÁT ĐỊNH DANH.')
+    : t('Tổng hợp 18 câu PHẦN 1 - KHẢO SÁT KHUYẾT DANH.')
 
   return (
     <section className="survey-loading-screen" aria-live="polite">
@@ -330,7 +331,7 @@ export function LoadingScreen({ reportMode, step }: { reportMode: 'part1' | 'pri
         {steps.map((item, index) => (
           <span className={cn(index + 1 <= step && 'is-done')} key={item}>
             <i>{index + 1 <= step ? '✓' : index + 1}</i>
-            {item}
+            {t(item)}
           </span>
         ))}
       </div>
@@ -404,9 +405,9 @@ export function ReportScreen({ emailStatus, html, mode, onHome, onReviewAnswers 
     <section aria-labelledby="survey-report-page-title" className="survey-report-page">
       <div className="survey-report-page-heading">
         <div>
-          <SurveyEyebrow>BÁO CÁO KHẢO SÁT</SurveyEyebrow>
-          <h1 id="survey-report-page-title">Báo cáo của Anh/Chị</h1>
-          <p>Báo cáo đã sẵn sàng. Anh/Chị có thể xem đầy đủ nội dung ngay trên trang này.</p>
+          <SurveyEyebrow>{t('BÁO CÁO KHẢO SÁT')}</SurveyEyebrow>
+          <h1 id="survey-report-page-title">{t('Báo cáo của Anh/Chị')}</h1>
+          <p>{t('Báo cáo đã sẵn sàng. Anh/Chị có thể xem đầy đủ nội dung ngay trên trang này.')}</p>
         </div>
         <div aria-live="polite" className="survey-report-page-status">
           <span aria-hidden="true" className="survey-submission-delivery-dot" />
@@ -415,24 +416,24 @@ export function ReportScreen({ emailStatus, html, mode, onHome, onReviewAnswers 
       </div>
       <div className={cn('survey-report-page-frame', isFullscreen && 'is-expanded')} ref={frameRef}>
         <div className="survey-report-page-frame-toolbar">
-          <span>{isFullscreen ? 'Đang xem toàn màn hình' : 'Báo cáo khảo sát'}</span>
+          <span>{isFullscreen ? t('Đang xem toàn màn hình') : t('Báo cáo khảo sát')}</span>
           <button
-            aria-label={isFullscreen ? 'Thu nhỏ báo cáo' : 'Phóng to báo cáo toàn màn hình'}
+            aria-label={isFullscreen ? tx('reportFullscreen', 'Thu nhỏ báo cáo') : t('Phóng to báo cáo toàn màn hình')}
             aria-pressed={isFullscreen}
             className="survey-report-page-fullscreen-button"
             onClick={() => void toggleFullscreen()}
-            title={isFullscreen ? 'Thu nhỏ báo cáo' : 'Phóng to báo cáo toàn màn hình'}
+            title={isFullscreen ? tx('reportFullscreen', 'Thu nhỏ báo cáo') : t('Phóng to báo cáo toàn màn hình')}
             type="button"
           >
             {isFullscreen ? <Minimize2 aria-hidden="true" size={17} /> : <Maximize2 aria-hidden="true" size={17} />}
-            <span>{isFullscreen ? 'Thu nhỏ' : 'Toàn màn hình'}</span>
+            <span>{isFullscreen ? t('Thu nhỏ') : t('Toàn màn hình')}</span>
           </button>
         </div>
-        <iframe loading="eager" referrerPolicy="no-referrer" sandbox="allow-same-origin" srcDoc={previewHtml} title="Báo cáo CEO Workforce Index" />
+        <iframe loading="eager" referrerPolicy="no-referrer" sandbox="allow-same-origin" srcDoc={previewHtml} title={t('Báo cáo CEO Workforce Index')} />
       </div>
       <div className="survey-report-page-actions">
-        <button className="survey-outline-button" onClick={onReviewAnswers} type="button">Xem khảo sát</button>
-        <button className="survey-primary-button" onClick={onHome} type="button">Trang chủ</button>
+        <button className="survey-outline-button" onClick={onReviewAnswers} type="button">{t('Xem khảo sát')}</button>
+        <button className="survey-primary-button" onClick={onHome} type="button">{t('Trang chủ')}</button>
       </div>
     </section>
   )
@@ -474,39 +475,45 @@ export function ResultScreen({ answers, isWebinarRegistering, mode, onBackHome, 
 
       <section className="survey-roundtable-invitation">
         <SurveyEyebrow>CEO Roundtable</SurveyEyebrow>
-        <h2>Đăng kí tham dự CEO Roundtable</h2>
-        {roundtableCopy.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-        <ul aria-label="Thông tin chương trình" className="survey-round-meta">
+        <h2>{t('Đăng kí tham dự CEO Roundtable')}</h2>
+        {roundtableCopy.paragraphs.map((paragraph) => <p key={paragraph}>{t(paragraph)}</p>)}
+        <ul aria-label={t('Thông tin chương trình')} className="survey-round-meta">
           {roundtableDetails.map((detail) => (
             <li key={detail.label}><strong>{detail.label}:</strong> {detail.value}</li>
           ))}
         </ul>
         <button className="survey-outline-button" onClick={(event) => onOpenRoundtable(event.currentTarget)} type="button">
-          Đăng ký tham dự
+          {t('Đăng ký tham dự')}
         </button>
       </section>
 
       <section className="survey-webinar-invitation">
         <SurveyEyebrow>CEO WORKFORCE INDEX WEBINAR</SurveyEyebrow>
-        <h2>Đăng kí tham dự Webinar</h2>
-        <p>Webinar: Làm sao để CEO và HRD hết lệch pha và không lỗi nhịp?</p>
-        <ul aria-label="Thông tin Webinar" className="survey-round-meta">
-          <li><strong>Thời gian:</strong> 14:00–16:00 | 22/10/2026</li>
-          <li><strong>Hình thức:</strong> Trực tuyến qua Zoom</li>
+        <h2>{t('Đăng kí tham dự Webinar')}</h2>
+        <p>{t('Webinar: Làm sao để CEO và HRD hết lệch pha và không lỗi nhịp?')}</p>
+        <ul aria-label={t('Thông tin Webinar')} className="survey-round-meta">
+          <li><strong>{t('Thời gian:')}</strong> 14:00–16:00 | 22/10/2026</li>
+          <li><strong>{t('Hình thức:')}</strong> {t('Trực tuyến qua Zoom')}</li>
         </ul>
         {webinarError ? <p className="survey-inline-error" role="alert">{webinarError}</p> : null}
-        {webinarRegistered ? <p className="survey-success-message">Đăng ký Webinar đã được ghi nhận{webinarRegisteredAt ? ` lúc ${new Date(webinarRegisteredAt).toLocaleString('vi-VN')}` : ''}.</p> : null}
+        {webinarRegistered ? (
+          <p className="survey-success-message">
+            {webinarRegisteredAt
+              ? t('Đăng ký Webinar đã được ghi nhận lúc {time}.', { time: new Date(webinarRegisteredAt).toLocaleString(dateLocale()) })
+              : t('Đăng ký Webinar đã được ghi nhận.')}
+          </p>
+        ) : null}
         <button className="survey-outline-button" disabled={webinarRegistered || isWebinarRegistering} onClick={onRegisterWebinar} type="button">
-          {webinarRegistered ? 'Đã đăng ký' : isWebinarRegistering ? 'Đang đăng ký...' : 'Đăng ký tham dự'}
+          {webinarRegistered ? t('Đã đăng ký') : isWebinarRegistering ? t('Đang đăng ký...') : t('Đăng ký tham dự')}
         </button>
       </section>
 
       <div className="survey-result-actions">
         <button className="survey-primary-button" onClick={() => window.print()} type="button">
           <Download aria-hidden="true" size={17} />
-          Tải xuống PDF
+          {t('Tải xuống PDF')}
         </button>
-        <button className="survey-outline-button" onClick={onBackHome} type="button">Quay về trang chủ</button>
+        <button className="survey-outline-button" onClick={onBackHome} type="button">{t('Quay về trang chủ')}</button>
       </div>
     </section>
   )
@@ -523,11 +530,11 @@ function ReportIdentity({ mode }: { mode: 'part1' | 'private' }) {
       </div>
       <header className="survey-result-identity">
         <SurveyBrandMark variant="report" />
-        <p className="survey-report-kicker">{isPrivate ? '\u0047\u1eedi \u006b\u1ebft qu\u1ea3' : '\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1'}</p>
-        <h1 id="survey-result-title">{isPrivate ? '\u0047\u1eedi \u006b\u1ebft qu\u1ea3' : '\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1'}</h1>
-        <p>{isPrivate ? '\u0047\u1eedi \u006b\u1ebft qu\u1ea3' : '\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1'}</p>
+        <p className="survey-report-kicker">{isPrivate ? t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3') : t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1')}</p>
+        <h1 id="survey-result-title">{isPrivate ? t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3') : t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1')}</h1>
+        <p>{isPrivate ? t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3') : t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1')}</p>
         <div className="survey-report-meta">
-          <span>{isPrivate ? '\u0047\u1eedi \u006b\u1ebft qu\u1ea3' : '\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1'}</span>
+          <span>{isPrivate ? t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3') : t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1')}</span>
         </div>
       </header>
     </>
@@ -551,29 +558,29 @@ function MarketBenchmarkSection({ data }: { data: MarketBenchmarkData }) {
 
   return (
     <section className="survey-result-section survey-market-section">
-      <ReportSectionHeading number="1." eyebrow="" title="Kết quả thị trường" />
-      <p className="survey-section-lede">Kết quả thị trường được lấy từ Teaser Report để tạo bối cảnh đối chuẩn.</p>
+      <ReportSectionHeading number="1." eyebrow="" title={t('Kết quả thị trường')} />
+      <p className="survey-section-lede">{t('Kết quả thị trường được lấy từ Teaser Report để tạo bối cảnh đối chuẩn.')}</p>
       {hasLiveData ? (
         <>
-          <p className="survey-section-lede">{data.sourceLabel}</p>
+          <p className="survey-section-lede">{t(data.sourceLabel)}</p>
           <div className="survey-market-demo" aria-hidden="true">
-            <span className="survey-market-demo-label">Demo bố cục · Dữ liệu thực tế lấy từ Teaser Report</span>
+            <span className="survey-market-demo-label">{t('Demo bố cục · Dữ liệu thực tế lấy từ Teaser Report')}</span>
             <div className="survey-market-demo-chart"><i /><b /><em /></div>
           </div>
           <div className="survey-market-metrics">
             {data.metrics.map((metric) => (
               <div key={metric.label}>
-                <span>{metric.label}</span>
+                <span>{t(metric.label)}</span>
                 <strong>{metric.value}</strong>
-                <small>{metric.description}</small>
+                <small>{t(metric.description)}</small>
               </div>
             ))}
           </div>
         </>
       ) : (
         <div className="survey-market-pending" role="status">
-          <strong>{data.sourceLabel}</strong>
-          <p>Dữ liệu đối chuẩn thị trường đang được tổng hợp trong kỳ nghiên cứu {data.period}.</p>
+          <strong>{t(data.sourceLabel)}</strong>
+          <p>{t('Dữ liệu đối chuẩn thị trường đang được tổng hợp trong kỳ nghiên cứu {period}.', { period: data.period })}</p>
         </div>
       )}
     </section>
@@ -582,8 +589,8 @@ function MarketBenchmarkSection({ data }: { data: MarketBenchmarkData }) {
 function PersonalScoreSection({ answers, otherAnswers, scores }: { answers: Answers; otherAnswers: Answers; scores: ScoreSet }) {
   return (
     <section className="survey-result-section">
-      <ReportSectionHeading number="2." eyebrow="" title="Input của Anh/Chị cho 18 câu hỏi" />
-      <p className="survey-section-lede">Tóm tắt các tín hiệu từ câu trả lời của Anh/Chị.</p>
+      <ReportSectionHeading number="2." eyebrow="" title={t('Input của Anh/Chị cho 18 câu hỏi')} />
+      <p className="survey-section-lede">{t('Tóm tắt các tín hiệu từ câu trả lời của Anh/Chị.')}</p>
       <div className="survey-score-rows">
         <ScoreRow label="Leadership Capacity" value={scores.overall} />
         <ScoreRow label="Scale Readiness" value={scores.scale} />
@@ -597,10 +604,10 @@ function AnswerSummary({ answers, otherAnswers }: { answers: Answers; otherAnswe
   const questionNumbers = [1, 6, 10, 14, 17, 18]
 
   return (
-    <div className="survey-answer-summary" aria-label="Tóm tắt câu trả lời">
+    <div className="survey-answer-summary" aria-label={t('Tóm tắt câu trả lời')}>
       {questionNumbers.map((number) => (
         <article key={number}>
-          <strong>Câu {number}</strong>
+          <strong>{t('Câu {n}', { n: number })}</strong>
           <span>{getAnswerDisplay(number, answers, otherAnswers)}</span>
         </article>
       ))}
@@ -610,8 +617,8 @@ function AnswerSummary({ answers, otherAnswers }: { answers: Answers; otherAnswe
 function DomainAnalysisSection({ domains }: { domains: ScoreSet['domains'] }) {
   return (
     <section className="survey-result-section">
-      <ReportSectionHeading number="3." eyebrow="" title="Phân tích đối chuẩn" />
-      <p className="survey-section-lede">Phân tích dữ liệu của Anh/Chị, đối chuẩn và xác định doanh nghiệp đang ở đâu so với bối cảnh thị trường.</p>
+      <ReportSectionHeading number="3." eyebrow="" title={t('Phân tích đối chuẩn')} />
+      <p className="survey-section-lede">{t('Phân tích dữ liệu của Anh/Chị, đối chuẩn và xác định doanh nghiệp đang ở đâu so với bối cảnh thị trường.')}</p>
       <div className="survey-domain-analysis-layout">
         <DomainRadar domains={domains} />
         <DomainBars domains={domains} />
@@ -664,7 +671,7 @@ function wrapDomainLabel(name: string) {
 
 function DomainRadar({ domains }: { domains: ScoreSet['domains'] }) {
   if (!domains.length) {
-    return <p className="survey-empty-visual">Chưa có nhóm năng lực để hiển thị.</p>
+    return <p className="survey-empty-visual">{t('Chưa có nhóm năng lực để hiển thị.')}</p>
   }
 
   const size = 320
@@ -680,9 +687,9 @@ function DomainRadar({ domains }: { domains: ScoreSet['domains'] }) {
 
   return (
     <figure className="survey-radar-figure">
-      <figcaption>5 nhóm năng lực<br /><small>Điểm từ 18 câu trả lời</small></figcaption>
+      <figcaption>{t('5 nhóm năng lực')}<br /><small>{t('Điểm từ 18 câu trả lời')}</small></figcaption>
       <svg
-        aria-label="Biểu đồ radar 5 nhóm năng lực theo điểm số CWI"
+        aria-label={t('Biểu đồ radar 5 nhóm năng lực theo điểm số CWI')}
         className="survey-radar"
         role="img"
         viewBox="0 0 320 320"
@@ -734,11 +741,11 @@ function DomainBars({ domains }: { domains: ScoreSet['domains'] }) {
 function PrivatePartOneSection({ domains }: { domains: ScoreSet['domains'] }) {
   return (
     <section className="survey-result-section">
-      <ReportSectionHeading number="" eyebrow="" title="Kết quả Phần 1" />
-      <p className="survey-section-lede">Bao gồm Kết quả thị trường, 18 câu trả lời và phân tích đối chuẩn từ PHẦN 1 - KHẢO SÁT KHUYẾT DANH.</p>
+      <ReportSectionHeading number="" eyebrow="" title={t('Kết quả Phần 1')} />
+      <p className="survey-section-lede">{t('Bao gồm Kết quả thị trường, 18 câu trả lời và phân tích đối chuẩn từ PHẦN 1 - KHẢO SÁT KHUYẾT DANH.')}</p>
       <div className="survey-private-chart-heading">
-        <strong>5 nhóm năng lực</strong>
-        <span>Tổng hợp Phần 1</span>
+        <strong>{t('5 nhóm năng lực')}</strong>
+        <span>{t('Tổng hợp Phần 1')}</span>
       </div>
       <div className="survey-domain-analysis-layout">
         <DomainRadar domains={domains} />
@@ -754,27 +761,27 @@ function PrivateAnalysisSection({ answers, otherAnswers }: { answers: Answers; o
     ['Độ sẵn sàng mở rộng', getAnswerDisplay(20, answers, otherAnswers)],
     ['Mức phụ thuộc vào CEO', getAnswerDisplay(21, answers, otherAnswers)],
     ['Rào cản tăng trưởng', getAnswerDisplay(22, answers, otherAnswers)],
-    ['Bối cảnh doanh nghiệp', `Doanh thu: ${getAnswerDisplay(23, answers, otherAnswers)} · Website: ${getAnswerDisplay(24, answers, otherAnswers)}`],
+    ['Bối cảnh doanh nghiệp', t('Doanh thu: {revenue} · Website: {website}', { revenue: getAnswerDisplay(23, answers, otherAnswers), website: getAnswerDisplay(24, answers, otherAnswers) })],
   ]
 
   return (
     <section className="survey-result-section">
-      <ReportSectionHeading number="" eyebrow="" title="5 trang phân tích riêng cho doanh nghiệp" />
-      <p className="survey-section-lede">Phân tích sâu hơn từ 6 câu PHẦN 2 - KHẢO SÁT ĐỊNH DANH, kèm kiến nghị và giải pháp phù hợp với bối cảnh doanh nghiệp.</p>
+      <ReportSectionHeading number="" eyebrow="" title={t('5 trang phân tích riêng cho doanh nghiệp')} />
+      <p className="survey-section-lede">{t('Phân tích sâu hơn từ 6 câu PHẦN 2 - KHẢO SÁT ĐỊNH DANH, kèm kiến nghị và giải pháp phù hợp với bối cảnh doanh nghiệp.')}</p>
       <div className="survey-market-metrics survey-private-metrics">
-        <div><span>Mức sẵn sàng mở rộng</span><strong>72/100</strong><small>Chỉ số minh họa cho khả năng scale của doanh nghiệp.</small></div>
-        <div><span>Rủi ro vận hành</span><strong>3</strong><small>Nhóm rủi ro ưu tiên được AI gắn cờ để xử lý sớm.</small></div>
-        <div><span>Khung hành động</span><strong>90</strong><small>Lộ trình minh họa trong 90 ngày để cải thiện năng lực thực thi.</small></div>
+        <div><span>{t('Mức sẵn sàng mở rộng')}</span><strong>72/100</strong><small>{t('Chỉ số minh họa cho khả năng scale của doanh nghiệp.')}</small></div>
+        <div><span>{t('Rủi ro vận hành')}</span><strong>3</strong><small>{t('Nhóm rủi ro ưu tiên được AI gắn cờ để xử lý sớm.')}</small></div>
+        <div><span>{t('Khung hành động')}</span><strong>90</strong><small>{t('Lộ trình minh họa trong 90 ngày để cải thiện năng lực thực thi.')}</small></div>
       </div>
       <div className="survey-private-analysis-list">
         {items.map(([title, answer], index) => (
           <article key={title}>
             <strong>{String(index + 1).padStart(2, '0')}</strong>
             <div>
-              <span>Trang phân tích riêng {index + 1}/5</span>
-              <h3>{title}</h3>
+              <span>{t('Trang phân tích riêng {n}/5', { n: index + 1 })}</span>
+              <h3>{t(title)}</h3>
               <p>{answer}</p>
-              <p>Demo wireframe: khu vực này sẽ chứa phân tích sâu, kiến nghị và giải pháp phù hợp với doanh nghiệp/ngành nghề.</p>
+              <p>{t('Demo wireframe: khu vực này sẽ chứa phân tích sâu, kiến nghị và giải pháp phù hợp với doanh nghiệp/ngành nghề.')}</p>
             </div>
           </article>
         ))}
@@ -848,11 +855,11 @@ export function RoundtableModal({ choice, error, isRegistering = false, isSubmit
         <div className="survey-modal-hero">
           <div className="survey-modal-head">
             <SurveyEyebrow>CEO ROUNDTABLE</SurveyEyebrow>
-            <button aria-label="Đóng" onClick={onClose} ref={initialFocusRef} type="button"><X aria-hidden="true" size={19} /></button>
+            <button aria-label={t('Đóng')} onClick={onClose} ref={initialFocusRef} type="button"><X aria-hidden="true" size={19} /></button>
           </div>
-          <h2 id="survey-roundtable-title">{roundtableCopy.title}</h2>
-          {roundtableCopy.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-          <ul aria-label="Thông tin chương trình" className="survey-round-meta">
+          <h2 id="survey-roundtable-title">{t(roundtableCopy.title)}</h2>
+          {roundtableCopy.paragraphs.map((paragraph) => <p key={paragraph}>{t(paragraph)}</p>)}
+          <ul aria-label={t('Thông tin chương trình')} className="survey-round-meta">
             {eventDetails.map((detail) => (
               <li key={detail.label}><strong>{detail.label}:</strong> {detail.value}</li>
             ))}
@@ -860,17 +867,17 @@ export function RoundtableModal({ choice, error, isRegistering = false, isSubmit
         </div>
         <div className="survey-modal-body">
           <fieldset className="survey-roundtable-choice">
-            <legend>Anh/Chị có muốn đăng ký tham dự CEO Roundtable không?</legend>
+            <legend>{t('Anh/Chị có muốn đăng ký tham dự CEO Roundtable không?')}</legend>
             <div className="survey-consent-grid">
-              <ConsentOption checked={choice === 'yes'} disabled={isBusy} id="survey-roundtable-yes" label="Đồng ý" name="survey-roundtable-choice" onChange={() => onChoiceChange('yes')} />
-              <ConsentOption checked={choice === 'no'} disabled={isBusy} id="survey-roundtable-no" label="Không đồng ý" name="survey-roundtable-choice" onChange={() => onChoiceChange('no')} />
+              <ConsentOption checked={choice === 'yes'} disabled={isBusy} id="survey-roundtable-yes" label={tx('roundtable', 'Đồng ý')} name="survey-roundtable-choice" onChange={() => onChoiceChange('yes')} />
+              <ConsentOption checked={choice === 'no'} disabled={isBusy} id="survey-roundtable-no" label={tx('roundtable', 'Không đồng ý')} name="survey-roundtable-choice" onChange={() => onChoiceChange('no')} />
             </div>
-            <p className="survey-roundtable-note">Đăng ký dùng Họ tên, Email, Số điện thoại, Chức vụ và Tên công ty Anh/Chị đã nhập ở bước trước.</p>
+            <p className="survey-roundtable-note">{t('Đăng ký dùng Họ tên, Email, Số điện thoại, Chức vụ và Tên công ty Anh/Chị đã nhập ở bước trước.')}</p>
           </fieldset>
           {error ? <p className="survey-inline-error" role="alert">{error}</p> : null}
           <div className="survey-modal-actions">
             <button className="survey-primary-button" disabled={isBusy || !choice} onClick={onConfirm} type="button">
-              {isRegistering ? 'Đang đăng ký...' : isSubmitting ? 'Đang gửi kết quả...' : 'Tiếp tục gửi kết quả'}
+              {isRegistering ? t('Đang đăng ký...') : isSubmitting ? t('Đang gửi kết quả...') : t('Tiếp tục gửi kết quả')}
               {isBusy ? null : <SurveyForwardArrow />}
             </button>
           </div>
@@ -929,12 +936,12 @@ function reportProgressIndex(status: ReportJobStatusValue | '') {
 }
 
 function reportEmailLabel(status: ReportEmailStatus) {
-  if (status === 'sent') return 'Email đã được gửi'
-  if (status === 'sending') return 'Đang gửi email'
-  if (status === 'queued') return 'Email đang chờ gửi'
-  if (status === 'failed') return 'Gửi email chưa thành công'
-  if (status === 'unknown') return 'Đang xác nhận trạng thái email'
-  return 'Email sẽ được gửi sau khi hoàn tất báo cáo'
+  if (status === 'sent') return t('Email đã được gửi')
+  if (status === 'sending') return t('Đang gửi email')
+  if (status === 'queued') return t('Email đang chờ gửi')
+  if (status === 'failed') return t('Gửi email chưa thành công')
+  if (status === 'unknown') return t('Đang xác nhận trạng thái email')
+  return t('Email sẽ được gửi sau khi hoàn tất báo cáo')
 }
 
 type ReportGenerationScreenProps = {
@@ -1052,18 +1059,18 @@ function ReportGenerationCarousel({ onHome }: { onHome: () => void }) {
     <section aria-labelledby="survey-report-gallery-title" className="survey-report-generation-gallery">
       <div className="survey-report-generation-gallery-heading">
         <div>
-          <SurveyEyebrow>RECAP SỰ KIỆN</SurveyEyebrow>
-          <h2 aria-label="Sự kiện Bàn tròn CEO Quý 3/2026 đã thu hút sự quan tâm của các báo kinh tế uy tín" id="survey-report-gallery-title">
-            <span aria-hidden="true" className="survey-report-generation-gallery-title-desktop">Sự kiện Bàn tròn CEO Quý 3/2026<br />đã thu hút sự quan tâm của các báo kinh tế uy tín</span>
+          <SurveyEyebrow>{t('RECAP SỰ KIỆN')}</SurveyEyebrow>
+          <h2 aria-label={t('Sự kiện Bàn tròn CEO Quý 3/2026 đã thu hút sự quan tâm của các báo kinh tế uy tín')} id="survey-report-gallery-title">
+            <span aria-hidden="true" className="survey-report-generation-gallery-title-desktop">{t('Sự kiện Bàn tròn CEO Quý 3/2026')}<br />{t('đã thu hút sự quan tâm của các báo kinh tế uy tín')}</span>
             <span aria-hidden="true" className="survey-report-generation-gallery-title-mobile">
-              <span>Sự kiện Bàn tròn CEO</span>
-              <span>Quý 3/2026 đã thu hút</span>
-              <span>sự quan tâm của các báo kinh tế uy tín</span>
+              <span>{t('Sự kiện Bàn tròn CEO')}</span>
+              <span>{t('Quý 3/2026 đã thu hút')}</span>
+              <span>{t('sự quan tâm của các báo kinh tế uy tín')}</span>
             </span>
           </h2>
           <div className="survey-report-generation-recap-actions">
-            <a className="survey-primary-button survey-report-generation-recap-link" href="https://cafebiz.vn/dieu-gi-dang-can-tro-doanh-nghiep-tang-truong-176260922103948402.chn" rel="noopener noreferrer" target="_blank">Xem chi tiết</a>
-            <button className="survey-primary-button survey-report-generation-recap-link" onClick={onHome} type="button">Về trang chủ</button>
+            <a className="survey-primary-button survey-report-generation-recap-link" href="https://cafebiz.vn/dieu-gi-dang-can-tro-doanh-nghiep-tang-truong-176260922103948402.chn" rel="noopener noreferrer" target="_blank">{t('Xem chi tiết')}</a>
+            <button className="survey-primary-button survey-report-generation-recap-link" onClick={onHome} type="button">{t('Về trang chủ')}</button>
           </div>
         </div>
         <span aria-live="polite" className="survey-report-generation-gallery-index">
@@ -1072,9 +1079,9 @@ function ReportGenerationCarousel({ onHome }: { onHome: () => void }) {
       </div>
 
       <div className="survey-report-generation-carousel-shell">
-        {imageCount > 1 ? <button aria-label="Ảnh trước" className="survey-report-generation-carousel-control is-previous" onClick={showPreviousImage} type="button"><ChevronLeft aria-hidden="true" size={24} /></button> : null}
+        {imageCount > 1 ? <button aria-label={t('Ảnh trước')} className="survey-report-generation-carousel-control is-previous" onClick={showPreviousImage} type="button"><ChevronLeft aria-hidden="true" size={24} /></button> : null}
         <div
-          aria-label="Bộ sưu tập hình ảnh"
+          aria-label={t('Bộ sưu tập hình ảnh')}
           className="survey-report-generation-carousel-viewport"
           onPointerCancel={() => { swipeStartRef.current = null }}
           onPointerDown={handlePointerDown}
@@ -1088,22 +1095,22 @@ function ReportGenerationCarousel({ onHome }: { onHome: () => void }) {
           >
             {images.map((image, index) => (
               <article className={cn('survey-report-generation-carousel-slide', index === activeIndex && 'is-active')} key={image}>
-                <button aria-label={`Phóng to hình ảnh ${index + 1}`} className="survey-report-generation-carousel-image-button" onClick={() => setLightboxIndex(index)} type="button">
-                  <img alt={`CEO Workforce Index - hình ảnh ${index + 1}`} draggable={false} loading={index === 0 ? 'eager' : 'lazy'} src={image} />
+                <button aria-label={t('Phóng to hình ảnh {n}', { n: index + 1 })} className="survey-report-generation-carousel-image-button" onClick={() => setLightboxIndex(index)} type="button">
+                  <img alt={t('CEO Workforce Index - hình ảnh {n}', { n: index + 1 })} draggable={false} loading={index === 0 ? 'eager' : 'lazy'} src={image} />
                   <span aria-hidden="true" className="survey-report-generation-carousel-image-sheen" />
-                  <span className="survey-report-generation-carousel-image-caption">Chạm để phóng to</span>
+                  <span className="survey-report-generation-carousel-image-caption">{t('Chạm để phóng to')}</span>
                 </button>
               </article>
             ))}
           </motion.div>
         </div>
-        {imageCount > 1 ? <button aria-label="Ảnh tiếp theo" className="survey-report-generation-carousel-control is-next" onClick={showNextImage} type="button"><ChevronRight aria-hidden="true" size={24} /></button> : null}
+        {imageCount > 1 ? <button aria-label={t('Ảnh tiếp theo')} className="survey-report-generation-carousel-control is-next" onClick={showNextImage} type="button"><ChevronRight aria-hidden="true" size={24} /></button> : null}
       </div>
 
       {imageCount > 1 ? (
-        <div aria-label="Chọn hình ảnh" className="survey-report-generation-carousel-pagination" role="group">
+        <div aria-label={t('Chọn hình ảnh')} className="survey-report-generation-carousel-pagination" role="group">
           {images.map((image, index) => (
-            <button aria-current={index === activeIndex ? 'true' : undefined} aria-label={`Hiển thị hình ảnh ${index + 1}`} className={cn(index === activeIndex && 'is-active')} key={image} onClick={() => selectImage(index)} type="button" />
+            <button aria-current={index === activeIndex ? 'true' : undefined} aria-label={t('Hiển thị hình ảnh {n}', { n: index + 1 })} className={cn(index === activeIndex && 'is-active')} key={image} onClick={() => selectImage(index)} type="button" />
           ))}
         </div>
       ) : null}
@@ -1112,11 +1119,11 @@ function ReportGenerationCarousel({ onHome }: { onHome: () => void }) {
         <AnimatePresence>
           {lightboxIndex !== null ? (
             <motion.div animate={{ opacity: 1 }} className="survey-report-generation-lightbox" exit={{ opacity: 0 }} initial={{ opacity: 0 }} onMouseDown={(event) => { if (event.target === event.currentTarget) setLightboxIndex(null) }} role="presentation">
-              <motion.div animate={{ opacity: 1, scale: 1, y: 0 }} aria-label={`Hình ảnh ${lightboxIndex + 1} phóng to`} aria-modal="true" className="survey-report-generation-lightbox-dialog" initial={{ opacity: 0, scale: .97, y: 14 }} ref={lightboxDialogRef} role="dialog" transition={{ duration: .2, ease: 'easeOut' }}>
-                <img alt={`CEO Workforce Index - hình ảnh ${lightboxIndex + 1}`} src={lightboxImage} />
-                <button aria-label="Đóng hình ảnh phóng to" className="survey-report-generation-lightbox-close" onClick={() => setLightboxIndex(null)} ref={lightboxCloseRef} type="button"><X aria-hidden="true" size={22} /></button>
-                {imageCount > 1 ? <button aria-label="Hình ảnh trước" className="survey-report-generation-lightbox-control is-previous" onClick={showPreviousImage} type="button"><ChevronLeft aria-hidden="true" size={30} /></button> : null}
-                {imageCount > 1 ? <button aria-label="Hình ảnh tiếp theo" className="survey-report-generation-lightbox-control is-next" onClick={showNextImage} type="button"><ChevronRight aria-hidden="true" size={30} /></button> : null}
+              <motion.div animate={{ opacity: 1, scale: 1, y: 0 }} aria-label={t('Hình ảnh {n} phóng to', { n: lightboxIndex + 1 })} aria-modal="true" className="survey-report-generation-lightbox-dialog" initial={{ opacity: 0, scale: .97, y: 14 }} ref={lightboxDialogRef} role="dialog" transition={{ duration: .2, ease: 'easeOut' }}>
+                <img alt={t('CEO Workforce Index - hình ảnh {n}', { n: lightboxIndex + 1 })} src={lightboxImage} />
+                <button aria-label={t('Đóng hình ảnh phóng to')} className="survey-report-generation-lightbox-close" onClick={() => setLightboxIndex(null)} ref={lightboxCloseRef} type="button"><X aria-hidden="true" size={22} /></button>
+                {imageCount > 1 ? <button aria-label={t('Hình ảnh trước')} className="survey-report-generation-lightbox-control is-previous" onClick={showPreviousImage} type="button"><ChevronLeft aria-hidden="true" size={30} /></button> : null}
+                {imageCount > 1 ? <button aria-label={t('Hình ảnh tiếp theo')} className="survey-report-generation-lightbox-control is-next" onClick={showNextImage} type="button"><ChevronRight aria-hidden="true" size={30} /></button> : null}
               </motion.div>
             </motion.div>
           ) : null}
@@ -1138,12 +1145,12 @@ export function ReportGenerationScreen({ error, onHome, onRetry, pollTimedOut, r
       <div className="survey-report-generation-layout">
         <header className="survey-report-generation-hero">
           <div className="survey-report-generation-copy">
-            <SurveyEyebrow>KHẢO SÁT ĐÃ HOÀN TẤT</SurveyEyebrow>
-            <h1 id="survey-report-generation-title">Đang chuẩn bị báo cáo của Anh/Chị</h1>
-            <p>CWI đang phân tích câu trả lời để dựng báo cáo phù hợp với bối cảnh doanh nghiệp. Trang này sẽ tự cập nhật ngay khi báo cáo sẵn sàng.</p>
+            <SurveyEyebrow>{t('KHẢO SÁT ĐÃ HOÀN TẤT')}</SurveyEyebrow>
+            <h1 id="survey-report-generation-title">{t('Đang chuẩn bị báo cáo của Anh/Chị')}</h1>
+            <p>{t('CWI đang phân tích câu trả lời để dựng báo cáo phù hợp với bối cảnh doanh nghiệp. Trang này sẽ tự cập nhật ngay khi báo cáo sẵn sàng.')}</p>
             <div aria-live="polite" className="survey-report-generation-stage">
               <span aria-hidden="true" className="survey-report-generation-stage-pulse" />
-              {activeStep.label}
+              {t(activeStep.label)}
             </div>
           </div>
           <div aria-hidden="true" className="survey-report-generation-loader">
@@ -1159,8 +1166,8 @@ export function ReportGenerationScreen({ error, onHome, onRetry, pollTimedOut, r
 
         </header>
 
-        <section aria-label="Tiến độ tạo báo cáo" className="survey-report-generation-progress">
-          <div aria-label="Tiến độ tạo báo cáo" className="survey-report-generation-progress-line" role="progressbar" aria-valuemax={100} aria-valuemin={0} aria-valuenow={(activeProgressIndex + 1) * 25}>
+        <section aria-label={t('Tiến độ tạo báo cáo')} className="survey-report-generation-progress">
+          <div aria-label={t('Tiến độ tạo báo cáo')} className="survey-report-generation-progress-line" role="progressbar" aria-valuemax={100} aria-valuemin={0} aria-valuenow={(activeProgressIndex + 1) * 25}>
             <motion.span animate={{ scaleX: (activeProgressIndex + 1) / reportProgressSteps.length }} initial={{ scaleX: .12 }} transition={{ duration: .45, ease: 'easeOut' }} />
           </div>
           <div className="survey-report-generation-steps" role="list">
@@ -1170,19 +1177,19 @@ export function ReportGenerationScreen({ error, onHome, onRetry, pollTimedOut, r
               return (
                 <div className={cn('survey-report-generation-step', done && 'is-done', active && 'is-active')} key={step.label} role="listitem">
                   <span aria-hidden="true">{done ? <Check size={15} strokeWidth={2.8} /> : String(index + 1).padStart(2, '0')}</span>
-                  <strong>{step.label}</strong>
+                  <strong>{t(step.label)}</strong>
                 </div>
               )
             })}
           </div>
           <div className="survey-report-generation-note" aria-live="polite">
             <span aria-hidden="true" />
-            {pollTimedOut ? 'Báo cáo đang mất nhiều thời gian hơn dự kiến. Anh/Chị có thể kiểm tra lại mà không cần gửi lại khảo sát.' : 'Anh/Chị có thể giữ nguyên trang này. Hệ thống vẫn tiếp tục xử lý an toàn ở nền.'}
+            {pollTimedOut ? t('Báo cáo đang mất nhiều thời gian hơn dự kiến. Anh/Chị có thể kiểm tra lại mà không cần gửi lại khảo sát.') : t('Anh/Chị có thể giữ nguyên trang này. Hệ thống vẫn tiếp tục xử lý an toàn ở nền.')}
           </div>
           {error ? <p className="survey-report-generation-error" role="alert">{error}</p> : null}
           {pollTimedOut || error ? (
             <div className="survey-report-generation-actions">
-              <button className="survey-outline-button" onClick={onRetry} type="button">Kiểm tra lại</button>
+              <button className="survey-outline-button" onClick={onRetry} type="button">{t('Kiểm tra lại')}</button>
             </div>
           ) : null}
         </section>
@@ -1239,21 +1246,21 @@ type SurveyAnswersReviewModalProps = {
 
 function reviewAnswerValue(questionNumber: number, answers: Answers, otherAnswers: Answers) {
   const value = getAnswerDisplay(questionNumber, answers, otherAnswers)
-  return value === '—' ? 'Chưa trả lời' : value
+  return value === '—' ? t('Chưa trả lời') : value
 }
 
 function ReviewAnswerSection({ answers, otherAnswers, questions, title }: { answers: Answers; otherAnswers: Answers; questions: typeof partOneQuestions; title: string }) {
   return (
     <section className="survey-review-answer-section" aria-labelledby={`survey-review-${title}`}>
       <div className="survey-review-section-heading">
-        <h3 id={`survey-review-${title}`}>{title}</h3>
-        <span>{questions.length} câu</span>
+        <h3 id={`survey-review-${title}`}>{t(title)}</h3>
+        <span>{t('{count} câu', { count: questions.length })}</span>
       </div>
       <ol className="survey-review-answer-list">
         {questions.map((question) => (
           <li key={question.n}>
-            <div className="survey-review-question-label">Câu {question.n}</div>
-            <p>{question.q}</p>
+            <div className="survey-review-question-label">{t('Câu {n}', { n: question.n })}</div>
+            <p>{t(question.q)}</p>
             <strong>{reviewAnswerValue(question.n, answers, otherAnswers)}</strong>
           </li>
         ))}
@@ -1306,8 +1313,8 @@ export function SurveyAnswersReviewModal({ answers, contact, onClose, open, othe
   if (!open) return null
 
   const position = contact.jobTitle === 'Khác' && contact.jobTitleOther.trim()
-    ? `${contact.jobTitle} - ${contact.jobTitleOther.trim()}`
-    : contact.jobTitle || 'Chưa cập nhật'
+    ? `${t(contact.jobTitle)} - ${contact.jobTitleOther.trim()}`
+    : contact.jobTitle ? t(contact.jobTitle) : t('Chưa cập nhật')
   const showPartTwoAnswers = reportMode === 'private' && !partTwoPrivacyRefused
 
   return (
@@ -1315,31 +1322,31 @@ export function SurveyAnswersReviewModal({ answers, contact, onClose, open, othe
       <div aria-labelledby="survey-review-title" aria-modal="true" className="survey-review-modal" ref={modalRef} role="dialog">
         <header className="survey-review-modal-header">
           <div>
-            <SurveyEyebrow>XEM LẠI KHẢO SÁT</SurveyEyebrow>
-            <h2 id="survey-review-title">Câu trả lời của Anh/Chị</h2>
-            <p>Thông tin được hiển thị ở chế độ chỉ đọc.</p>
+            <SurveyEyebrow>{t('XEM LẠI KHẢO SÁT')}</SurveyEyebrow>
+            <h2 id="survey-review-title">{t('Câu trả lời của Anh/Chị')}</h2>
+            <p>{t('Thông tin được hiển thị ở chế độ chỉ đọc.')}</p>
           </div>
-          <button aria-label="Đóng cửa sổ xem lại khảo sát" className="survey-review-close" onClick={onClose} ref={initialFocusRef} type="button"><X aria-hidden="true" size={20} /></button>
+          <button aria-label={t('Đóng cửa sổ xem lại khảo sát')} className="survey-review-close" onClick={onClose} ref={initialFocusRef} type="button"><X aria-hidden="true" size={20} /></button>
         </header>
         <div className="survey-review-modal-body">
           <section className="survey-review-contact" aria-labelledby="survey-review-contact-title">
             <div className="survey-review-section-heading">
-              <h3 id="survey-review-contact-title">Thông tin đã gửi</h3>
-              <span>{reportMode === 'private' ? 'Báo cáo toàn phần' : 'Báo cáo Phần 1'}</span>
+              <h3 id="survey-review-contact-title">{t('Thông tin đã gửi')}</h3>
+              <span>{reportMode === 'private' ? t('Báo cáo toàn phần') : t('Báo cáo Phần 1')}</span>
             </div>
             <div className="survey-review-contact-grid">
-              <div><span>Họ tên</span><strong>{contact.name || 'Chưa cập nhật'}</strong></div>
-              <div><span>Email</span><strong>{contact.email || 'Chưa cập nhật'}</strong></div>
-              <div><span>Chức vụ</span><strong>{position}</strong></div>
-              <div><span>Tên công ty</span><strong>{contact.companyName || 'Chưa cập nhật'}</strong></div>
-              <div><span>Roundtable</span><strong>{roundtableRegistered ? 'Đã đăng ký' : 'Chưa đăng ký'}</strong></div>
+              <div><span>{t('Họ tên')}</span><strong>{contact.name || t('Chưa cập nhật')}</strong></div>
+              <div><span>Email</span><strong>{contact.email || t('Chưa cập nhật')}</strong></div>
+              <div><span>{t('Chức vụ')}</span><strong>{position}</strong></div>
+              <div><span>{t('Tên công ty')}</span><strong>{contact.companyName || t('Chưa cập nhật')}</strong></div>
+              <div><span>Roundtable</span><strong>{roundtableRegistered ? t('Đã đăng ký') : t('Chưa đăng ký')}</strong></div>
             </div>
           </section>
           <ReviewAnswerSection answers={answers} otherAnswers={otherAnswers} questions={partOneQuestions} title="Phần 1 - Khảo sát khuyết danh" />
           {showPartTwoAnswers ? <ReviewAnswerSection answers={answers} otherAnswers={otherAnswers} questions={partTwoQuestions} title="Phần 2 - Khảo sát định danh" /> : null}
         </div>
         <footer className="survey-review-modal-footer">
-          <button className="survey-primary-button" onClick={onClose} type="button">Đóng</button>
+          <button className="survey-primary-button" onClick={onClose} type="button">{t('Đóng')}</button>
         </footer>
       </div>
     </div>
@@ -1395,17 +1402,17 @@ export function SubmissionCompleteModal({ emailStatus, error, hasReportJob, html
                 <div className="survey-submission-modal-top">
                   <div aria-hidden="true" className="survey-submission-modal-icon"><CheckCircle2 size={30} /></div>
                 </div>
-                <SurveyEyebrow>BÁO CÁO ĐÃ SẴN SÀNG</SurveyEyebrow>
-                <h2 id="survey-submission-title">Báo cáo của Anh/Chị</h2>
-                <p className="survey-submission-modal-lede">Báo cáo đã được tạo. Anh/Chị có thể xem ngay tại đây; bản PDF sẽ tiếp tục được hoàn thiện và gửi qua email.</p>
+                <SurveyEyebrow>{t('BÁO CÁO ĐÃ SẴN SÀNG')}</SurveyEyebrow>
+                <h2 id="survey-submission-title">{t('Báo cáo của Anh/Chị')}</h2>
+                <p className="survey-submission-modal-lede">{t('Báo cáo đã được tạo. Anh/Chị có thể xem ngay tại đây; bản PDF sẽ tiếp tục được hoàn thiện và gửi qua email.')}</p>
                 <div className="survey-report-preview-frame">
-                  <iframe loading="eager" referrerPolicy="no-referrer" sandbox="allow-same-origin" srcDoc={previewHtml} title="Báo cáo CEO Workforce Index" />
+                  <iframe loading="eager" referrerPolicy="no-referrer" sandbox="allow-same-origin" srcDoc={previewHtml} title={t('Báo cáo CEO Workforce Index')} />
                 </div>
                 <div className="survey-submission-delivery-status" aria-live="polite">
                   <span className="survey-submission-delivery-dot" aria-hidden="true" />
                   {reportEmailLabel(emailStatus)}
                 </div>
-                <button className="survey-primary-button survey-submission-modal-button" onClick={onHome} ref={initialFocusRef} type="button">{submissionCompleteCopy.home}</button>
+                <button className="survey-primary-button survey-submission-modal-button" onClick={onHome} ref={initialFocusRef} type="button">{t(submissionCompleteCopy.home)}</button>
               </motion.div>
             ) : hasReportJob ? (
               <motion.div animate={{ opacity: 1, y: 0 }} className="survey-report-loading-state" initial={{ opacity: 0, y: 10 }} key="report-loading" transition={{ duration: .28 }}>
@@ -1417,47 +1424,47 @@ export function SubmissionCompleteModal({ emailStatus, error, hasReportJob, html
                     <motion.span className="survey-report-loading-glow" animate={{ opacity: [.35, .85, .35], scale: [.92, 1.06, .92] }} transition={{ duration: 1.8, ease: 'easeInOut', repeat: Infinity }} />
                   </div>
                 </div>
-                <SurveyEyebrow>KHẢO SÁT ĐÃ HOÀN TẤT</SurveyEyebrow>
-                <h2 id="survey-submission-title">Đang chuẩn bị báo cáo</h2>
-                <p className="survey-submission-modal-lede">CWI đang phân tích câu trả lời và dựng báo cáo riêng cho Anh/Chị. Báo cáo sẽ hiển thị ngay khi sẵn sàng.</p>
+                <SurveyEyebrow>{t('KHẢO SÁT ĐÃ HOÀN TẤT')}</SurveyEyebrow>
+                <h2 id="survey-submission-title">{t('Đang chuẩn bị báo cáo')}</h2>
+                <p className="survey-submission-modal-lede">{t('CWI đang phân tích câu trả lời và dựng báo cáo riêng cho Anh/Chị. Báo cáo sẽ hiển thị ngay khi sẵn sàng.')}</p>
                 <motion.p animate={{ opacity: 1, y: 0 }} className="survey-report-loading-stage" initial={{ opacity: 0, y: 4 }} key={reportStatus || 'pending'}>
-                  {reportProgressSteps[activeProgressIndex]?.label ?? 'Đang tiếp nhận câu trả lời'}
+                  {reportProgressSteps[activeProgressIndex] ? t(reportProgressSteps[activeProgressIndex].label) : t('Đang tiếp nhận câu trả lời')}
                 </motion.p>
-                <div aria-label="Tiến độ tạo báo cáo" className="survey-report-loading-progress" role="progressbar" aria-valuemax={100} aria-valuemin={0} aria-valuenow={(activeProgressIndex + 1) * 25}>
+                <div aria-label={t('Tiến độ tạo báo cáo')} className="survey-report-loading-progress" role="progressbar" aria-valuemax={100} aria-valuemin={0} aria-valuenow={(activeProgressIndex + 1) * 25}>
                   <motion.span animate={{ scaleX: (activeProgressIndex + 1) / reportProgressSteps.length }} initial={{ scaleX: .12 }} transition={{ duration: .45, ease: 'easeOut' }} />
                 </div>
-                <div aria-label="Tiến độ tạo báo cáo" className="survey-report-progress" role="list">
+                <div aria-label={t('Tiến độ tạo báo cáo')} className="survey-report-progress" role="list">
                   {reportProgressSteps.map((step, index) => {
                     const done = Boolean(previewHtml) || index < activeProgressIndex
                     const active = index === activeProgressIndex && !done
                     return (
                       <div className={cn('survey-report-progress-step', done && 'is-done', active && 'is-active')} key={step.label} role="listitem">
                         <span aria-hidden="true" className="survey-report-progress-marker">{done ? '✓' : index + 1}</span>
-                        <span>{step.label}</span>
+                        <span>{t(step.label)}</span>
                       </div>
                     )
                   })}
                 </div>
                 <div className="survey-report-loading-note" aria-live="polite">
                   <motion.span animate={{ opacity: [.45, 1, .45] }} transition={{ duration: 1.4, repeat: Infinity }} />
-                  {pollTimedOut ? 'Báo cáo đang được xử lý lâu hơn dự kiến.' : 'Anh/Chị có thể giữ nguyên cửa sổ này; hệ thống sẽ tự cập nhật.'}
+                  {pollTimedOut ? t('Báo cáo đang được xử lý lâu hơn dự kiến.') : t('Anh/Chị có thể giữ nguyên cửa sổ này; hệ thống sẽ tự cập nhật.')}
                 </div>
                 {error ? <p className="survey-submission-modal-error" role="alert">{error}</p> : null}
-                {pollTimedOut || error ? <button className="survey-outline-button survey-submission-modal-retry" onClick={onRetry} type="button">Kiểm tra lại</button> : null}
-                <button className="survey-primary-button survey-submission-modal-button" onClick={onHome} ref={initialFocusRef} type="button">{submissionCompleteCopy.home}</button>
+                {pollTimedOut || error ? <button className="survey-outline-button survey-submission-modal-retry" onClick={onRetry} type="button">{t('Kiểm tra lại')}</button> : null}
+                <button className="survey-primary-button survey-submission-modal-button" onClick={onHome} ref={initialFocusRef} type="button">{t(submissionCompleteCopy.home)}</button>
               </motion.div>
             ) : (
               <motion.div animate={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 10 }} key="submission-complete" transition={{ duration: .28 }}>
                 <div className="survey-submission-modal-top">
                   <div aria-hidden="true" className="survey-submission-modal-icon"><CheckCircle2 size={30} /></div>
                 </div>
-                <SurveyEyebrow>{submissionCompleteCopy.eyebrow}</SurveyEyebrow>
+                <SurveyEyebrow>{t(submissionCompleteCopy.eyebrow)}</SurveyEyebrow>
                 <div aria-hidden="true" className="survey-submission-modal-logo-title">
                   <SurveyBrandMark decorative variant="intro" />
                 </div>
-                <h2 className="survey-sr-only" id="survey-submission-title">{submissionCompleteCopy.title}</h2>
-                <p>{submissionCompleteCopy.message}</p>
-                <button className="survey-primary-button survey-submission-modal-button" onClick={onHome} ref={initialFocusRef} type="button">{submissionCompleteCopy.home}</button>
+                <h2 className="survey-sr-only" id="survey-submission-title">{t(submissionCompleteCopy.title)}</h2>
+                <p>{t(submissionCompleteCopy.message)}</p>
+                <button className="survey-primary-button survey-submission-modal-button" onClick={onHome} ref={initialFocusRef} type="button">{t(submissionCompleteCopy.home)}</button>
               </motion.div>
             )}
           </AnimatePresence>

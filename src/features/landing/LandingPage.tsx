@@ -1,6 +1,8 @@
 import { LazyMotion, domAnimation, m, type Variants } from 'framer-motion'
 import { ChevronLeft, ChevronRight, SquarePen } from 'lucide-react'
 import { useEffect, useRef, useState, type CSSProperties, type ImgHTMLAttributes, type PointerEvent, type ReactNode } from 'react'
+import { getLang, languageToggleCode, t, tx } from '@/i18n'
+import { LanguageToggle } from '@/i18n/LanguageToggle'
 import { cn } from '@/lib/cn'
 import { figmaAssets, type FigmaAssetKey } from './figmaAssets'
 import spotlightBackground from '@/assets/figma/bg-tieu-diem.png'
@@ -20,8 +22,10 @@ import webinarCarouselBackground from '@/assets/figma/carousel-webinar.jpg'
 import mobileReportCarouselBackground from '@/assets/figma/carousel-baocaoquy3-mobile.png'
 import mobileRoundtableCarouselBackground from '@/assets/figma/carousel-dauanbantron-mobile.png'
 import logoSectionCarouselCwi from '@/assets/figma/logo-section-carousel-cwi.png'
+import logoSectionCarouselCwiNoLabels from '@/assets/figma/logo-section-carousel-cwi-nolabels.png'
 import mobileHeroBackground from '@/assets/figma/bg-mobile-banner.jpg'
 import mobileLogoStrip from '@/assets/figma/logo-website-mobile.png'
+import mobileLogoStripNoLabels from '@/assets/figma/logo-website-mobile-nolabels.png'
 import { LandingRoundtableModal } from './LandingRoundtableModal'
 import { WebinarInfoModal } from './WebinarInfoModal'
 import {
@@ -351,7 +355,7 @@ function FigmaSectionLabel({
         style={{ left: leftLine.left, top: lineTop, width: leftLine.width }}
       />
       <span className="figma-section-label-text" style={{ left: textLeft, width: textWidth }}>
-        {label}
+        {t(label)}
       </span>
       <AssetImage
         alt=""
@@ -501,22 +505,22 @@ function Header({ scale, isPolicyPage = false }: { scale: number; isPolicyPage?:
                 }}
                 style={{ left: item.left, width: item.width }}
               >
-                {item.label}
+                {t(item.label)}
               </a>
             ))}
           </nav>
           <div className="figma-header-language absolute left-[878px] top-[11px] h-[30px] w-[60px]">
             <AssetImage alt="" aria-hidden="true" asset="line38" className="figma-header-chrome-icon absolute left-[59px] top-0 h-[30px] w-[1px]" loading="eager" />
             <AssetImage alt="" aria-hidden="true" asset="iconLanguage" className="figma-header-chrome-icon absolute left-0 top-[7px] h-[18px] w-[18px]" loading="eager" />
-            <span className="figma-inter absolute left-[25px] top-[6px] whitespace-nowrap text-[16px] font-medium leading-[19px] text-black underline">EN</span>
+            <LanguageToggle className="figma-header-language-toggle figma-inter absolute left-[25px] top-[6px] whitespace-nowrap text-[16px] font-medium leading-[19px] text-black underline" />
           </div>
           <RedButton action="login" className="figma-header-login-button absolute left-[954px] top-[5px] h-[41px] w-[144px] whitespace-nowrap text-[16px] font-medium">
-            Đăng nhập
+            {t('Đăng nhập')}
           </RedButton>
           <button
             aria-controls="mobile-navigation-menu"
             aria-expanded={isMenuOpen}
-            aria-label={isMenuOpen ? 'Đóng menu' : 'Mở menu'}
+            aria-label={isMenuOpen ? t('Đóng menu') : t('Mở menu')}
             className="mobile-menu-button"
             onClick={() => setIsMenuOpen((open) => !open)}
             ref={menuButtonRef}
@@ -536,25 +540,25 @@ function Header({ scale, isPolicyPage = false }: { scale: number; isPolicyPage?:
           if (event.target === event.currentTarget) setIsMenuOpen(false)
         }}
       >
-        <div className="mobile-menu-panel" onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-label="Điều hướng mobile">
+        <div className="mobile-menu-panel" onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-label={t('Điều hướng mobile')}>
           <div className="mobile-menu-topline">
-            <button aria-label="Đóng menu" className="mobile-menu-close" onClick={() => setIsMenuOpen(false)} type="button">×</button>
+            <button aria-label={t('Đóng menu')} className="mobile-menu-close" onClick={() => setIsMenuOpen(false)} type="button">×</button>
           </div>
           <nav className="mobile-menu-nav" aria-label="Mobile navigation">
             {navItems.map((label, index) => (
               <button key={label} onClick={() => handleMobileNav(navTargets[index])} style={{ '--item-index': index } as CSSProperties} type="button">
                 <span>{String(index + 1).padStart(2, '0')}</span>
-                {label}
+                {t(label)}
               </button>
             ))}
           </nav>
           <div className="mobile-menu-footer-row">
-            <div className="mobile-menu-language">
+            <LanguageToggle className="mobile-menu-language">
               <AssetImage alt="" aria-hidden="true" asset="iconLanguage" />
-              <span>Language: <strong>EN</strong></span>
-            </div>
+              <span>Language: <strong>{languageToggleCode()}</strong></span>
+            </LanguageToggle>
             <RedButton action="survey" className="mobile-menu-cta" >
-              <span>Thực hiện khảo sát</span>
+              <span>{t('Thực hiện khảo sát')}</span>
               <AssetImage alt="" aria-hidden="true" asset="arrow1" className="h-[15px] w-[17px]" loading="eager" />
             </RedButton>
           </div>
@@ -612,7 +616,7 @@ function HeroCarouselButton({ onOpenReportPdf, onOpenWebinarModal, slide }: { on
   const className = 'figma-button-red figma-hero-survey-button absolute left-[564px] top-[539px] h-[60px] w-[313px] text-[22px] font-medium'
   const content = (
     <>
-      <span>{slide.ctaLabel}</span>
+      <span>{t(slide.ctaLabel)}</span>
       <AssetImage alt="" aria-hidden="true" asset="arrow1" className="h-[15px] w-[17px]" loading="eager" />
     </>
   )
@@ -656,10 +660,10 @@ function HeroCarouselButton({ onOpenReportPdf, onOpenWebinarModal, slide }: { on
 function HeroCarouselNavigation({ onNext, onPrevious }: { onNext: () => void; onPrevious: () => void }) {
   return (
     <div className="hero-carousel-navigation">
-      <button aria-label="Slide trước" className="hero-carousel-navigation-button" onClick={onPrevious} title="Slide trước" type="button">
+      <button aria-label={t('Slide trước')} className="hero-carousel-navigation-button" onClick={onPrevious} title={t('Slide trước')} type="button">
         <ChevronLeft aria-hidden="true" size={34} strokeWidth={1.8} />
       </button>
-      <button aria-label="Slide tiếp theo" className="hero-carousel-navigation-button" onClick={onNext} title="Slide tiếp theo" type="button">
+      <button aria-label={t('Slide tiếp theo')} className="hero-carousel-navigation-button" onClick={onNext} title={t('Slide tiếp theo')} type="button">
         <ChevronRight aria-hidden="true" size={34} strokeWidth={1.8} />
       </button>
     </div>
@@ -669,31 +673,69 @@ function HeroCarouselNavigation({ onNext, onPrevious }: { onNext: () => void; on
 function HeroCarouselCopy({ copy }: { copy: HeroCarouselCopy }) {
   return (
     <div className={cn('hero-carousel-copy', `hero-carousel-copy--${copy.variant}`)}>
-      {copy.eyebrow && <p className="hero-carousel-eyebrow">{copy.eyebrow}</p>}
+      {copy.eyebrow && <p className="hero-carousel-eyebrow">{t(copy.eyebrow)}</p>}
       <h1 id="hero-title" className="hero-carousel-heading">
         {copy.heading.map((line, lineIndex) => (
           <span className={cn('hero-carousel-copy-line', line.compact && 'is-compact')} key={lineIndex}>
             {line.segments.map((segment, segmentIndex) => (
               <span className={cn(segment.accent && 'hero-carousel-copy-accent')} key={`${lineIndex}-${segmentIndex}`}>
-                {segment.text}
+                {t(segment.text)}
               </span>
             ))}
           </span>
         ))}
       </h1>
       <div className="hero-carousel-description">
-        {copy.description.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        {copy.description.map((paragraph) => <p key={paragraph}>{t(paragraph)}</p>)}
       </div>
     </div>
   )
 }
 
+// The Figma strips have the Vietnamese group labels baked in. English shows label-free copies and
+// sets the labels as text: x is the label centre and y its baseline, in pixels of each strip image.
+const heroLogoStripLabels = [
+  { label: 'Đơn vị bảo trợ', desktop: [324.5, 30], mobile: [375.5, 533] },
+  { label: 'Đơn vị tổ chức', desktop: [471, 30], mobile: [707, 533] },
+  { label: 'Đơn vị đồng hành', desktop: [713, 30], mobile: [540, 815] },
+  { label: 'Đối tác truyền thông', desktop: [978.5, 30], mobile: [540, 1090] },
+  { label: 'Đối tác tri thức', desktop: [1252, 30], mobile: [540, 1337] },
+  { label: 'Đối tác vận hành', desktop: [1554, 30], mobile: [540, 1601] },
+] as const
+
 function HeroLogoStrip({ className }: { className: string }) {
+  if (getLang() === 'vi') {
+    return (
+      <picture aria-hidden="true" className={className}>
+        <source media="(max-width: 900px)" srcSet={mobileLogoStrip} />
+        <img alt="" draggable={false} src={logoSectionCarouselCwi} />
+      </picture>
+    )
+  }
+
   return (
-    <picture aria-hidden="true" className={className}>
-      <source media="(max-width: 900px)" srcSet={mobileLogoStrip} />
-      <img alt="" draggable={false} src={logoSectionCarouselCwi} />
-    </picture>
+    <div aria-hidden="true" className={cn(className, 'hero-logo-strip-en')}>
+      <div className="hero-logo-strip-en-frame">
+        <picture>
+          <source media="(max-width: 900px)" srcSet={mobileLogoStripNoLabels} />
+          <img alt="" draggable={false} src={logoSectionCarouselCwiNoLabels} />
+        </picture>
+        {heroLogoStripLabels.map(({ label, desktop, mobile }) => (
+          <span
+            className="hero-logo-strip-label"
+            key={label}
+            style={{
+              '--label-x': `${(desktop[0] / 1656) * 100}%`,
+              '--label-y': `${(desktop[1] / 104) * 100}%`,
+              '--label-x-mobile': `${(mobile[0] / 1080) * 100}%`,
+              '--label-y-mobile': `${(mobile[1] / 1920) * 100}%`,
+            } as CSSProperties}
+          >
+            {tx('logoStrip', label)}
+          </span>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -735,16 +777,16 @@ function HeroSection({ isWebinarOpen, onOpenWebinar }: { isWebinarOpen: boolean;
       {activeSlide.showIntro && (
         <>
           <p className="absolute left-[440px] top-[220px] w-[560px] whitespace-nowrap text-center text-[16px] font-medium uppercase leading-[19px] text-[#13e6d0]">
-            LA BÀN ĐỊNH HƯỚNG NĂNG LỰC VẬN HÀNH CỦA TỔ CHỨC
+            {t('LA BÀN ĐỊNH HƯỚNG NĂNG LỰC VẬN HÀNH CỦA TỔ CHỨC')}
           </p>
           <h1 id="hero-title" className="absolute left-[236px] top-[254px] w-[968px] text-center text-[81px] font-medium leading-[90px] text-white">
-            <span className="block">Hệ cộng lực mạnh</span>
+            <span className="block">{t('Hệ cộng lực mạnh')}</span>
             <span className="block">
-              <em className="figma-text-gradient font-semibold italic">Doanh nghiệp</em> vươn tầm
+              <em className="figma-text-gradient font-semibold italic">{tx('slogan', 'Doanh nghiệp')}</em> {tx('slogan', 'vươn tầm')}
             </span>
           </h1>
           <p className="figma-hero-body-copy absolute left-[370px] top-[449px] w-[700px] text-center">
-            Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - tự động hoá - hệ sinh thái) của doanh nghiệp bạn với thị trường, hiểu nguyên nhân và nhận khuyến nghị hành động.
+            {t('Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - tự động hoá - hệ sinh thái) của doanh nghiệp bạn với thị trường, hiểu nguyên nhân và nhận khuyến nghị hành động.')}
           </p>
         </>
       )}
@@ -762,16 +804,16 @@ function SpotlightEditorial({ mobile = false }: { mobile?: boolean }) {
       <div className="spotlight-editorial-brand">
         <AssetImage alt="CEO Workforce Index" asset="cwiLogo" className="spotlight-editorial-logo" loading="eager" />
         <span aria-hidden="true" className="spotlight-editorial-divider" />
-        <span>Tiêu điểm quý</span>
+        <span>{t('Tiêu điểm quý')}</span>
       </div>
       <h2 className="spotlight-editorial-title" id={mobile ? 'mobile-report-title' : 'report-title'}>
-        <span>Q3/2026</span> Năng lực lãnh đạo
+        <span>Q3/2026</span> {t('Năng lực lãnh đạo')}
       </h2>
-      <p className="spotlight-editorial-subtitle">Nâng cao năng lực lãnh đạo để mở rộng quy mô</p>
+      <p className="spotlight-editorial-subtitle">{t('Nâng cao năng lực lãnh đạo để mở rộng quy mô')}</p>
       <img alt="" aria-hidden="true" className="spotlight-editorial-rule" src={spotlightLineLeft} />
       <div className="spotlight-editorial-meta">
         <strong>Teaser Report</strong>
-        <p>Trích lược những phát hiện cốt lõi từ khảo sát CEO toàn cầu &amp; Việt Nam</p>
+        <p>{t('Trích lược những phát hiện cốt lõi từ khảo sát CEO toàn cầu & Việt Nam')}</p>
       </div>
     </article>
   )
@@ -785,19 +827,19 @@ function SpotlightInfo({ desktop = false }: { desktop?: boolean }) {
       style={{ backgroundImage: 'url(' + spotlightBackground2 + ')' }}
     >
       <div className="spotlight-info-content">
-        <h3><span>Báo cáo CEO Workforce Index Q3 2026</span></h3>
+        <h3><span>{t('Báo cáo CEO Workforce Index Q3 2026')}</span></h3>
         <img alt="" aria-hidden="true" className="spotlight-info-rule" src={spotlightLineRight} />
-        <p>Giúp hiểu sâu, phân tích và có hành động ngay trong 90 ngày để tăng cường &quot;hệ cộng lực&quot;.</p>
+        <p>{t('Giúp hiểu sâu, phân tích và có hành động ngay trong 90 ngày để tăng cường "hệ cộng lực".')}</p>
         <ul>
-          <li>Đối chuẩn thị trường để biết doanh nghiệp mình đang ở đâu</li>
-          <li>Nhận diện những khoảng trống cần lưu ý</li>
-          <li>Khuyến nghị hành động phù hợp cho doanh nghiệp</li>
+          <li>{t('Đối chuẩn thị trường để biết doanh nghiệp mình đang ở đâu')}</li>
+          <li>{t('Nhận diện những khoảng trống cần lưu ý')}</li>
+          <li>{t('Khuyến nghị hành động phù hợp cho doanh nghiệp')}</li>
         </ul>
-        <p>Hoàn thành nhanh chóng trong 7 phút.</p>
+        <p>{t('Hoàn thành nhanh chóng trong 7 phút.')}</p>
       </div>
       <RedButton action="survey" className="spotlight-cta">
         <SquarePen aria-hidden="true" size={19} strokeWidth={1.8} />
-        <span>Bắt đầu khảo sát</span>
+        <span>{t('Bắt đầu khảo sát')}</span>
       </RedButton>
     </article>
   )
@@ -880,7 +922,7 @@ function ReportStatsSection() {
       whileInView="show"
       viewport={desktopMotionViewport}
       variants={desktopSectionReveal}
-      aria-label="Thông số nghiên cứu"
+      aria-label={t('Thông số nghiên cứu')}
     >
       <div className="absolute left-[234.375px] top-0 h-[147px] w-[971.25px]">
         {[323.75, 647.5].map((left) => (
@@ -897,9 +939,9 @@ function ReportStatsSection() {
             <div className="absolute top-0 h-full text-center" key={stat.value} style={slots[index]}>
               <AssetImage alt="" aria-hidden="true" asset={stat.icon} className="absolute left-1/2 top-[26px] h-[46px] w-[60px] -translate-x-1/2 object-contain" />
               <strong className="absolute left-0 top-[84px] w-full text-center text-[18px] font-medium leading-[22px] text-[#144eaf]">
-                <AnimatedReportValue delay={index * 90} value={stat.value} />
+                <AnimatedReportValue delay={index * 90} value={t(stat.value)} />
               </strong>
-              <span className="absolute left-0 top-[108px] w-full text-center text-[14px] font-normal leading-[18px] text-black">{stat.label}</span>
+              <span className="absolute left-0 top-[108px] w-full text-center text-[14px] font-normal leading-[18px] text-black">{t(stat.label)}</span>
             </div>
           )
         })}
@@ -908,23 +950,30 @@ function ReportStatsSection() {
   )
 }
 function RoundtableSection({ onOpenRoundtable }: { onOpenRoundtable: () => void }) {
+  // The "CEO" wordmark is an image after "Bàn tròn"; English puts it first ("CEO Roundtable").
+  const ceoWordmarkFirst = getLang() === 'en'
+  const ceoWordmark = (
+    <AssetImage
+      alt="CEO"
+      asset="textCeo"
+      className="mt-[-2px] h-[32.5px] w-[64px] object-contain"
+      loading="eager"
+    />
+  )
+
   return (
     <m.section id="roundtable" className="absolute left-[40px] top-[1710px] h-[640px] w-[1360px] overflow-hidden rounded-[20px]" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="roundtable-title">
       <AssetImage alt="" aria-hidden="true" asset="bgCircleCeo" className="absolute inset-0 h-full w-full object-cover" />
 
       <div className="absolute left-[70px] top-[94px] w-[420px] text-white">
         <h2 id="roundtable-title" className="flex h-[36px] items-start gap-[6px] text-[30px] font-medium leading-[36px]">
-          <span>Bàn tròn</span>
-          <AssetImage
-            alt="CEO"
-            asset="textCeo"
-            className="mt-[-2px] h-[32.5px] w-[64px] object-contain"
-            loading="eager"
-          />
+          {ceoWordmarkFirst && ceoWordmark}
+          <span>{t('Bàn tròn')}</span>
+          {!ceoWordmarkFirst && ceoWordmark}
         </h2>
-        <p className="mt-0 text-[18px] font-normal leading-[22px]">Khai mở góc nhìn - Kiến tạo giá trị</p>
+        <p className="mt-0 text-[18px] font-normal leading-[22px]">{t('Khai mở góc nhìn - Kiến tạo giá trị')}</p>
         <p className="mt-[8px] w-[420px] text-[16px] font-normal leading-[20px]">
-          Không &quot;thuyết trình&quot;. Tranh luận để tìm kiếm những sự thật ngầm hiểu đắt giá nhất. Tham gia Bàn tròn CEO định kỳ dành riêng cho thành viên CWI.
+          {t('Không "thuyết trình". Tranh luận để tìm kiếm những sự thật ngầm hiểu đắt giá nhất. Tham gia Bàn tròn CEO định kỳ dành riêng cho thành viên CWI.')}
         </p>
       </div>
 
@@ -940,8 +989,8 @@ function RoundtableSection({ onOpenRoundtable }: { onOpenRoundtable: () => void 
           return (
             <div className="absolute top-0 h-full text-center" key={stat.value} style={slot}>
               <AssetImage alt="" aria-hidden="true" asset={stat.icon} className="absolute left-1/2 top-0 h-[37px] w-[49px] -translate-x-1/2 object-contain" />
-              <strong className="absolute left-0 top-[53px] w-full whitespace-nowrap text-[20px] font-medium leading-[24px]">{stat.value}</strong>
-              <span className="absolute left-0 top-[78px] w-full text-[16px] font-normal leading-[20px]">{stat.label}</span>
+              <strong className="absolute left-0 top-[53px] w-full whitespace-nowrap text-[20px] font-medium leading-[24px]">{t(stat.value)}</strong>
+              <span className="absolute left-0 top-[78px] w-full text-[16px] font-normal leading-[20px]">{t(stat.label)}</span>
             </div>
           )
         })}
@@ -949,7 +998,7 @@ function RoundtableSection({ onOpenRoundtable }: { onOpenRoundtable: () => void 
 
 
       <RedButton action="roundtable" className="absolute left-[70px] top-[435px] h-[50px] w-[330px] text-[16px] font-medium" onClick={onOpenRoundtable}>
-        Đăng kí tham gia
+        {t('Đăng kí tham gia')}
       </RedButton>
       <div className="absolute left-[594px] top-[80px] h-[480px] w-[686px] rounded-[16px] border border-white/90 p-[9px]">
         <AssetImage alt="Roundtable session" asset="image124" className="h-full w-full rounded-[8px] object-cover" />
@@ -1067,14 +1116,14 @@ function AboutCwiCard({ card }: { card: AboutCwiCardData }) {
     <article className={cn('about-cwi-card', `about-cwi-card--${card.icon}`)}>
       <div className="about-cwi-card-header">
         <img alt="" aria-hidden="true" className="about-cwi-card-icon" draggable={false} src={Icon} />
-        <h3>{card.title}</h3>
+        <h3>{t(card.title)}</h3>
       </div>
       <div className="about-cwi-card-body">
         {card.blocks.map((block, index) => {
           if (block.type === 'paragraph') {
             return (
               <p className={cn('about-cwi-card-paragraph', block.muted && 'is-muted')} key={`paragraph-${index}`}>
-                {block.text}
+                {t(block.text)}
               </p>
             )
           }
@@ -1082,7 +1131,7 @@ function AboutCwiCard({ card }: { card: AboutCwiCardData }) {
           if (block.type === 'bullets') {
             return (
               <ul className={cn('about-cwi-card-bullets', block.strong && 'is-strong')} key={`bullets-${index}`}>
-                {block.items.map((item) => <li key={item}>{item}</li>)}
+                {block.items.map((item) => <li key={item}>{t(item)}</li>)}
               </ul>
             )
           }
@@ -1090,14 +1139,14 @@ function AboutCwiCard({ card }: { card: AboutCwiCardData }) {
           if (block.type === 'labels') {
             return (
               <ul className="about-cwi-card-labels" key={`labels-${index}`}>
-                {block.items.map((item) => <li key={item}>{item}</li>)}
+                {block.items.map((item) => <li key={item}>{t(item)}</li>)}
               </ul>
             )
           }
 
           return (
             <div className="about-cwi-card-formula" key={`formula-${index}`}>
-              {block.items.map((item) => <span key={item}>{item}</span>)}
+              {block.items.map((item) => <span key={item}>{t(item)}</span>)}
             </div>
           )
         })}
@@ -1109,11 +1158,11 @@ function AboutCwiCard({ card }: { card: AboutCwiCardData }) {
 function AboutCwiTitle({ id, className }: { id?: string; className?: string }) {
   return (
     <h2 className={cn('about-cwi-title', className)} id={id}>
-      <em>CEO Workforce Index</em> là thước đo
+      <em>CEO Workforce Index</em> {tx('aboutCwiTitle', 'là thước đo')}
       <br />
-      Hệ cộng lực vận hành doanh nghiệp
+      {tx('aboutCwiTitle', 'Hệ cộng lực vận hành doanh nghiệp')}
       <br />
-      hiệu quả
+      {tx('aboutCwiTitle', 'hiệu quả')}
     </h2>
   )
 }
@@ -1229,7 +1278,7 @@ function AdvisorText({ spec }: { spec: AdvisorTextSpec }) {
 
   return (
     <p className={cn('absolute whitespace-pre-line [word-break:break-word]', spec.alignRight && 'text-right', spec.italic && 'italic', spec.uppercase && 'uppercase', spec.nowrap && 'whitespace-nowrap')} style={style}>
-      {spec.text}
+      {t(spec.text)}
     </p>
   )
 }
@@ -1300,7 +1349,7 @@ function FigmaLogoAsset({ spec }: { spec: FigmaLogoSpec }) {
 
   return (
     <div className="absolute overflow-hidden pointer-events-none" style={boxStyle(spec)}>
-      <AssetImage alt={spec.alt} asset={spec.asset} className={cn('absolute', spec.objectCover ? 'object-cover' : !spec.crop && 'object-contain')} style={imageStyle} />
+      <AssetImage alt={t(spec.alt)} asset={spec.asset} className={cn('absolute', spec.objectCover ? 'object-cover' : !spec.crop && 'object-contain')} style={imageStyle} />
     </div>
   )
 }
@@ -1310,9 +1359,9 @@ function AdvisorsSection() {
       <m.div className="about-cwi-layout" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal}>
         <div className="about-cwi-left-panel">
           <AboutCwiTitle id="advisors-title" />
-          <img alt="Cuộc họp lãnh đạo doanh nghiệp" className="about-cwi-left-image" draggable={false} loading="lazy" src={leftPanelBackground} />
+          <img alt={t('Cuộc họp lãnh đạo doanh nghiệp')} className="about-cwi-left-image" draggable={false} loading="lazy" src={leftPanelBackground} />
         </div>
-        <div aria-label="Nội dung về CEO Workforce Index" className="about-cwi-card-viewport">
+        <div aria-label={t('Nội dung về CEO Workforce Index')} className="about-cwi-card-viewport">
           <div className="about-cwi-card-stack">
             {aboutCwiCards.map((card) => <AboutCwiCard card={card} key={card.title} />)}
           </div>
@@ -1324,7 +1373,7 @@ function AdvisorsSection() {
 
 function AdvisorPeopleSection() {
   return (
-    <m.section className="about-cwi-people-section absolute left-0 top-[3198px] h-[390px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-label="Ban tổ chức">
+    <m.section className="about-cwi-people-section absolute left-0 top-[3198px] h-[390px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-label={t('Ban tổ chức')}>
       <div className="absolute left-[112px] top-0 h-[374px] w-[1216px]">
         <FigmaSectionLabel
           as="h2"
@@ -1344,7 +1393,7 @@ function AdvisorPeopleSection() {
 }
 function PartnersSection() {
   return (
-    <m.section className="absolute left-0 top-[3620px] h-[693px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="partners-title">
+    <m.section className="partners-section absolute left-0 top-[3620px] h-[693px] w-full" initial="hidden" whileInView="show" viewport={desktopMotionViewport} variants={desktopSectionReveal} aria-labelledby="partners-title">
       <FigmaSectionLabel
         as="h2"
         className="absolute left-0 top-0 h-[19px] w-full"
@@ -1433,20 +1482,20 @@ function PartnersSection() {
       <AssetImage alt="CEO Workforce Index" asset="footerLogo" className="absolute left-[252px] top-[81px] h-[139.302px] w-[301.024px]" data-node-id="94:285" />
       <span aria-hidden="true" className="absolute left-[620px] top-[67px] h-[148px] border-l border-dashed border-black/20" />
 
-      <nav aria-label="Thông tin pháp lý" className="absolute left-[659px] top-[96px] flex flex-col items-start text-[19px] leading-[34px]">
+      <nav aria-label={t('Thông tin pháp lý')} className="absolute left-[659px] top-[96px] flex flex-col items-start text-[19px] leading-[34px]">
         {legalLinks.map((link) => (
           <a className="font-semibold uppercase transition-colors hover:text-[#144eaf] focus-visible:rounded-[2px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#144eaf]" href={link.href} key={link.href}>
-            {link.label}
+            {t(link.label)}
           </a>
         ))}
         <p className="whitespace-nowrap">
-          <strong className="font-semibold uppercase">LIÊN HỆ:</strong> contact@ceo-workforce-index.com
+          <strong className="font-semibold uppercase">{t('LIÊN HỆ:')}</strong> contact@ceo-workforce-index.com
         </p>
-        <p className="whitespace-nowrap">Địa chỉ: 11 Huỳnh Đình Hai, Phường Bình Thạnh, TP.HCM</p>
+        <p className="whitespace-nowrap">{t('Địa chỉ: 11 Huỳnh Đình Hai, Phường Bình Thạnh, TP.HCM')}</p>
       </nav>
 
       <p className="absolute left-[322px] top-[303px] h-[20px] w-[598px] whitespace-nowrap text-center text-[14px] font-normal leading-[20px]" data-node-id="94:278">
-        Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về SKALE
+        {t('Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về SKALE')}
       </p>
       <AssetImage alt="" aria-hidden="true" asset="line22" className="absolute left-0 top-[14px] h-px w-[1240px]" data-node-id="94:316" />
     </m.footer>
@@ -1454,13 +1503,13 @@ function PartnersSection() {
 }
 function MobileStats() {
   return (
-    <div className="mobile-stats-list" aria-label="Thông số nghiên cứu">
+    <div className="mobile-stats-list" aria-label={t('Thông số nghiên cứu')}>
       {reportStats.map((stat, index) => (
         <div className="mobile-stat-row" data-reveal key={stat.value}>
           <AssetImage alt="" aria-hidden="true" asset={stat.icon} className="mobile-stat-icon" />
           <div>
-            <strong><AnimatedReportValue delay={index * 90} value={stat.value} /></strong>
-            <span>{stat.label}</span>
+            <strong><AnimatedReportValue delay={index * 90} value={t(stat.value)} /></strong>
+            <span>{t(stat.label)}</span>
           </div>
         </div>
       ))}
@@ -1483,9 +1532,9 @@ function MobileAdvisorCard({ advisor, isActive }: { advisor: (typeof advisors)[n
       <AssetImage alt="" aria-hidden="true" asset={advisor.image} className="mobile-advisor-image" />
       <div className="mobile-advisor-blue" />
       <div className="mobile-advisor-copy">
-        <em>{advisor.title}</em>
-        <span>{advisor.field}</span>
-        <strong>{advisor.name}</strong>
+        <em>{t(advisor.title)}</em>
+        <span>{t(advisor.field)}</span>
+        <strong>{t(advisor.name)}</strong>
       </div>
     </article>
   )
@@ -1526,7 +1575,7 @@ function MobileAdvisorCarousel() {
 
   return (
     <div className="mobile-advisor-carousel" data-reveal>
-      <div className="mobile-advisor-scroll" aria-label="Ban tổ chức" ref={scrollRef}>
+      <div className="mobile-advisor-scroll" aria-label={t('Ban tổ chức')} ref={scrollRef}>
         {visibleAdvisors.map((advisor, index) => (
           <MobileAdvisorCard advisor={advisor} isActive={activeIndex === index} key={advisor.name + '-' + index} />
         ))}
@@ -1612,7 +1661,7 @@ function MobileLogoRail({
       <div className="mobile-logo-track">
         {logos.map((logo) => (
           <div className="mobile-logo-item" key={logo.asset + "-" + logo.alt}>
-            <AssetImage alt={logo.alt} asset={logo.asset} className="mobile-logo-image" />
+            <AssetImage alt={t(logo.alt)} asset={logo.asset} className="mobile-logo-image" />
           </div>
         ))}
         {isMarquee && logos.map((logo) => (
@@ -1646,12 +1695,12 @@ function MobileHeroCarouselContent({ copy, showIntro }: { copy?: HeroCarouselCop
   if (showIntro) {
     return (
       <>
-        <p className="mobile-eyebrow">LA BÀN ĐỊNH HƯỚNG NĂNG LỰC VẬN HÀNH CỦA TỔ CHỨC</p>
+        <p className="mobile-eyebrow">{t('LA BÀN ĐỊNH HƯỚNG NĂNG LỰC VẬN HÀNH CỦA TỔ CHỨC')}</p>
         <h1 id="mobile-hero-title">
-          <span><span>Hệ cộng lực mạnh</span></span>
-          <span className="mobile-heading-cluster"><span><em>Doanh nghiệp</em> vươn tầm</span></span>
+          <span><span>{t('Hệ cộng lực mạnh')}</span></span>
+          <span className="mobile-heading-cluster"><span><em>{tx('slogan', 'Doanh nghiệp')}</em> {tx('slogan', 'vươn tầm')}</span></span>
         </h1>
-        <p className="mobile-hero-copy">Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - tự động hoá - hệ sinh thái) của doanh nghiệp bạn với thị trường, hiểu nguyên nhân và nhận khuyến nghị hành động.</p>
+        <p className="mobile-hero-copy">{t('Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - tự động hoá - hệ sinh thái) của doanh nghiệp bạn với thị trường, hiểu nguyên nhân và nhận khuyến nghị hành động.')}</p>
       </>
     )
   }
@@ -1660,18 +1709,18 @@ function MobileHeroCarouselContent({ copy, showIntro }: { copy?: HeroCarouselCop
 
   return (
     <>
-      {copy.eyebrow ? <p className="mobile-carousel-eyebrow">{copy.eyebrow}</p> : null}
+      {copy.eyebrow ? <p className="mobile-carousel-eyebrow">{t(copy.eyebrow)}</p> : null}
       <h1 className={cn('mobile-carousel-heading', `is-${copy.variant}`)} id="mobile-hero-title">
         {copy.heading.map((line, lineIndex) => (
           <span className={cn('mobile-carousel-heading-line', line.compact && 'is-compact')} key={lineIndex}>
             {line.segments.map((segment, segmentIndex) => segment.accent
-              ? <em key={`${lineIndex}-${segmentIndex}`}>{segment.text}</em>
-              : <span key={`${lineIndex}-${segmentIndex}`}>{segment.text}</span>)}
+              ? <em key={`${lineIndex}-${segmentIndex}`}>{t(segment.text)}</em>
+              : <span key={`${lineIndex}-${segmentIndex}`}>{t(segment.text)}</span>)}
           </span>
         ))}
       </h1>
       <div className="mobile-carousel-description">
-        {copy.description.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        {copy.description.map((paragraph) => <p key={paragraph}>{t(paragraph)}</p>)}
       </div>
     </>
   )
@@ -1681,7 +1730,7 @@ function MobileHeroCarouselButton({ onOpenReportPdf, onOpenWebinarModal, slide }
   const className = 'figma-button-red mobile-hero-button mobile-carousel-action'
   const content = (
     <>
-      <span>{slide.ctaLabel}</span>
+      <span>{t(slide.ctaLabel)}</span>
       <AssetImage alt="" aria-hidden="true" asset="arrow1" className="mobile-button-arrow h-[15px] w-[17px]" loading="eager" />
     </>
   )
@@ -1707,11 +1756,11 @@ function MobileHeroCarouselButton({ onOpenReportPdf, onOpenWebinarModal, slide }
 
 function MobileHeroCarouselProgress({ activeIndex, onSelect }: { activeIndex: number; onSelect: (index: number) => void }) {
   return (
-    <div aria-label="Điều hướng slide" className="mobile-hero-carousel-progress" role="group">
+    <div aria-label={t('Điều hướng slide')} className="mobile-hero-carousel-progress" role="group">
       {heroCarouselSlides.map((slide, index) => (
         <button
           aria-current={index === activeIndex ? 'true' : undefined}
-          aria-label={`Xem slide ${index + 1}`}
+          aria-label={t('Xem slide {n}', { n: index + 1 })}
           className={cn('mobile-hero-carousel-progress-item', index === activeIndex && 'is-active')}
           key={slide.image}
           onClick={() => onSelect(index)}
@@ -1807,6 +1856,9 @@ function MobileLandingPage({
   onOpenRoundtable: () => void
   onOpenWebinar: () => void
 }) {
+  // Same reordering as the desktop Roundtable title: "CEO Roundtable" in English.
+  const ceoWordmarkFirst = getLang() === 'en'
+  const mobileCeoWordmark = <AssetImage alt="CEO" asset="textCeo" className="mobile-text-ceo" loading="eager" />
 
   return (
     <main className="mobile-landing">
@@ -1823,21 +1875,22 @@ function MobileLandingPage({
         <AssetImage alt="" aria-hidden="true" asset="bgCircleCeo" className="mobile-roundtable-bg" />
         <div className="mobile-roundtable-content" data-reveal>
           <h2 id="mobile-roundtable-title">
-            <span>Bàn tròn</span>
-            <AssetImage alt="CEO" asset="textCeo" className="mobile-text-ceo" loading="eager" />
+            {ceoWordmarkFirst && mobileCeoWordmark}
+            <span>{t('Bàn tròn')}</span>
+            {!ceoWordmarkFirst && mobileCeoWordmark}
           </h2>
-          <p className="mobile-roundtable-subtitle">Khai mở góc nhìn - Kiến tạo giá trị</p>
-          <p>Không &quot;thuyết trình&quot;. Tranh luận để tìm kiếm những sự thật ngầm hiểu đắt giá nhất. Tham gia Bàn tròn CEO định kỳ dành riêng cho thành viên CWI.</p>
+          <p className="mobile-roundtable-subtitle">{t('Khai mở góc nhìn - Kiến tạo giá trị')}</p>
+          <p>{t('Không "thuyết trình". Tranh luận để tìm kiếm những sự thật ngầm hiểu đắt giá nhất. Tham gia Bàn tròn CEO định kỳ dành riêng cho thành viên CWI.')}</p>
           <div className="mobile-roundtable-stats">
             {roundtableStats.map((stat) => (
               <div key={stat.value}>
                 <AssetImage alt="" aria-hidden="true" asset={stat.icon} />
-                <strong>{stat.value}</strong>
-                <span>{stat.label}</span>
+                <strong>{t(stat.value)}</strong>
+                <span>{t(stat.label)}</span>
               </div>
             ))}
           </div>
-          <RedButton action="roundtable" className="mobile-roundtable-button" onClick={onOpenRoundtable}>Đăng kí tham gia</RedButton>
+          <RedButton action="roundtable" className="mobile-roundtable-button" onClick={onOpenRoundtable}>{t('Đăng kí tham gia')}</RedButton>
         </div>
         <div className="mobile-roundtable-photo-frame" data-reveal>
           <AssetImage alt="Roundtable session" asset="image124" className="mobile-roundtable-photo" />
@@ -1847,32 +1900,32 @@ function MobileLandingPage({
       <section className="mobile-section mobile-advisors-section about-cwi-mobile-section" data-mobile-target="#about-cwi" aria-labelledby="mobile-advisors-title">
         <div className="about-cwi-mobile-intro" data-reveal>
           <AboutCwiTitle className="about-cwi-mobile-title" id="mobile-advisors-title" />
-          <img alt="Cuộc họp lãnh đạo doanh nghiệp" className="about-cwi-mobile-image" draggable={false} loading="lazy" src={leftPanelBackground} />
+          <img alt={t('Cuộc họp lãnh đạo doanh nghiệp')} className="about-cwi-mobile-image" draggable={false} loading="lazy" src={leftPanelBackground} />
         </div>
         <div className="about-cwi-mobile-cards" data-reveal>
           {aboutCwiCards.map((card) => <AboutCwiCard card={card} key={card.title} />)}
         </div>
-        <MobileSectionTitle>Ban tổ chức</MobileSectionTitle>
+        <MobileSectionTitle>{t('Ban tổ chức')}</MobileSectionTitle>
         <MobileAdvisorCarousel />
       </section>
       <section className="mobile-section mobile-partners-section" aria-labelledby="mobile-partners-title">
-        <h2 id="mobile-partners-title" className="sr-only">Đối tác</h2>
-        <MobileSectionTitle>Đơn vị bảo trợ</MobileSectionTitle>
+        <h2 id="mobile-partners-title" className="sr-only">{t('Đối tác')}</h2>
+        <MobileSectionTitle>{t('Đơn vị bảo trợ')}</MobileSectionTitle>
         <MobileLogoRail logos={associationLogos} variant="static" />
-        <MobileSectionTitle>Đối tác tri thức</MobileSectionTitle>
+        <MobileSectionTitle>{t('Đối tác tri thức')}</MobileSectionTitle>
         <MobileLogoRail logos={knowledgePartnerLogos} variant="static" />
-        <MobileSectionTitle>Đối tác truyền thông</MobileSectionTitle>
+        <MobileSectionTitle>{t('Đối tác truyền thông')}</MobileSectionTitle>
         <MobileLogoRail logos={mediaPartnerLogos} variant="static" />
-        <MobileSectionTitle>Đối tác vận hành</MobileSectionTitle>
+        <MobileSectionTitle>{t('Đối tác vận hành')}</MobileSectionTitle>
         <MobileLogoRail logos={operationalPartnerLogos} variant="static" />
-        <MobileSectionTitle>Đơn vị tổ chức</MobileSectionTitle>
+        <MobileSectionTitle>{t('Đơn vị tổ chức')}</MobileSectionTitle>
         <MobileLogoRail logos={organizerLogos} variant="static" />
       </section>
 
       <section className="mobile-final-cta" data-reveal>
-        <h2>Hệ cộng lực mạnh<br /><em>Doanh nghiệp</em> vươn tầm</h2>
+        <h2>{t('Hệ cộng lực mạnh')}<br /><em>{tx('slogan', 'Doanh nghiệp')}</em> {tx('slogan', 'vươn tầm')}</h2>
         <RedButton action="survey" className="mobile-hero-button">
-          <span>Thực hiện khảo sát</span>
+          <span>{t('Thực hiện khảo sát')}</span>
           <AssetImage alt="" aria-hidden="true" asset="arrow1" className="mobile-button-arrow h-[15px] w-[17px]" loading="eager" />
         </RedButton>
       </section>
@@ -1880,14 +1933,14 @@ function MobileLandingPage({
       <footer className="mobile-footer" data-mobile-target="#footer">
         <AssetImage alt="" aria-hidden="true" asset="image131" className="mobile-footer-pattern" />
         <AssetImage alt="CEO Workforce Index" asset="footerLogo" className="mobile-footer-logo" />
-        <nav aria-label="Thông tin pháp lý" className="mobile-footer-legal">
+        <nav aria-label={t('Thông tin pháp lý')} className="mobile-footer-legal">
           {legalLinks.map((link) => (
-            <a href={link.href} key={link.href}>{link.label}</a>
+            <a href={link.href} key={link.href}>{t(link.label)}</a>
           ))}
         </nav>
-        <p className="mobile-footer-contact"><strong>LIÊN HỆ:</strong> contact@ceo-workforce-index.com</p>
-        <p className="mobile-footer-address">Địa chỉ: 11 Huỳnh Đình Hai, Phường Bình Thạnh, TP.HCM</p>
-        <p className="mobile-copyright">Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về SKALE</p>
+        <p className="mobile-footer-contact"><strong>{t('LIÊN HỆ:')}</strong> contact@ceo-workforce-index.com</p>
+        <p className="mobile-footer-address">{t('Địa chỉ: 11 Huỳnh Đình Hai, Phường Bình Thạnh, TP.HCM')}</p>
+        <p className="mobile-copyright">{t('Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về SKALE')}</p>
       </footer>
     </main>
   )

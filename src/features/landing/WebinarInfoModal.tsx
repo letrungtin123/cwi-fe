@@ -2,6 +2,7 @@ import { AnimatePresence, m } from 'framer-motion'
 import { Check, ChevronDown, Clock3, Monitor, X } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { createPortal } from 'react-dom'
+import { t } from '@/i18n'
 import { createWebinarRegistrationIdempotencyKey, submitWebinarRegistration } from '../survey/surveyApi'
 import { isValidPhone } from '../survey/phoneValidation'
 import { jobTitleOptions } from '../survey/surveyData'
@@ -181,11 +182,11 @@ export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarI
   const register = async () => {
     if (isSubmitting || registered) return
     if (!contact.name.trim() || !validEmail(contact.email.trim()) || !isValidPhone(contact.phone) || !contact.companyName.trim() || !contact.jobTitle || (contact.jobTitle === 'Khác' && !contact.jobTitleOther.trim())) {
-      setError('Vui lòng điền Họ tên, Email hợp lệ, Số điện thoại, Tên công ty và Chức vụ để đăng ký Webinar.')
+      setError(t('Vui lòng điền Họ tên, Email hợp lệ, Số điện thoại, Tên công ty và Chức vụ để đăng ký Webinar.'))
       return
     }
     if (!dataCollectionConsented) {
-      setError('Vui lòng đồng ý thu thập và xử lý dữ liệu cá nhân để đăng ký Webinar.')
+      setError(t('Vui lòng đồng ý thu thập và xử lý dữ liệu cá nhân để đăng ký Webinar.'))
       return
     }
 
@@ -215,7 +216,7 @@ export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarI
       )
       setRegistered(true)
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Không thể đăng ký Webinar. Vui lòng thử lại.')
+      setError(caught instanceof Error ? caught.message : t('Không thể đăng ký Webinar. Vui lòng thử lại.'))
     } finally {
       setIsSubmitting(false)
     }
@@ -248,7 +249,7 @@ export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarI
             transition={{ duration: .22, ease: [0.22, 1, 0.36, 1] }}
           >
             <div aria-hidden="true" className="webinar-info-modal-topline" />
-            <button aria-label={registered ? 'Đóng thông báo đăng ký thành công' : 'Đóng thông tin webinar'} className="webinar-info-modal-close" onClick={onClose} type="button">
+            <button aria-label={registered ? t('Đóng thông báo đăng ký thành công') : t('Đóng thông tin webinar')} className="webinar-info-modal-close" onClick={onClose} type="button">
               <X aria-hidden="true" size={20} strokeWidth={2} />
             </button>
 
@@ -257,47 +258,47 @@ export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarI
                 <div aria-hidden="true" className="webinar-info-modal-success-mark">
                   <span><Check size={30} strokeWidth={3} /></span>
                 </div>
-                <h2 id="webinar-info-modal-title">Đăng ký thành công</h2>
+                <h2 id="webinar-info-modal-title">{t('Đăng ký thành công')}</h2>
                 <div className="webinar-info-modal-success-copy" id="webinar-success-description">
-                  <p>Cảm ơn Anh/Chị đã đăng ký tham dự webinar <strong>“CEO &amp; HRD – Từ lệch pha đến cùng hướng, cùng nhịp”</strong>.</p>
-                  <p>Để có thêm dữ liệu tham khảo trước khi tham dự Webinar, Anh/Chị vui lòng dành 7 phút thực hiện khảo sát để nhận báo cáo đối chiếu giữa CEO – HRD.</p>
+                  <p>{t('Cảm ơn Anh/Chị đã đăng ký tham dự webinar')} <strong>“CEO &amp; HRD – {t('Từ lệch pha đến cùng hướng, cùng nhịp')}”</strong>.</p>
+                  <p>{t('Để có thêm dữ liệu tham khảo trước khi tham dự Webinar, Anh/Chị vui lòng dành 7 phút thực hiện khảo sát để nhận báo cáo đối chiếu giữa CEO – HRD.')}</p>
                 </div>
-                <button className="webinar-info-modal-success-continue" onClick={onContinueToSurvey} ref={successContinueRef} type="button">Tiếp tục</button>
+                <button className="webinar-info-modal-success-continue" onClick={onContinueToSurvey} ref={successContinueRef} type="button">{t('Tiếp tục')}</button>
               </div>
             ) : <>
             <header className="webinar-info-modal-header">
               <p>WEBINAR CEO WORKFORCE INDEX</p>
-              <h2 id="webinar-info-modal-title">Webinar CEO &amp; HRD – Từ lệch pha đến cùng hướng, cùng nhịp</h2>
+              <h2 id="webinar-info-modal-title">{t('Webinar CEO & HRD – Từ lệch pha đến cùng hướng, cùng nhịp')}</h2>
             </header>
 
             <div className="webinar-info-modal-content" id="webinar-info-modal-description">
               <section className="webinar-info-modal-section">
-                <h3>Nội dung nổi bật</h3>
+                <h3>{t('Nội dung nổi bật')}</h3>
                 <ul className="webinar-info-modal-highlight-list">
-                  {webinarHighlights.map((highlight) => <li key={highlight}>{highlight}</li>)}
+                  {webinarHighlights.map((highlight) => <li key={highlight}>{t(highlight)}</li>)}
                 </ul>
               </section>
 
               <section className="webinar-info-modal-section">
-                <h3>Khách mời</h3>
+                <h3>{t('Khách mời')}</h3>
                 <ul className="webinar-info-modal-guest-list">
-                  {webinarGuests.map((guest) => <li key={guest}>{guest}</li>)}
+                  {webinarGuests.map((guest) => <li key={guest}>{t(guest)}</li>)}
                 </ul>
               </section>
 
-              <div className="webinar-info-modal-meta" aria-label="Thông tin thời gian và hình thức">
-                <div><Clock3 aria-hidden="true" size={19} /><span><strong>Thời gian</strong>14:00 - 15:30 | 22/10/2026</span></div>
-                <div><Monitor aria-hidden="true" size={19} /><span><strong>Hình thức</strong>Trực tuyến qua Zoom</span></div>
+              <div className="webinar-info-modal-meta" aria-label={t('Thông tin thời gian và hình thức')}>
+                <div><Clock3 aria-hidden="true" size={19} /><span><strong>{t('Thời gian')}</strong>14:00 - 15:30 | 22/10/2026</span></div>
+                <div><Monitor aria-hidden="true" size={19} /><span><strong>{t('Hình thức')}</strong>{t('Trực tuyến qua Zoom')}</span></div>
               </div>
 
-              <section aria-label="Đăng ký tham dự Webinar" className="webinar-info-modal-registration">
+              <section aria-label={t('Đăng ký tham dự Webinar')} className="webinar-info-modal-registration">
                 <div className="webinar-info-modal-registration-copy">
-                  <h3>Đăng ký tham dự</h3>
-                  <p>Thông tin của Anh/Chị được dùng để xác nhận đăng ký Webinar.</p>
+                  <h3>{t('Đăng ký tham dự')}</h3>
+                  <p>{t('Thông tin của Anh/Chị được dùng để xác nhận đăng ký Webinar.')}</p>
                 </div>
                 <div className="webinar-info-modal-form">
                   <label htmlFor="landing-webinar-name">
-                    <span>Họ tên <b>*</b></span>
+                    <span>{t('Họ tên')} <b>*</b></span>
                     <input
                       autoComplete="name"
                       disabled={registered || isSubmitting}
@@ -308,7 +309,7 @@ export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarI
                         setContact((current) => ({ ...current, name }))
                         setError('')
                       }}
-                      placeholder="Nhập họ tên"
+                      placeholder={t('Nhập họ tên')}
                       value={contact.name}
                     />
                   </label>
@@ -330,7 +331,7 @@ export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarI
                     />
                   </label>
                   <label htmlFor="landing-webinar-phone">
-                    <span>Số điện thoại <b>*</b></span>
+                    <span>{t('Số điện thoại')} <b>*</b></span>
                     <input
                       autoComplete="tel"
                       disabled={registered || isSubmitting}
@@ -347,7 +348,7 @@ export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarI
                     />
                   </label>
                   <label className="webinar-info-modal-company-field" htmlFor="landing-webinar-company">
-                    <span>Tên công ty <b>*</b></span>
+                    <span>{t('Tên công ty')} <b>*</b></span>
                     <input
                       autoComplete="organization"
                       disabled={registered || isSubmitting}
@@ -357,12 +358,12 @@ export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarI
                         setContact((current) => ({ ...current, companyName }))
                         setError('')
                       }}
-                      placeholder="Nhập tên công ty"
+                      placeholder={t('Nhập tên công ty')}
                       value={contact.companyName}
                     />
                   </label>
                   <div className={`webinar-info-modal-position-field${positionOpen ? ' is-open' : ''}`}>
-                    <span id="landing-webinar-position-label">Chức vụ <b>*</b></span>
+                    <span id="landing-webinar-position-label">{t('Chức vụ')} <b>*</b></span>
                     <div className="webinar-info-modal-position-control" ref={positionControlRef}>
                       <button
                         aria-activedescendant={positionOpen ? `landing-webinar-position-option-${positionActiveIndex}` : undefined}
@@ -381,7 +382,7 @@ export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarI
                         ref={positionButtonRef}
                         type="button"
                       >
-                        <span className={contact.jobTitle ? '' : 'is-placeholder'}>{contact.jobTitle || 'Chọn chức vụ'}</span>
+                        <span className={contact.jobTitle ? '' : 'is-placeholder'}>{contact.jobTitle ? t(contact.jobTitle) : t('Chọn chức vụ')}</span>
                         <ChevronDown aria-hidden="true" className={`webinar-info-modal-position-icon${positionOpen ? ' is-open' : ''}`} size={18} />
                       </button>
                       {positionOpen ? (
@@ -397,7 +398,7 @@ export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarI
                               role="option"
                               type="button"
                             >
-                              <span>{option}</span>
+                              <span>{t(option)}</span>
                               {contact.jobTitle === option ? <Check aria-hidden="true" size={16} /> : null}
                             </button>
                           ))}
@@ -407,7 +408,7 @@ export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarI
                   </div>
                   {contact.jobTitle === 'Khác' ? (
                     <label htmlFor="landing-webinar-other-position">
-                      <span>Chức vụ cụ thể <b>*</b></span>
+                      <span>{t('Chức vụ cụ thể')} <b>*</b></span>
                       <input
                         disabled={registered || isSubmitting}
                         id="landing-webinar-other-position"
@@ -416,13 +417,13 @@ export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarI
                           setContact((current) => ({ ...current, jobTitleOther }))
                           setError('')
                         }}
-                        placeholder="Nhập chức vụ"
+                        placeholder={t('Nhập chức vụ')}
                         value={contact.jobTitleOther}
                       />
                     </label>
                   ) : null}
                   <label className="webinar-info-modal-question-field" htmlFor="landing-webinar-speaker-question">
-                    <span>Anh/Chị muốn đặt câu hỏi gì cho diễn giả? <em>Không bắt buộc</em></span>
+                    <span>{t('Anh/Chị muốn đặt câu hỏi gì cho diễn giả?')} <em>{t('Không bắt buộc')}</em></span>
                     <textarea
                       disabled={isSubmitting}
                       id="landing-webinar-speaker-question"
@@ -432,7 +433,7 @@ export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarI
                         setContact((current) => ({ ...current, speakerQuestion }))
                         setError('')
                       }}
-                      placeholder="Nhập câu hỏi Anh/Chị muốn gửi đến diễn giả"
+                      placeholder={t('Nhập câu hỏi Anh/Chị muốn gửi đến diễn giả')}
                       rows={3}
                       value={contact.speakerQuestion}
                     />
@@ -451,7 +452,7 @@ export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarI
                     <span aria-hidden="true" className="webinar-info-modal-consent-box">
                       {dataCollectionConsented ? <Check size={15} strokeWidth={3} /> : null}
                     </span>
-                    <span className="webinar-info-modal-consent-copy">Tôi đồng ý để Ban tổ chức CEO Workforce Index thu thập, lưu trữ và xử lý dữ liệu cá nhân nhằm phục vụ đăng ký và tham dự Webinar.</span>
+                    <span className="webinar-info-modal-consent-copy">{t('Tôi đồng ý để Ban tổ chức CEO Workforce Index thu thập, lưu trữ và xử lý dữ liệu cá nhân nhằm phục vụ đăng ký và tham dự Webinar.')}</span>
                   </label>
                   {error ? (
                     <div aria-live="polite" className="webinar-info-modal-registration-status">
@@ -464,9 +465,9 @@ export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarI
 
             <footer className="webinar-info-modal-footer">
               <button className="webinar-info-modal-register webinar-info-modal-register--footer" disabled={isSubmitting || !dataCollectionConsented} onClick={() => { void register() }} type="button">
-                {isSubmitting ? 'Đang đăng ký...' : 'Đăng ký tham dự'}
+                {isSubmitting ? t('Đang đăng ký...') : t('Đăng ký tham dự')}
               </button>
-              <button className="webinar-info-modal-dismiss" onClick={onClose} type="button">Đóng</button>
+              <button className="webinar-info-modal-dismiss" onClick={onClose} type="button">{t('Đóng')}</button>
             </footer>
             </>}
           </m.section>

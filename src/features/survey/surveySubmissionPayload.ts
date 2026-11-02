@@ -1,3 +1,4 @@
+import { getLang, t, type Lang } from '@/i18n'
 import type { ContactState, ConsentChoice, ReportMode } from './surveyPersistence'
 import { normalizeWebsiteValue, OTHER_OPTION, hasQuestionAnswer, type Answers } from './surveyScoring'
 import { partOneQuestions, partTwoQuestions, SURVEY_VERSION, type SurveyQuestion } from './surveyData'
@@ -14,6 +15,8 @@ type SurveySubmissionAnswer = {
 export type SurveySubmissionPayload = {
   answers: SurveySubmissionAnswer[]
   clientMeta: Record<string, unknown>
+  // The language the survey was shown in; answers are Vietnamese either way.
+  language: Lang
   participant: {
     companyName: string
     email: string
@@ -59,10 +62,10 @@ function normalizePosition(contact: ContactState) {
 
 function normalizeWebsite(value: string) {
   const raw = value.trim()
-  if (!raw) throw new Error('Vui lòng nhập website công ty ở câu 24.')
+  if (!raw) throw new Error(t('Vui lòng nhập website công ty ở câu 24.'))
 
   const normalized = normalizeWebsiteValue(raw)
-  if (!normalized) throw new Error('Website công ty ở câu 24 chưa đúng định dạng. Ví dụ: example.com hoặc https://example.com')
+  if (!normalized) throw new Error(t('Website công ty ở câu 24 chưa đúng định dạng. Ví dụ: example.com hoặc https://example.com'))
   return normalized
 }
 
@@ -71,19 +74,19 @@ function buildAnswer(question: SurveyQuestion, answers: Answers, otherAnswers: A
 
   if (question.type === 'likert') {
     const value = Number(rawAnswer)
-    if (!Number.isInteger(value) || value < 1 || value > 5) throw new Error(`Câu ${question.n} cần chọn điểm từ 1 đến 5.`)
+    if (!Number.isInteger(value) || value < 1 || value > 5) throw new Error(t('Câu {n} cần chọn điểm từ 1 đến 5.', { n: question.n }))
     return { answer: value, idx: question.n }
   }
 
   if (question.type === 'mcq') {
     if (rawAnswer === OTHER_OPTION) {
       const otherText = otherAnswers[question.n]?.trim()
-      if (!otherText) throw new Error(`Câu ${question.n} cần nhập nội dung khác.`)
-      if (otherText.length < 2) throw new Error(`Nội dung khác ở câu ${question.n} cần ít nhất 2 ký tự.`)
+      if (!otherText) throw new Error(t('Câu {n} cần nhập nội dung khác.', { n: question.n }))
+      if (otherText.length < 2) throw new Error(t('Nội dung khác ở câu {n} cần ít nhất 2 ký tự.', { n: question.n }))
       return { answer: OTHER_OPTION, idx: question.n, otherText }
     }
 
-    if (!rawAnswer) throw new Error(`Câu ${question.n} chưa có câu trả lời.`)
+    if (!rawAnswer) throw new Error(t('Câu {n} chưa có câu trả lời.', { n: question.n }))
     return { answer: rawAnswer, idx: question.n }
   }
 
@@ -92,7 +95,7 @@ function buildAnswer(question: SurveyQuestion, answers: Answers, otherAnswers: A
 
 function assertAnswered(questions: SurveyQuestion[], answers: Answers, otherAnswers: Answers, label: string) {
   const missing = questions.filter((question) => !hasQuestionAnswer(question, answers, otherAnswers)).map((question) => question.n)
-  if (missing.length) throw new Error(`${label} còn thiếu câu: ${missing.join(', ')}.`)
+  if (missing.length) throw new Error(t('{label} còn thiếu câu: {list}.', { label, list: missing.join(', ') }))
 }
 
 function getSubmissionStatus(input: Pick<BuildSurveySubmissionPayloadInput, 'consent' | 'partTwoPrivacyRefused' | 'reportMode'>): SubmissionStatus {
@@ -108,12 +111,12 @@ function getPrivacyConsent(status: SubmissionStatus): PrivacyConsent {
 }
 
 export function buildSurveySubmissionPayload(input: BuildSurveySubmissionPayloadInput): SurveySubmissionPayload {
-  assertAnswered(partOneQuestions, input.answers, input.otherAnswers, 'Phần 1')
+  assertAnswered(partOneQuestions, input.answers, input.otherAnswers, t('Phần 1'))
 
   const status = getSubmissionStatus(input)
   const requiredQuestions = status === 'part1_only' ? partOneQuestions : [...partOneQuestions, ...partTwoQuestions]
 
-  if (status !== 'part1_only') assertAnswered(partTwoQuestions, input.answers, input.otherAnswers, 'Phần 2')
+  if (status !== 'part1_only') assertAnswered(partTwoQuestions, input.answers, input.otherAnswers, t('Phần 2'))
 
   const participant = {
     companyName: input.contact.companyName.trim().replace(/\s+/g, ' '),
@@ -124,7 +127,7 @@ export function buildSurveySubmissionPayload(input: BuildSurveySubmissionPayload
   }
 
   if (!participant.fullName || !participant.email || !participant.phone || !participant.position || !participant.companyName) {
-    throw new Error('Vui lòng điền đầy đủ Họ tên, Email, Số điện thoại, Chức vụ và Tên công ty trước khi gửi kết quả.')
+    throw new Error(t('Vui lòng điền đầy đủ Họ tên, Email, Số điện thoại, Chức vụ và Tên công ty trước khi gửi kết quả.'))
   }
 
   const roundtableName = input.roundtableContact.name.trim().replace(/\s+/g, ' ') || participant.fullName
@@ -141,6 +144,7 @@ export function buildSurveySubmissionPayload(input: BuildSurveySubmissionPayload
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       userAgent: navigator.userAgent,
     },
+    language: getLang(),
     participant,
     privacyConsent: getPrivacyConsent(status),
     roundtableRegistration: input.roundtableRegistered

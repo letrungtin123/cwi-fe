@@ -1,3 +1,4 @@
+import { t } from '@/i18n'
 import type { SurveySubmissionPayload } from './surveySubmissionPayload'
 
 const apiBaseUrl = (import.meta.env.VITE_CWI_API_BASE_URL ?? 'http://localhost:8088').replace(/\/+$/, '')
@@ -129,13 +130,13 @@ export function createWebinarRegistrationIdempotencyKey() {
 }
 
 function getFriendlyError(status: number, code: string, message: string) {
-  if (code === 'survey_version_mismatch') return 'Bộ câu hỏi khảo sát vừa được cập nhật. Vui lòng tải lại trang và thực hiện lại khảo sát.'
-  if (status === 422) return 'Một số thông tin chưa đúng định dạng. Vui lòng kiểm tra lại và gửi lại.'
-  if (status === 409 && code.startsWith('roundtable')) return 'Đăng ký CEO Roundtable này đã được ghi nhận trước đó.'
-  if (status === 409 && code.startsWith('webinar')) return 'Đăng ký Webinar này đã được ghi nhận trước đó.'
-  if (status === 409) return 'Kết quả này đã được ghi nhận trước đó.'
-  if (status >= 500) return 'Hệ thống đang bận, vui lòng thử gửi lại sau ít phút.'
-  return message || 'Không thể gửi dữ liệu lúc này.'
+  if (code === 'survey_version_mismatch') return t('Bộ câu hỏi khảo sát vừa được cập nhật. Vui lòng tải lại trang và thực hiện lại khảo sát.')
+  if (status === 422) return t('Một số thông tin chưa đúng định dạng. Vui lòng kiểm tra lại và gửi lại.')
+  if (status === 409 && code.startsWith('roundtable')) return t('Đăng ký CEO Roundtable này đã được ghi nhận trước đó.')
+  if (status === 409 && code.startsWith('webinar')) return t('Đăng ký Webinar này đã được ghi nhận trước đó.')
+  if (status === 409) return t('Kết quả này đã được ghi nhận trước đó.')
+  if (status >= 500) return t('Hệ thống đang bận, vui lòng thử gửi lại sau ít phút.')
+  return message || t('Không thể gửi dữ liệu lúc này.')
 }
 
 async function parseApiResponse<T>(response: Response): Promise<T> {
@@ -148,7 +149,7 @@ async function parseApiResponse<T>(response: Response): Promise<T> {
   }
 
   if (!body || !('data' in body)) {
-    throw new SurveyApiError(response.status, 'invalid_response', 'Phản hồi từ hệ thống không hợp lệ.')
+    throw new SurveyApiError(response.status, 'invalid_response', t('Phản hồi từ hệ thống không hợp lệ.'))
   }
 
   return body.data
@@ -180,7 +181,7 @@ export async function submitSurveySubmission(payload: SurveySubmissionPayload, i
 
     return await parseApiResponse<SurveySubmitResult>(response)
   } catch (error) {
-    throw toNetworkError(error, 'Gửi dữ liệu quá thời gian chờ. Vui lòng thử lại.', 'Không kết nối được hệ thống lưu dữ liệu. Vui lòng kiểm tra kết nối và thử lại.')
+    throw toNetworkError(error, t('Gửi dữ liệu quá thời gian chờ. Vui lòng thử lại.'), t('Không kết nối được hệ thống lưu dữ liệu. Vui lòng kiểm tra kết nối và thử lại.'))
   } finally {
     window.clearTimeout(timeoutId)
   }
@@ -204,7 +205,7 @@ export async function submitRoundtableRegistration(payload: RoundtableRegistrati
 
     return await parseApiResponse<RoundtableRegistrationResult>(response)
   } catch (error) {
-    throw toNetworkError(error, 'Gửi đăng ký quá thời gian chờ. Vui lòng thử lại.', 'Không kết nối được hệ thống đăng ký. Vui lòng kiểm tra kết nối và thử lại.')
+    throw toNetworkError(error, t('Gửi đăng ký quá thời gian chờ. Vui lòng thử lại.'), t('Không kết nối được hệ thống đăng ký. Vui lòng kiểm tra kết nối và thử lại.'))
   } finally {
     window.clearTimeout(timeoutId)
   }
@@ -231,7 +232,7 @@ export async function checkRoundtableRegistration(email: string, signal?: AbortS
 
     return await parseApiResponse<RoundtableRegistrationStatusResult>(response)
   } catch (error) {
-    throw toNetworkError(error, 'Kiểm tra đăng ký quá thời gian chờ. Vui lòng thử lại.', 'Không thể kiểm tra đăng ký Roundtable lúc này.')
+    throw toNetworkError(error, t('Kiểm tra đăng ký quá thời gian chờ. Vui lòng thử lại.'), t('Không thể kiểm tra đăng ký Roundtable lúc này.'))
   } finally {
     signal?.removeEventListener('abort', abortFromCaller)
     window.clearTimeout(timeoutId)
@@ -266,7 +267,7 @@ export async function submitWebinarRegistration(payload: WebinarRegistrationPayl
 
     return await parseApiResponse<WebinarRegistrationResult>(response)
   } catch (error) {
-    throw toNetworkError(error, 'Gửi đăng ký quá thời gian chờ. Vui lòng thử lại.', 'Không kết nối được hệ thống đăng ký Webinar. Vui lòng kiểm tra kết nối và thử lại.')
+    throw toNetworkError(error, t('Gửi đăng ký quá thời gian chờ. Vui lòng thử lại.'), t('Không kết nối được hệ thống đăng ký Webinar. Vui lòng kiểm tra kết nối và thử lại.'))
   } finally {
     window.clearTimeout(timeoutId)
   }
@@ -293,7 +294,7 @@ export async function checkWebinarRegistration(email: string, signal?: AbortSign
 
     return await parseApiResponse<WebinarRegistrationStatusResult>(response)
   } catch (error) {
-    throw toNetworkError(error, 'Kiểm tra đăng ký quá thời gian chờ. Vui lòng thử lại.', 'Không thể kiểm tra đăng ký Webinar lúc này.')
+    throw toNetworkError(error, t('Kiểm tra đăng ký quá thời gian chờ. Vui lòng thử lại.'), t('Không thể kiểm tra đăng ký Webinar lúc này.'))
   } finally {
     signal?.removeEventListener('abort', abortFromCaller)
     window.clearTimeout(timeoutId)
@@ -317,7 +318,7 @@ export async function getReportJobStatus(jobId: string, accessToken: string, sig
     })
     return await parseApiResponse<ReportJobStatusResult>(response)
   } catch (error) {
-    throw toNetworkError(error, 'Chưa thể kiểm tra trạng thái báo cáo. Vui lòng thử lại.', 'Không thể kết nối để kiểm tra báo cáo. Vui lòng thử lại.')
+    throw toNetworkError(error, t('Chưa thể kiểm tra trạng thái báo cáo. Vui lòng thử lại.'), t('Không thể kết nối để kiểm tra báo cáo. Vui lòng thử lại.'))
   } finally {
     signal?.removeEventListener('abort', abortFromCaller)
     window.clearTimeout(timeoutId)
@@ -346,17 +347,17 @@ export async function getReportHtml(jobId: string, accessToken: string, signal?:
 
     const contentLength = Number(response.headers.get('content-length') ?? 0)
     if (contentLength > 8 * 1024 * 1024) {
-      throw new SurveyApiError(502, 'report_too_large', 'Báo cáo có kích thước không hợp lệ. Vui lòng thử lại sau.')
+      throw new SurveyApiError(502, 'report_too_large', t('Báo cáo có kích thước không hợp lệ. Vui lòng thử lại sau.'))
     }
 
     const html = await response.text()
-    if (!html.trim()) throw new SurveyApiError(502, 'empty_report', 'Báo cáo chưa có nội dung. Vui lòng thử lại sau.')
+    if (!html.trim()) throw new SurveyApiError(502, 'empty_report', t('Báo cáo chưa có nội dung. Vui lòng thử lại sau.'))
     if (html.length > 8 * 1024 * 1024) {
-      throw new SurveyApiError(502, 'report_too_large', 'Báo cáo có kích thước không hợp lệ. Vui lòng thử lại sau.')
+      throw new SurveyApiError(502, 'report_too_large', t('Báo cáo có kích thước không hợp lệ. Vui lòng thử lại sau.'))
     }
     return html
   } catch (error) {
-    throw toNetworkError(error, 'Tải báo cáo quá thời gian chờ. Vui lòng thử lại.', 'Không thể tải nội dung báo cáo. Vui lòng thử lại.')
+    throw toNetworkError(error, t('Tải báo cáo quá thời gian chờ. Vui lòng thử lại.'), t('Không thể tải nội dung báo cáo. Vui lòng thử lại.'))
   } finally {
     signal?.removeEventListener('abort', abortFromCaller)
     window.clearTimeout(timeoutId)

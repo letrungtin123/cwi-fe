@@ -1,4 +1,6 @@
-const apiBaseUrl = (import.meta.env.VITE_CWI_API_BASE_URL ?? 'http://localhost:8088').replace(/\/+$/, '')
+import { t } from '@/i18n'
+
+const apiBaseUrl =(import.meta.env.VITE_CWI_API_BASE_URL ?? 'http://localhost:8088').replace(/\/+$/, '')
 
 type ApiSuccess<T> = { data: T }
 type ApiFailure = { error?: { code?: string; message?: string } }
@@ -61,10 +63,10 @@ async function parse<T>(response: Response): Promise<T> {
   const payload = (await response.json().catch(() => null)) as ApiSuccess<T> | ApiFailure | null
   if (!response.ok) {
     const error = payload && 'error' in payload ? payload.error : undefined
-    throw new QuarterlyReportApiError(response.status, error?.code ?? 'request_failed', error?.message ?? 'Không thể tải báo cáo.')
+    throw new QuarterlyReportApiError(response.status, error?.code ?? 'request_failed', error?.message ?? t('Không thể tải báo cáo.'))
   }
   if (!payload || !('data' in payload)) {
-    throw new QuarterlyReportApiError(response.status, 'invalid_response', 'Phản hồi báo cáo không hợp lệ.')
+    throw new QuarterlyReportApiError(response.status, 'invalid_response', t('Phản hồi báo cáo không hợp lệ.'))
   }
   return payload.data
 }

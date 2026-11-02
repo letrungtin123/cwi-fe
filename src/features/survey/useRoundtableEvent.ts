@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { t } from '@/i18n'
 import { getRoundtableEvent, type RoundtableEvent } from './surveyApi'
 
 export type RoundtableEventDetail = { label: string; value: string }
@@ -24,9 +25,11 @@ export function useRoundtableEventDetails(active: boolean): RoundtableEventDetai
     return () => controller.abort()
   }, [active])
 
-  const fallback = status === 'loading' ? 'Đang tải...' : 'Đang cập nhật'
+  // Display labels, translated at render (the hook runs during render). The
+  // admin-entered time and location are shown as entered.
+  const fallback = status === 'loading' ? t('Đang tải...') : t('Đang cập nhật')
   return [
-    { label: 'Thời gian', value: event?.eventTime || fallback },
-    { label: 'Địa điểm', value: event?.eventLocation || fallback },
+    { label: t('Thời gian'), value: event?.eventTime || fallback },
+    { label: t('Địa điểm'), value: event?.eventLocation || fallback },
   ]
 }

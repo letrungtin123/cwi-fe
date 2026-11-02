@@ -5,6 +5,7 @@ import { PrivacyPolicyPage } from '@/features/landing/PrivacyPolicyPage'
 import { TermsOfOperationPage } from '@/features/landing/TermsOfOperationPage'
 import { SurveyExperience } from '@/features/survey/SurveyExperience'
 import { clearSurveySession, hasSurveySession } from '@/features/survey/surveyPersistence'
+import { useLang } from '@/i18n'
 
 type AppMode = 'landing' | 'quarterlyReport' | 'survey' | 'privacy' | 'terms'
 type LandingActionEvent = CustomEvent<{ action?: string }>
@@ -33,6 +34,8 @@ function getInitialMode(): AppMode {
 
 function App() {
   const [mode, setMode] = useState<AppMode>(getInitialMode)
+  // Subscribing here re-renders the whole tree when the language changes.
+  useLang()
 
   useEffect(() => {
     const handleLandingAction = (event: Event) => {
