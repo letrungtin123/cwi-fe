@@ -28,6 +28,7 @@ import mobileLogoStrip from '@/assets/figma/logo-website-mobile.png'
 import mobileLogoStripNoLabels from '@/assets/figma/logo-website-mobile-nolabels.png'
 import { LandingRoundtableModal } from './LandingRoundtableModal'
 import { WebinarInfoModal } from './WebinarInfoModal'
+import { WEBINAR_ENABLED } from '../survey/surveyData'
 import {
   associationLogos,
   advisors,
@@ -88,6 +89,7 @@ type HeroCarouselSlide = {
   ctaLabel: string
   action?: LandingAction
   copy?: HeroCarouselCopy
+  hidden?: boolean
   href?: string
   mobileImage?: string
   opensReportPdf?: boolean
@@ -110,7 +112,7 @@ type HeroCarouselHeadingLine = {
   }[]
 }
 
-const heroCarouselSlides: readonly HeroCarouselSlide[] = [
+const heroCarouselSlideCatalog: readonly HeroCarouselSlide[] = [
   {
     image: carouselCwiBackground,
     ctaLabel: 'Thực hiện khảo sát',
@@ -156,6 +158,7 @@ const heroCarouselSlides: readonly HeroCarouselSlide[] = [
   {
     image: webinarCarouselBackground,
     ctaLabel: 'Đăng kí ngay',
+    hidden: !WEBINAR_ENABLED,
     mobileImage: webinarCarouselBackground,
     opensWebinarModal: true,
     copy: {
@@ -172,9 +175,13 @@ const heroCarouselSlides: readonly HeroCarouselSlide[] = [
   },
 ] as const
 
+// Hidden slides stay defined so they can be switched back on later.
+const heroCarouselSlides = heroCarouselSlideCatalog.filter((slide) => !slide.hidden)
+
 function getPublicRegistrationFromLocation(): PublicRegistration | null {
   if (typeof window === 'undefined') return null
   const registration = new URLSearchParams(window.location.search).get('register')
+  if (registration === 'webinar' && !WEBINAR_ENABLED) return null
   return registration === 'roundtable' || registration === 'webinar' ? registration : null
 }
 

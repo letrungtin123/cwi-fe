@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, Download, LockKeyhole, Maximize2, Minimize2, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { dateLocale, t, tx } from '@/i18n'
-import { contactCopy, introCopy, jobTitleOptions, partOneQuestions, partTwoQuestions, reportParts, roundtableCopy } from './surveyData'
+import { contactCopy, introCopy, jobTitleOptions, partOneQuestions, partTwoQuestions, reportParts, roundtableCopy, WEBINAR_ENABLED } from './surveyData'
 import { marketBenchmarkData, type MarketBenchmarkData } from './surveyReportData'
 import { getAnswerDisplay, type Answers, validEmail } from './surveyScoring'
 import { isValidPhone } from './phoneValidation'
@@ -487,7 +487,7 @@ export function ResultScreen({ answers, isWebinarRegistering, mode, onBackHome, 
         </button>
       </section>
 
-      <section className="survey-webinar-invitation">
+      {WEBINAR_ENABLED && <section className="survey-webinar-invitation">
         <SurveyEyebrow>CEO WORKFORCE INDEX WEBINAR</SurveyEyebrow>
         <h2>{t('Đăng kí tham dự Webinar')}</h2>
         <p>{t('Webinar: Làm sao để CEO và HRD hết lệch pha và không lỗi nhịp?')}</p>
@@ -506,7 +506,7 @@ export function ResultScreen({ answers, isWebinarRegistering, mode, onBackHome, 
         <button className="survey-outline-button" disabled={webinarRegistered || isWebinarRegistering} onClick={onRegisterWebinar} type="button">
           {webinarRegistered ? t('Đã đăng ký') : isWebinarRegistering ? t('Đang đăng ký...') : t('Đăng ký tham dự')}
         </button>
-      </section>
+      </section>}
 
       <div className="survey-result-actions">
         <button className="survey-primary-button" onClick={() => window.print()} type="button">
