@@ -35,6 +35,10 @@ export const jobTitleOptions = [
 // registry character for character; the backend rejects any other wording.
 export const SURVEY_VERSION = '2026Q4'
 
+// Webinar entry points (landing slide, ?register=webinar link, result-screen
+// invitation) are hidden for now. Set to true to show them again.
+export const WEBINAR_ENABLED = false
+
 export const partOneQuestions: SurveyQuestion[] = [
   { n: 1, type: 'likert', q: 'Chúng tôi có đủ năng lực để thích ứng nhanh trước thay đổi của thị trường.' },
   { n: 2, type: 'likert', q: 'AI và công nghệ đang giúp cải thiện hiệu quả quản trị.' },
