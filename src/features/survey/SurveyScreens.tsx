@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, Download, LockKeyhole, Maximize2, Minimize2, X } from 'lucide-react'
+import { Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, Download, LockKeyhole, MailCheck, Maximize2, Minimize2, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { dateLocale, t, tx } from '@/i18n'
 import { contactCopy, introCopy, jobTitleOptions, partOneQuestions, partTwoQuestions, reportParts, roundtableCopy, WEBINAR_ENABLED } from './surveyData'
@@ -945,6 +945,7 @@ function reportEmailLabel(status: ReportEmailStatus) {
 }
 
 type ReportGenerationScreenProps = {
+  deferredDays: number | null
   error: string
   onHome: () => void
   onRetry: () => void
@@ -1134,7 +1135,35 @@ function ReportGenerationCarousel({ onHome }: { onHome: () => void }) {
   )
 }
 
-export function ReportGenerationScreen({ error, onHome, onRetry, pollTimedOut, reportStatus }: ReportGenerationScreenProps) {
+// Report generation is paused in the dashboard: the submission is stored and the
+// report is emailed later, so the page confirms that instead of showing progress.
+// The Vietnamese copy writes the day count with two digits ("07 ngày"); the
+// English copy uses the plain number ({count}).
+function ReportDeferredScreen({ days, onHome }: { days: number; onHome: () => void }) {
+  const dayParams = { count: days, days: String(days).padStart(2, '0') }
+  return (
+    <section aria-labelledby="survey-report-generation-title" className="survey-report-generation-page">
+      <div className="survey-report-generation-layout">
+        <header className="survey-report-generation-hero">
+          <div className="survey-report-generation-copy">
+            <SurveyEyebrow>{t('ĐÃ GHI NHẬN KẾT QUẢ')}</SurveyEyebrow>
+            <h1 id="survey-report-generation-title">{t('Cảm ơn Anh/Chị đã hoàn thành khảo sát.')}</h1>
+            <p>{tx(days === 1 ? 'one-day' : 'days', 'Báo cáo cá nhân sẽ được gửi đến email Anh/Chị sau {days} ngày tới.', dayParams)}</p>
+          </div>
+          <div aria-hidden="true" className="survey-report-generation-deferred-mark">
+            <MailCheck size={56} strokeWidth={1.5} />
+          </div>
+        </header>
+
+        <ReportGenerationCarousel onHome={onHome} />
+      </div>
+    </section>
+  )
+}
+
+export function ReportGenerationScreen({ deferredDays, error, onHome, onRetry, pollTimedOut, reportStatus }: ReportGenerationScreenProps) {
+  if (deferredDays) return <ReportDeferredScreen days={deferredDays} onHome={onHome} />
+
   const activeProgressIndex = reportProgressIndex(reportStatus)
   const activeStep = reportProgressSteps[activeProgressIndex] ?? reportProgressSteps[0]
 

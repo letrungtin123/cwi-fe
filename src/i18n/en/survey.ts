@@ -181,6 +181,11 @@ export const surveyEn: Record<string, string> = {
   "Báo cáo đang mất nhiều thời gian hơn dự kiến. Anh/Chị có thể kiểm tra lại mà không cần gửi lại khảo sát.": "Your report is taking longer than expected. You can check again without resubmitting the survey.",
   "Anh/Chị có thể giữ nguyên trang này. Hệ thống vẫn tiếp tục xử lý an toàn ở nền.": "You can stay on this page. Processing continues securely in the background.",
   "Kiểm tra lại": "Check again",
+  // Waiting page while report generation is paused in the dashboard.
+  "ĐÃ GHI NHẬN KẾT QUẢ": "RESULTS RECORDED",
+  "Cảm ơn Anh/Chị đã hoàn thành khảo sát.": "Thank you for completing the survey.",
+  "Báo cáo cá nhân sẽ được gửi đến email Anh/Chị sau {days} ngày tới.": "Your personal report will be sent to your email in {count} days.",
+  "one-day|Báo cáo cá nhân sẽ được gửi đến email Anh/Chị sau {days} ngày tới.": "Your personal report will be sent to your email in 1 day.",
   "Chưa trả lời": "Not answered",
   "Chưa cập nhật": "Not provided",
   "XEM LẠI KHẢO SÁT": "SURVEY REVIEW",
