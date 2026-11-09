@@ -44,3 +44,10 @@
 .quarterly-download-success h3 { color: #123b66; font-size: 21px; }
 .quarterly-download-success p { color: #6b7f93; font-size: 14px; }
 @media (max-width: 620px) { .quarterly-download-backdrop { align-items: end; padding: 0; } .quarterly-download-modal { width: 100%; max-height: min(94dvh, 760px); overflow: auto; border-width: 1px 0 0; border-radius: 16px 16px 0 0; } .quarterly-download-header { padding: 24px 58px 22px 20px; } .quarterly-download-header h2 { font-size: 26px; } .quarterly-download-header span { font-size: 13px; } .quarterly-download-close { top: 14px; right: 14px; width: 36px; height: 36px; } .quarterly-download-content { gap: 18px; padding: 22px 20px 26px; } .quarterly-download-fields { grid-template-columns: 1fr; gap: 13px; } .quarterly-download-other-position { grid-column: auto; } .quarterly-download-actions { flex-direction: column-reverse; } .quarterly-download-primary, .quarterly-download-secondary { width: 100%; } }
+
+/* iOS zooms the page in when a focused field's text is under 16px and keeps it
+   zoomed after the field is left, which crops the next screens. 16px on touch
+   devices prevents that. */
+@media (hover: none) and (pointer: coarse), (max-width: 767px) {
+  .quarterly-download-fields input { font-size: 16px; }
+}
