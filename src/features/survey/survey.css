@@ -2601,7 +2601,7 @@
   .survey-report-generation-gallery-title-desktop { display: none; }
   .survey-report-generation-gallery-title-mobile { display: grid; gap: 3px; }
   .survey-report-generation-gallery-index { position: absolute; top: 0; right: 0; }
-  .survey-report-generation-recap-actions { margin-top: 2px; }
+  .survey-report-generation-recap-actions { margin-top: 14px; }
   .survey-report-generation-recap-link { display: inline-flex; flex: 1 1 150px; max-width: 210px; justify-content: center; }
   .survey-report-generation-gallery-index { font-size: 12px; }
   .survey-report-generation-carousel-shell { margin-inline: calc((100vw - 100%) / -2); }
@@ -3016,3 +3016,12 @@
   background-clip: padding-box;
 }
 
+
+/* iOS zooms the page in when a focused field's text is under 16px and keeps it
+   zoomed after the field is left, which crops the next screens. 16px on touch
+   devices prevents that. */
+@media (hover: none) and (pointer: coarse), (max-width: 767px) {
+  .survey-page input:not([type="radio"]):not([type="checkbox"]),
+  .survey-page select,
+  .survey-page textarea { font-size: 16px; }
+}

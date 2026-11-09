@@ -174,3 +174,10 @@
   .webinar-info-modal-success { padding: 46px 24px 30px; }
   .webinar-info-modal-success h2 { font-size: 25px; }
 }
+
+/* iOS zooms the page in when a focused field's text is under 16px and keeps it
+   zoomed after the field is left, which crops the next screens. 16px on touch
+   devices prevents that. */
+@media (hover: none) and (pointer: coarse), (max-width: 767px) {
+  .webinar-info-modal-form input, .webinar-info-modal-form textarea { font-size: 16px; }
+}

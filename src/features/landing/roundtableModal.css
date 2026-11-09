@@ -149,3 +149,10 @@
   .landing-roundtable-modal-primary, .landing-roundtable-modal-secondary { flex: 1; padding: 0 14px; }
   .landing-roundtable-modal-success { padding: 56px 24px 28px; }
 }
+
+/* iOS zooms the page in when a focused field's text is under 16px and keeps it
+   zoomed after the field is left, which crops the next screens. 16px on touch
+   devices prevents that. */
+@media (hover: none) and (pointer: coarse), (max-width: 767px) {
+  .landing-roundtable-modal-form input { font-size: 16px; }
+}
