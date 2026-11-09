@@ -17,7 +17,7 @@ import {
   SurveyAnswersReviewModal,
   type RoundtableChoice,
 } from './SurveyScreens'
-import { createRoundtableRegistrationIdempotencyKey, createSurveySubmissionIdempotencyKey, createWebinarRegistrationIdempotencyKey, getReportHtml, getReportJobStatus, submitRoundtableRegistration, submitSurveySubmission, submitWebinarRegistration, SurveyApiError, type ReportEmailStatus, type ReportJobStatusValue } from './surveyApi'
+import { createRoundtableRegistrationIdempotencyKey, createSurveySubmissionIdempotencyKey, createWebinarRegistrationIdempotencyKey, deferredResultDays, getReportHtml, getReportJobStatus, submitRoundtableRegistration, submitSurveySubmission, submitWebinarRegistration, SurveyApiError, type ReportEmailStatus, type ReportJobStatusValue } from './surveyApi'
 import { buildSurveySubmissionPayload } from './surveySubmissionPayload'
 import { isValidPhone } from './phoneValidation'
 import './survey.css'
@@ -111,6 +111,8 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
   const [reportAccessTokenExpiresAt, setReportAccessTokenExpiresAt] = useState(() => restoredSession?.reportAccessTokenExpiresAt ?? '')
   const [reportStatus, setReportStatus] = useState<ReportJobStatusValue | ''>(() => (restoredSession?.reportStatus as ReportJobStatusValue | undefined) ?? '')
   const [reportEmailStatus, setReportEmailStatus] = useState<ReportEmailStatus>(() => (restoredSession?.reportEmailStatus as ReportEmailStatus | undefined) ?? 'not_sent')
+  // Set while report generation is paused: the report is emailed within this many days.
+  const [reportDeferredDays, setReportDeferredDays] = useState<number | null>(() => restoredSession?.reportDeferredDays ?? null)
   const [reportHtml, setReportHtml] = useState('')
   const [reportError, setReportError] = useState('')
   const [reportPollingTimedOut, setReportPollingTimedOut] = useState(false)
@@ -153,6 +155,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
       partTwoPrivacyRefused,
       reportAccessToken,
       reportAccessTokenExpiresAt,
+      reportDeferredDays,
       reportEmailStatus,
       reportJobId,
       reportStatus,
@@ -178,7 +181,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
       questionError,
       version: 1,
     })
-  }, [activeQuestion, answers, consent, contact, dataCollectionConsent, formError, loadingStep, missingQuestionNumbers, otherAnswers, partTwoPrivacyRefused, questionError, reportAccessToken, reportAccessTokenExpiresAt, reportEmailStatus, reportJobId, reportMode, reportStatus, roundtableContact, roundtableError, roundtableOpen, roundtableRegistered, roundtableRegisteredAt, roundtableRegistrationId, roundtableRegistrationIdempotencyKey, screen, submittedAt, submittedSubmissionId, submissionError, submissionIdempotencyKey, webinarError, webinarRegistered, webinarRegisteredAt, webinarRegistrationId, webinarRegistrationIdempotencyKey])
+  }, [activeQuestion, answers, consent, contact, dataCollectionConsent, formError, loadingStep, missingQuestionNumbers, otherAnswers, partTwoPrivacyRefused, questionError, reportAccessToken, reportAccessTokenExpiresAt, reportDeferredDays, reportEmailStatus, reportJobId, reportMode, reportStatus, roundtableContact, roundtableError, roundtableOpen, roundtableRegistered, roundtableRegisteredAt, roundtableRegistrationId, roundtableRegistrationIdempotencyKey, screen, submittedAt, submittedSubmissionId, submissionError, submissionIdempotencyKey, webinarError, webinarRegistered, webinarRegisteredAt, webinarRegistrationId, webinarRegistrationIdempotencyKey])
 
   useEffect(() => {
     const desktopMedia = window.matchMedia(surveyPersistentQuestionPanelMediaQuery)
@@ -281,6 +284,11 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
           window.requestAnimationFrame(scrollToTop)
           return
         }
+
+        // Paused report generation: the report is emailed later, so stop polling.
+        const deferredDays = deferredResultDays(status)
+        setReportDeferredDays(deferredDays)
+        if (deferredDays) return
 
         if (status.status === 'failed') {
           setReportError(t('Không thể tạo báo cáo lần này. Anh/Chị vui lòng thử lại sau.'))
@@ -626,6 +634,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
       setReportAccessToken(result.report?.accessToken ?? '')
       setReportAccessTokenExpiresAt(result.report?.accessTokenExpiresAt ?? '')
       setReportStatus(result.report?.status ?? '')
+      setReportDeferredDays(deferredResultDays(result.report))
       setReportEmailStatus('not_sent')
       setReportHtml('')
       setReportError('')
@@ -805,6 +814,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
         {screen === 'loading' ? (
           reportJobId && reportAccessToken ? (
             <ReportGenerationScreen
+              deferredDays={reportDeferredDays}
               error={reportError}
               onHome={backToLanding}
               onRetry={retryReportPolling}

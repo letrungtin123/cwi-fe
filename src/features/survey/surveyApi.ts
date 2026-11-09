@@ -21,14 +21,21 @@ export type ReportJobStatusValue = 'pending' | 'queued' | 'queued_ai' | 'generat
 
 export type ReportEmailStatus = 'not_sent' | 'queued' | 'sending' | 'sent' | 'failed' | 'unknown'
 
-export type SurveyReportAccess = {
+// resultDeferred: report generation is paused in the dashboard, so the report is
+// emailed within deferredResultDays instead of appearing on the waiting page.
+type ReportDeferral = {
+  deferredResultDays?: number | null
+  resultDeferred?: boolean
+}
+
+export type SurveyReportAccess = ReportDeferral & {
   accessToken: string
   accessTokenExpiresAt: string
   jobId: string
   status: ReportJobStatusValue
 }
 
-export type ReportJobStatusResult = {
+export type ReportJobStatusResult = ReportDeferral & {
   createdAt: string
   emailStatus: ReportEmailStatus
   htmlAvailable: boolean
@@ -37,6 +44,10 @@ export type ReportJobStatusResult = {
   reportType: 'anonymous' | 'personalized'
   status: ReportJobStatusValue
   updatedAt: string
+}
+
+export function deferredResultDays(result: ReportDeferral | null | undefined) {
+  return result?.resultDeferred ? result.deferredResultDays ?? 7 : null
 }
 
 export type SurveySubmitResult = {

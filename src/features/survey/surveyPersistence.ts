@@ -22,6 +22,7 @@ export type SurveySession = {
   partTwoPrivacyRefused: boolean
   reportAccessToken?: string
   reportAccessTokenExpiresAt?: string
+  reportDeferredDays?: number | null
   reportEmailStatus?: string
   reportJobId?: string
   reportStatus?: string
