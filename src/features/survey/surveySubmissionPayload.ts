@@ -2,6 +2,7 @@ import { getLang, t, type Lang } from '@/i18n'
 import type { ContactState, ConsentChoice, ReportMode } from './surveyPersistence'
 import { normalizeWebsiteValue, OTHER_OPTION, hasQuestionAnswer, type Answers } from './surveyScoring'
 import { partOneQuestions, partTwoQuestions, SURVEY_VERSION, type SurveyQuestion } from './surveyData'
+import { readSurveySourceCode } from './surveySource'
 
 export type SubmissionStatus = 'part1_only' | 'part2_refused_privacy' | 'full_private_report'
 export type PrivacyConsent = 'yes' | 'no' | 'not_applicable'
@@ -32,6 +33,8 @@ export type SurveySubmissionPayload = {
     position?: string
     registered: true
   }
+  // Invitation source code from the survey link, remembered for 30 days.
+  sourceCode?: string
   statusNote: string
   submissionStatus: SubmissionStatus
   surveyVersion: string
@@ -156,6 +159,7 @@ export function buildSurveySubmissionPayload(input: BuildSurveySubmissionPayload
           registered: true,
         }
       : undefined,
+    sourceCode: readSurveySourceCode() ?? undefined,
     statusNote: statusNotes[status],
     submissionStatus: status,
     surveyVersion: SURVEY_VERSION,
