@@ -38,8 +38,8 @@ export const landingEn: Record<string, string> = {
   "Truyền thông & Thương hiệu": "Communications & Branding",
   "TRẦN MẠNH TƯỞNG": "TRẦN MẠNH TƯỞNG",
   "Quản trị Nhân sự Cao cấp": "Senior HR Management",
-  "Đơn vị tổ chức": "Co-orgainzer",
-  "Đơn vị bảo trợ": "Under the patronage of",
+  "Đơn vị tổ chức": "Co-organizer",
+  "Đơn vị bảo trợ": "Patron",
   "Đơn vị đồng hành": "Supporting Partners",
   "Chính sách bảo mật": "Privacy Policy",
   "Quy chế hoạt động": "Terms of Operation",
@@ -227,8 +227,8 @@ export const landingEn: Record<string, string> = {
   "aboutCwiTitle|là thước đo": "is the benchmark",
   "aboutCwiTitle|Hệ cộng lực vận hành doanh nghiệp": "for the Workforce Plus behind",
   "aboutCwiTitle|hiệu quả": "high-performing businesses",
-  // Hero logo strip label: its column is 145px wide on the desktop strip, so it takes two lines.
-  "logoStrip|Đơn vị bảo trợ": "Under the\npatronage of",
+  // Hero logo strip label (strip hidden for now, SHOW_HERO_LOGO_STRIP): fits its 145px desktop column.
+  "logoStrip|Đơn vị bảo trợ": "Patron",
   // PDF reader zoom buttons (the survey uses "Thu nhỏ báo cáo" for leaving full screen).
   "reportPdf|Thu nhỏ báo cáo": "Zoom out",
   "reportPdf|Phóng to báo cáo": "Zoom in",

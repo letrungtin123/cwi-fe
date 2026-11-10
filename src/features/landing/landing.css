@@ -3581,7 +3581,7 @@ html[lang='en'] .figma-advisor-card > p:nth-of-type(2) {
 }
 
 /* Partner group labels: the text boxes and side rules are placed for the Vietnamese widths, and
-   "Under the patronage of" (174px) overflows its 116px box onto the right rule. Lay EN out as
+   longer EN labels (e.g. "Operation partners") can overflow their box onto the right rule. Lay EN out as
    rule – label – rule, centred, with the ~22px gaps VI shows. */
 html[lang='en'] .partners-section .figma-section-label-frame {
   display: flex;
