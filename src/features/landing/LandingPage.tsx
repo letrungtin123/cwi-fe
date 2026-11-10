@@ -83,6 +83,8 @@ const desktopHeroReveal: Variants = {
 const FIGMA_CANVAS_WIDTH = 1440
 const FIGMA_CANVAS_HEIGHT = 4758
 const HERO_CAROUSEL_INTERVAL_MS = 3000
+// Partner logo strip at the bottom of the hero slider (desktop and mobile). Hidden for now; set to true to show it again.
+const SHOW_HERO_LOGO_STRIP = false
 
 type HeroCarouselSlide = {
   image: string
@@ -777,7 +779,7 @@ function HeroSection({ isWebinarOpen, onOpenWebinar }: { isWebinarOpen: boolean;
   return (
     <m.section animate="show" className="figma-hero-section absolute left-0 top-0 h-[940px] w-full overflow-hidden" initial="hidden" variants={desktopHeroReveal} aria-labelledby="hero-title">
       <HeroCarousel activeIndex={activeIndex} />
-      <HeroLogoStrip className="hero-logo-strip" />
+      {SHOW_HERO_LOGO_STRIP && <HeroLogoStrip className="hero-logo-strip" />}
       <div className="figma-hero-gradient absolute inset-0 h-full w-full" />
       <AssetImage alt="" aria-hidden="true" asset="rectangle4329" className="absolute left-0 top-[763px] h-[156px] w-[1440px] object-cover" loading="eager" />
       <Sparkles />
@@ -1847,7 +1849,7 @@ function MobileHeroCarousel({ isWebinarOpen, onOpenWebinar }: { isWebinarOpen: b
       <div className={cn('mobile-hero-content', !activeSlide.showIntro && 'is-carousel-slide')} data-reveal key={activeSlide.image}>
         <MobileHeroCarouselContent copy={activeSlide.copy} showIntro={activeSlide.showIntro} />
         <MobileHeroCarouselButton onOpenReportPdf={openQuarterlyReport} onOpenWebinarModal={onOpenWebinar} slide={activeSlide} />
-        <HeroLogoStrip className="mobile-hero-logo-strip" />
+        {SHOW_HERO_LOGO_STRIP && <HeroLogoStrip className="mobile-hero-logo-strip" />}
       </div>
       <MobileHeroCarouselProgress activeIndex={activeIndex} onSelect={selectSlide} />
     </section>
