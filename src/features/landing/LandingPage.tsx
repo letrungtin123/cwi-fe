@@ -204,11 +204,28 @@ const figmaScrollTargets: Record<(typeof navTargets)[number], number> = {
   '#about-cwi': 2420,
 }
 
+// Width of a classic vertical scrollbar in CSS pixels (about 15px on Windows); 0 where scrollbars
+// overlay the page (phones, tablets, macOS default). Measured each time: browser zoom changes it.
+function getScrollbarWidth() {
+  if (!document.body) return 0
+  const probe = document.createElement('div')
+  probe.style.cssText = 'position:absolute;top:-9999px;left:-9999px;width:100px;height:100px;overflow:scroll;visibility:hidden'
+  document.body.appendChild(probe)
+  const width = probe.offsetWidth - probe.clientWidth
+  probe.remove()
+  return width
+}
+
+// The desktop page is the 1440px Figma canvas zoomed to the window width, smaller and larger
+// screens alike, so it always fills the window edge to edge (no side margins on wide screens).
+// The scrollbar's width is left out whether or not it is showing right now: it is missing before
+// the page has grown tall enough to scroll and while a dialog locks scrolling, and the scale must
+// not jump in those moments.
 function getViewportScale() {
   if (typeof window === 'undefined') return 1
 
-  const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
-  return Math.min(1, viewportWidth / FIGMA_CANVAS_WIDTH)
+  const windowWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0) || FIGMA_CANVAS_WIDTH
+  return (windowWidth - getScrollbarWidth()) / FIGMA_CANVAS_WIDTH
 }
 
 function useFigmaViewportScale() {
