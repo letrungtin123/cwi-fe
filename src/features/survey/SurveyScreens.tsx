@@ -11,9 +11,9 @@ import { isValidPhone } from './phoneValidation'
 import { SurveyBrandMark, SurveyEyebrow, SurveyForwardArrow } from './SurveyChrome'
 import type { ReportEmailStatus, ReportJobStatusValue } from './surveyApi'
 import { useRoundtableEventDetails } from './useRoundtableEvent'
-import reportCarouselFallback from '@/assets/figma/carousel-baocaoquy3.png'
-import roundtableCarouselFallback from '@/assets/figma/carousel-dauanbantron.jpg'
-import webinarCarouselFallback from '@/assets/figma/carousel-webinar.png'
+import reportCarouselFallback from '@/assets/figma/carousel-baocaoquy3.webp'
+import roundtableCarouselFallback from '@/assets/figma/carousel-dauanbantron.webp'
+import webinarCarouselFallback from '@/assets/figma/carousel-webinar.webp'
 
 type ContactState = { companyName: string; email: string; name: string; phone: string; jobTitle: string; jobTitleOther: string }
 type ConsentChoice = 'yes' | 'no' | ''

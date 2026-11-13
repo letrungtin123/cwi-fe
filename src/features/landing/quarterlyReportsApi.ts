@@ -1,6 +1,8 @@
 import { t } from '@/i18n'
 
-const apiBaseUrl =(import.meta.env.VITE_CWI_API_BASE_URL ?? 'http://localhost:8088').replace(/\/+$/, '')
+// Without VITE_CWI_API_BASE_URL a production build calls its own origin (/api); only the dev
+// server falls back to the local backend.
+const apiBaseUrl = (import.meta.env.VITE_CWI_API_BASE_URL ?? (import.meta.env.DEV ? 'http://localhost:8088' : '')).replace(/\/+$/, '')
 
 type ApiSuccess<T> = { data: T }
 type ApiFailure = { error?: { code?: string; message?: string } }

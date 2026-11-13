@@ -7,6 +7,8 @@ import type { QuarterlyReportPublic } from './quarterlyReportsApi'
 import './reportPdfModal.css'
 
 type ReportPdfModalProps = {
+  // True while another dialog (the download form) is open on top: Escape then belongs to it.
+  escapeSuspended?: boolean
   onClose: () => void
   onRequestDownload: () => void
   open: boolean
@@ -285,8 +287,12 @@ function ReportPdfViewer({ onPageChange, onPageCountChange, onRetry, pdfUrl, zoo
   )
 }
 
-export function ReportPdfModal({ onClose, onRequestDownload, open, report }: ReportPdfModalProps) {
+export function ReportPdfModal({ escapeSuspended = false, onClose, onRequestDownload, open, report }: ReportPdfModalProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const escapeSuspendedRef = useRef(escapeSuspended)
+  useEffect(() => {
+    escapeSuspendedRef.current = escapeSuspended
+  }, [escapeSuspended])
   const expandButtonRef = useRef<HTMLButtonElement>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [pageCount, setPageCount] = useState<number | null>(null)
@@ -300,7 +306,7 @@ export function ReportPdfModal({ onClose, onRequestDownload, open, report }: Rep
     const previousOverflow = document.body.style.overflow
     const previousFocus = document.activeElement as HTMLElement | null
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return
+      if (event.key !== 'Escape' || escapeSuspendedRef.current) return
       event.preventDefault()
       onClose()
     }

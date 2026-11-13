@@ -53,7 +53,7 @@ export function QuarterlyReportPage({ slug }: QuarterlyReportPageProps) {
 
   return (
     <>
-      <ReportPdfModal onClose={goHome} onRequestDownload={() => setDownloadOpen(true)} open report={report} />
+      <ReportPdfModal escapeSuspended={downloadOpen} onClose={goHome} onRequestDownload={() => setDownloadOpen(true)} open report={report} />
       <QuarterlyReportDownloadModal onClose={() => setDownloadOpen(false)} open={downloadOpen} report={report} />
     </>
   )
