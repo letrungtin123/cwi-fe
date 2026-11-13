@@ -75,6 +75,16 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
     }
     return readSurveySession()
   })
+  // An invitation/QR link (?entry=qr) starts a fresh survey once. Drop the flag from the address
+  // bar right away, so a reload or a restored tab keeps the answers given so far instead of
+  // wiping them again. The ?src= invitation code stays (it was saved at page load).
+  useEffect(() => {
+    if (!startFresh) return
+    const url = new URL(window.location.href)
+    if (url.searchParams.get('entry') !== 'qr') return
+    url.searchParams.delete('entry')
+    window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash)
+  }, [startFresh])
   const [screen, setScreen] = useState<SurveyScreen>(() => restoredSession?.screen ?? 'intro')
   const [answers, setAnswers] = useState<Answers>(() => restoredSession?.answers ?? {})
   const [otherAnswers, setOtherAnswers] = useState<Answers>(() => restoredSession?.otherAnswers ?? {})
