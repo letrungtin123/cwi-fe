@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronUp, Download, Minus, Plus, RefreshCw, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { useDialogKeyboard } from '@/lib/useDialogKeyboard'
 import { createPortal } from 'react-dom'
 import type { PDFDocumentProxy } from 'pdfjs-dist/types/src/pdf'
 import { t, tx } from '@/i18n'
@@ -289,10 +290,7 @@ function ReportPdfViewer({ onPageChange, onPageCountChange, onRetry, pdfUrl, zoo
 
 export function ReportPdfModal({ escapeSuspended = false, onClose, onRequestDownload, open, report }: ReportPdfModalProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null)
-  const escapeSuspendedRef = useRef(escapeSuspended)
-  useEffect(() => {
-    escapeSuspendedRef.current = escapeSuspended
-  }, [escapeSuspended])
+  const dialogRef = useRef<HTMLElement>(null)
   const expandButtonRef = useRef<HTMLButtonElement>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [pageCount, setPageCount] = useState<number | null>(null)
@@ -300,27 +298,8 @@ export function ReportPdfModal({ escapeSuspended = false, onClose, onRequestDown
   const [zoom, setZoom] = useState(100)
   const [isChromeCollapsed, setIsChromeCollapsed] = useState(false)
 
-  useEffect(() => {
-    if (!open) return
-
-    const previousOverflow = document.body.style.overflow
-    const previousFocus = document.activeElement as HTMLElement | null
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape' || escapeSuspendedRef.current) return
-      event.preventDefault()
-      onClose()
-    }
-
-    document.body.style.overflow = 'hidden'
-    window.addEventListener('keydown', closeOnEscape)
-    window.requestAnimationFrame(() => closeButtonRef.current?.focus())
-
-    return () => {
-      document.body.style.overflow = previousOverflow
-      window.removeEventListener('keydown', closeOnEscape)
-      window.requestAnimationFrame(() => previousFocus?.focus())
-    }
-  }, [onClose, open])
+  // While the download form is open on top, Escape and Tab belong to that form.
+  useDialogKeyboard(open, dialogRef, { initialFocusRef: closeButtonRef, onEscape: onClose, suspended: escapeSuspended })
 
   useEffect(() => {
     if (!open) return
@@ -341,7 +320,7 @@ export function ReportPdfModal({ escapeSuspended = false, onClose, onRequestDown
 
   return createPortal(
     <div className="report-pdf-modal-backdrop" role="presentation">
-      <section aria-labelledby="report-pdf-modal-title" aria-modal="true" className="report-pdf-modal" data-chrome-collapsed={isChromeCollapsed} role="dialog">
+      <section aria-labelledby="report-pdf-modal-title" aria-modal="true" className="report-pdf-modal" data-chrome-collapsed={isChromeCollapsed} ref={dialogRef} role="dialog">
         <div aria-hidden={isChromeCollapsed} className="report-pdf-reader-chrome">
           <header className="report-pdf-modal-header">
             <div className="report-pdf-modal-copy">

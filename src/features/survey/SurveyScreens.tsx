@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, Download, LockKeyhole, MailCheck, Maximize2, Minimize2, X } from 'lucide-react'
+import { Check, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, LockKeyhole, MailCheck, Maximize2, Minimize2, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
-import { dateLocale, t, tx } from '@/i18n'
-import { contactCopy, introCopy, jobTitleOptions, partOneQuestions, partTwoQuestions, reportParts, roundtableCopy, WEBINAR_ENABLED } from './surveyData'
-import { marketBenchmarkData, type MarketBenchmarkData } from './surveyReportData'
+import { t, tx } from '@/i18n'
+import { contactCopy, introCopy, jobTitleOptions, partOneQuestions, partTwoQuestions, reportParts, roundtableCopy } from './surveyData'
 import { getAnswerDisplay, type Answers, validEmail } from './surveyScoring'
 import { isValidPhone } from './phoneValidation'
 import { SurveyBrandMark, SurveyEyebrow, SurveyForwardArrow } from './SurveyChrome'
@@ -14,14 +13,10 @@ import { useRoundtableEventDetails } from './useRoundtableEvent'
 import reportCarouselFallback from '@/assets/figma/carousel-baocaoquy3.webp'
 import roundtableCarouselFallback from '@/assets/figma/carousel-dauanbantron.webp'
 import webinarCarouselFallback from '@/assets/figma/carousel-webinar.webp'
+import { useDialogKeyboard } from '@/lib/useDialogKeyboard'
 
 type ContactState = { companyName: string; email: string; name: string; phone: string; jobTitle: string; jobTitleOther: string }
 type ConsentChoice = 'yes' | 'no' | ''
-type ScoreSet = {
-  domains: Array<{ name: string; value: number }>
-  overall: number
-  scale: number
-}
 
 type IntroScreenProps = {
   onStart: () => void
@@ -439,357 +434,6 @@ export function ReportScreen({ emailStatus, html, mode, onHome, onReviewAnswers 
   )
 }
 
-type ResultScreenProps = {
-  answers: Answers
-  isWebinarRegistering: boolean
-  mode: 'part1' | 'private'
-  onBackHome: () => void
-  onOpenRoundtable: (trigger: HTMLButtonElement) => void
-  onRegisterWebinar: () => void
-  otherAnswers: Answers
-  scores: ScoreSet
-  webinarError: string
-  webinarRegistered: boolean
-  webinarRegisteredAt: string
-}
-
-export function ResultScreen({ answers, isWebinarRegistering, mode, onBackHome, onOpenRoundtable, onRegisterWebinar, otherAnswers, scores, webinarError, webinarRegistered, webinarRegisteredAt }: ResultScreenProps) {
-  const isPrivate = mode === 'private'
-  const roundtableDetails = useRoundtableEventDetails(true)
-
-  return (
-    <section className="survey-result-screen" aria-labelledby="survey-result-title">
-      <ReportIdentity mode={mode} />
-      {isPrivate ? (
-        <>
-          <PrivatePartOneSection domains={scores.domains} />
-          <PrivateAnalysisSection answers={answers} otherAnswers={otherAnswers} />
-        </>
-      ) : (
-        <>
-          <MarketBenchmarkSection data={marketBenchmarkData} />
-          <PersonalScoreSection answers={answers} otherAnswers={otherAnswers} scores={scores} />
-          <DomainAnalysisSection domains={scores.domains} />
-        </>
-      )}
-
-      <section className="survey-roundtable-invitation">
-        <SurveyEyebrow>CEO Roundtable</SurveyEyebrow>
-        <h2>{t('Đăng kí tham dự CEO Roundtable')}</h2>
-        {roundtableCopy.paragraphs.map((paragraph) => <p key={paragraph}>{t(paragraph)}</p>)}
-        <ul aria-label={t('Thông tin chương trình')} className="survey-round-meta">
-          {roundtableDetails.map((detail) => (
-            <li key={detail.label}><strong>{detail.label}:</strong> {detail.value}</li>
-          ))}
-        </ul>
-        <button className="survey-outline-button" onClick={(event) => onOpenRoundtable(event.currentTarget)} type="button">
-          {t('Đăng ký tham dự')}
-        </button>
-      </section>
-
-      {WEBINAR_ENABLED && <section className="survey-webinar-invitation">
-        <SurveyEyebrow>CEO WORKFORCE INDEX WEBINAR</SurveyEyebrow>
-        <h2>{t('Đăng kí tham dự Webinar')}</h2>
-        <p>{t('Webinar: Làm sao để CEO và HRD hết lệch pha và không lỗi nhịp?')}</p>
-        <ul aria-label={t('Thông tin Webinar')} className="survey-round-meta">
-          <li><strong>{t('Thời gian:')}</strong> 14:00–16:00 | 22/10/2026</li>
-          <li><strong>{t('Hình thức:')}</strong> {t('Trực tuyến qua Zoom')}</li>
-        </ul>
-        {webinarError ? <p className="survey-inline-error" role="alert">{webinarError}</p> : null}
-        {webinarRegistered ? (
-          <p className="survey-success-message">
-            {webinarRegisteredAt
-              ? t('Đăng ký Webinar đã được ghi nhận lúc {time}.', { time: new Date(webinarRegisteredAt).toLocaleString(dateLocale()) })
-              : t('Đăng ký Webinar đã được ghi nhận.')}
-          </p>
-        ) : null}
-        <button className="survey-outline-button" disabled={webinarRegistered || isWebinarRegistering} onClick={onRegisterWebinar} type="button">
-          {webinarRegistered ? t('Đã đăng ký') : isWebinarRegistering ? t('Đang đăng ký...') : t('Đăng ký tham dự')}
-        </button>
-      </section>}
-
-      <div className="survey-result-actions">
-        <button className="survey-primary-button" onClick={() => window.print()} type="button">
-          <Download aria-hidden="true" size={17} />
-          {t('Tải xuống PDF')}
-        </button>
-        <button className="survey-outline-button" onClick={onBackHome} type="button">{t('Quay về trang chủ')}</button>
-      </div>
-    </section>
-  )
-}
-
-function ReportIdentity({ mode }: { mode: 'part1' | 'private' }) {
-  const isPrivate = mode === 'private'
-
-  return (
-    <>
-      <div className="survey-report-print-brand">
-        <SurveyBrandMark variant="report" />
-        <span>CEO Workforce Index · Q3 2026</span>
-      </div>
-      <header className="survey-result-identity">
-        <SurveyBrandMark variant="report" />
-        <p className="survey-report-kicker">{isPrivate ? t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3') : t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1')}</p>
-        <h1 id="survey-result-title">{isPrivate ? t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3') : t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1')}</h1>
-        <p>{isPrivate ? t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3') : t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1')}</p>
-        <div className="survey-report-meta">
-          <span>{isPrivate ? t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3') : t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1')}</span>
-        </div>
-      </header>
-    </>
-  )
-}
-
-function ReportSectionHeading({ number, eyebrow, title }: { number: string; eyebrow: string; title: string }) {
-  return (
-    <div className="survey-section-heading">
-      <span className="survey-report-section-number">{number}</span>
-      <div>
-        {eyebrow ? <SurveyEyebrow>{eyebrow}</SurveyEyebrow> : null}
-        <h2>{title}</h2>
-      </div>
-    </div>
-  )
-}
-
-function MarketBenchmarkSection({ data }: { data: MarketBenchmarkData }) {
-  const hasLiveData = data.status === 'live'
-
-  return (
-    <section className="survey-result-section survey-market-section">
-      <ReportSectionHeading number="1." eyebrow="" title={t('Kết quả thị trường')} />
-      <p className="survey-section-lede">{t('Kết quả thị trường được lấy từ Teaser Report để tạo bối cảnh đối chuẩn.')}</p>
-      {hasLiveData ? (
-        <>
-          <p className="survey-section-lede">{t(data.sourceLabel)}</p>
-          <div className="survey-market-demo" aria-hidden="true">
-            <span className="survey-market-demo-label">{t('Demo bố cục · Dữ liệu thực tế lấy từ Teaser Report')}</span>
-            <div className="survey-market-demo-chart"><i /><b /><em /></div>
-          </div>
-          <div className="survey-market-metrics">
-            {data.metrics.map((metric) => (
-              <div key={metric.label}>
-                <span>{t(metric.label)}</span>
-                <strong>{metric.value}</strong>
-                <small>{t(metric.description)}</small>
-              </div>
-            ))}
-          </div>
-        </>
-      ) : (
-        <div className="survey-market-pending" role="status">
-          <strong>{t(data.sourceLabel)}</strong>
-          <p>{t('Dữ liệu đối chuẩn thị trường đang được tổng hợp trong kỳ nghiên cứu {period}.', { period: data.period })}</p>
-        </div>
-      )}
-    </section>
-  )
-}
-function PersonalScoreSection({ answers, otherAnswers, scores }: { answers: Answers; otherAnswers: Answers; scores: ScoreSet }) {
-  return (
-    <section className="survey-result-section">
-      <ReportSectionHeading number="2." eyebrow="" title={t('Input của Anh/Chị cho 18 câu hỏi')} />
-      <p className="survey-section-lede">{t('Tóm tắt các tín hiệu từ câu trả lời của Anh/Chị.')}</p>
-      <div className="survey-score-rows">
-        <ScoreRow label="Leadership Capacity" value={scores.overall} />
-        <ScoreRow label="Scale Readiness" value={scores.scale} />
-      </div>
-      <AnswerSummary answers={answers} otherAnswers={otherAnswers} />
-    </section>
-  )
-}
-
-function AnswerSummary({ answers, otherAnswers }: { answers: Answers; otherAnswers: Answers }) {
-  const questionNumbers = [1, 6, 10, 14, 17, 18]
-
-  return (
-    <div className="survey-answer-summary" aria-label={t('Tóm tắt câu trả lời')}>
-      {questionNumbers.map((number) => (
-        <article key={number}>
-          <strong>{t('Câu {n}', { n: number })}</strong>
-          <span>{getAnswerDisplay(number, answers, otherAnswers)}</span>
-        </article>
-      ))}
-    </div>
-  )
-}
-function DomainAnalysisSection({ domains }: { domains: ScoreSet['domains'] }) {
-  return (
-    <section className="survey-result-section">
-      <ReportSectionHeading number="3." eyebrow="" title={t('Phân tích đối chuẩn')} />
-      <p className="survey-section-lede">{t('Phân tích dữ liệu của Anh/Chị, đối chuẩn và xác định doanh nghiệp đang ở đâu so với bối cảnh thị trường.')}</p>
-      <div className="survey-domain-analysis-layout">
-        <DomainRadar domains={domains} />
-        <DomainBars domains={domains} />
-      </div>
-    </section>
-  )
-}
-function ScoreRow({ label, value }: { label: string; value: number }) {
-  const safeValue = clampScore(value)
-  return (
-    <article className="survey-score-row">
-      <div><span>{label}</span><strong>{safeValue} <small>/ 100</small></strong></div>
-      <div className="survey-score-track"><i style={{ width: safeValue + '%' }} /></div>
-    </article>
-  )
-}
-
-function clampScore(value: number) {
-  return Math.max(0, Math.min(100, Number.isFinite(value) ? value : 0))
-}
-
-function polarPoint(cx: number, cy: number, radius: number, index: number, count: number) {
-  const angle = -Math.PI / 2 + (index * Math.PI * 2) / count
-  return { x: cx + Math.cos(angle) * radius, y: cy + Math.sin(angle) * radius }
-}
-
-function pointsForScale(count: number, cx: number, cy: number, radius: number, scale: number) {
-  return Array.from({ length: count }, (_, index) => {
-    const point = polarPoint(cx, cy, radius * scale, index, count)
-    return point.x.toFixed(2) + ',' + point.y.toFixed(2)
-  }).join(' ')
-}
-
-function wrapDomainLabel(name: string) {
-  const words = name.split(' ')
-  const lines: string[] = []
-  let current = ''
-  words.forEach((word) => {
-    const candidate = current ? current + ' ' + word : word
-    if (candidate.length > 18 && current) {
-      lines.push(current)
-      current = word
-    } else {
-      current = candidate
-    }
-  })
-  if (current) lines.push(current)
-  return lines.slice(0, 2)
-}
-
-function DomainRadar({ domains }: { domains: ScoreSet['domains'] }) {
-  if (!domains.length) {
-    return <p className="survey-empty-visual">{t('Chưa có nhóm năng lực để hiển thị.')}</p>
-  }
-
-  const size = 320
-  const center = size / 2
-  const radius = 102
-  const labelRadius = 140
-  const count = domains.length
-  const values = domains.map((domain) => clampScore(domain.value))
-  const valuePoints = values.map((value, index) => {
-    const point = polarPoint(center, center, radius * (value / 100), index, count)
-    return point.x.toFixed(2) + ',' + point.y.toFixed(2)
-  }).join(' ')
-
-  return (
-    <figure className="survey-radar-figure">
-      <figcaption>{t('5 nhóm năng lực')}<br /><small>{t('Điểm từ 18 câu trả lời')}</small></figcaption>
-      <svg
-        aria-label={t('Biểu đồ radar 5 nhóm năng lực theo điểm số CWI')}
-        className="survey-radar"
-        role="img"
-        viewBox="0 0 320 320"
-      >
-        {[0.25, 0.5, 0.75, 1].map((scale) => (
-          <polygon className="survey-radar-grid" key={scale} points={pointsForScale(count, center, center, radius, scale)} />
-        ))}
-        {domains.map((domain, index) => {
-          const point = polarPoint(center, center, radius, index, count)
-          return <line className="survey-radar-axis" key={domain.name} x1={center} x2={point.x} y1={center} y2={point.y} />
-        })}
-        <polygon className="survey-radar-area" points={valuePoints} />
-        <polyline className="survey-radar-line" points={valuePoints + ' ' + valuePoints.split(' ')[0]} />
-        {domains.map((domain, index) => {
-          const point = polarPoint(center, center, radius * (values[index] / 100), index, count)
-          return <circle className="survey-radar-point" cx={point.x} cy={point.y} key={domain.name} r="4" />
-        })}
-        {domains.map((domain, index) => {
-          const point = polarPoint(center, center, labelRadius, index, count)
-          const anchor = point.x < center - 8 ? 'end' : point.x > center + 8 ? 'start' : 'middle'
-          const lines = wrapDomainLabel(domain.name)
-          return (
-            <text className="survey-radar-label" key={domain.name} textAnchor={anchor} x={point.x} y={point.y}>
-              {lines.map((line, lineIndex) => <tspan dy={lineIndex === 0 ? 0 : 14} key={line} x={point.x}>{line}</tspan>)}
-            </text>
-          )
-        })}
-      </svg>
-    </figure>
-  )
-}
-
-function DomainBars({ domains }: { domains: ScoreSet['domains'] }) {
-  return (
-    <div className="survey-domain-bars">
-      {domains.map((domain) => {
-        const value = clampScore(domain.value)
-        return (
-          <div key={domain.name}>
-            <div><strong>{domain.name}</strong><span>{value} / 100</span></div>
-            <i><b style={{ width: value + '%' }} /></i>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
-function PrivatePartOneSection({ domains }: { domains: ScoreSet['domains'] }) {
-  return (
-    <section className="survey-result-section">
-      <ReportSectionHeading number="" eyebrow="" title={t('Kết quả Phần 1')} />
-      <p className="survey-section-lede">{t('Bao gồm Kết quả thị trường, 18 câu trả lời và phân tích đối chuẩn từ PHẦN 1 - KHẢO SÁT KHUYẾT DANH.')}</p>
-      <div className="survey-private-chart-heading">
-        <strong>{t('5 nhóm năng lực')}</strong>
-        <span>{t('Tổng hợp Phần 1')}</span>
-      </div>
-      <div className="survey-domain-analysis-layout">
-        <DomainRadar domains={domains} />
-        <DomainBars domains={domains} />
-      </div>
-    </section>
-  )
-}
-
-function PrivateAnalysisSection({ answers, otherAnswers }: { answers: Answers; otherAnswers: Answers }) {
-  const items = [
-    ['Cơ chế ra quyết định', getAnswerDisplay(19, answers, otherAnswers)],
-    ['Độ sẵn sàng mở rộng', getAnswerDisplay(20, answers, otherAnswers)],
-    ['Mức phụ thuộc vào CEO', getAnswerDisplay(21, answers, otherAnswers)],
-    ['Rào cản tăng trưởng', getAnswerDisplay(22, answers, otherAnswers)],
-    ['Bối cảnh doanh nghiệp', t('Doanh thu: {revenue} · Website: {website}', { revenue: getAnswerDisplay(23, answers, otherAnswers), website: getAnswerDisplay(24, answers, otherAnswers) })],
-  ]
-
-  return (
-    <section className="survey-result-section">
-      <ReportSectionHeading number="" eyebrow="" title={t('5 trang phân tích riêng cho doanh nghiệp')} />
-      <p className="survey-section-lede">{t('Phân tích sâu hơn từ 6 câu PHẦN 2 - KHẢO SÁT ĐỊNH DANH, kèm kiến nghị và giải pháp phù hợp với bối cảnh doanh nghiệp.')}</p>
-      <div className="survey-market-metrics survey-private-metrics">
-        <div><span>{t('Mức sẵn sàng mở rộng')}</span><strong>72/100</strong><small>{t('Chỉ số minh họa cho khả năng scale của doanh nghiệp.')}</small></div>
-        <div><span>{t('Rủi ro vận hành')}</span><strong>3</strong><small>{t('Nhóm rủi ro ưu tiên được AI gắn cờ để xử lý sớm.')}</small></div>
-        <div><span>{t('Khung hành động')}</span><strong>90</strong><small>{t('Lộ trình minh họa trong 90 ngày để cải thiện năng lực thực thi.')}</small></div>
-      </div>
-      <div className="survey-private-analysis-list">
-        {items.map(([title, answer], index) => (
-          <article key={title}>
-            <strong>{String(index + 1).padStart(2, '0')}</strong>
-            <div>
-              <span>{t('Trang phân tích riêng {n}/5', { n: index + 1 })}</span>
-              <h3>{t(title)}</h3>
-              <p>{answer}</p>
-              <p>{t('Demo wireframe: khu vực này sẽ chứa phân tích sâu, kiến nghị và giải pháp phù hợp với doanh nghiệp/ngành nghề.')}</p>
-            </div>
-          </article>
-        ))}
-      </div>
-    </section>
-  )
-}
-
 export type RoundtableChoice = 'yes' | 'no' | ''
 
 type RoundtableModalProps = {
@@ -811,41 +455,7 @@ export function RoundtableModal({ choice, error, isRegistering = false, isSubmit
   const eventDetails = useRoundtableEventDetails(open)
   const isBusy = isRegistering || isSubmitting
 
-  useEffect(() => {
-    if (!open) return
-
-    const previousFocus = document.activeElement as HTMLElement | null
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    window.requestAnimationFrame(() => initialFocusRef.current?.focus())
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        onClose()
-        return
-      }
-      if (event.key !== 'Tab' || !modalRef.current) return
-      const focusable = Array.from(modalRef.current.querySelectorAll<HTMLElement>('button, input, [href], [tabindex]:not([tabindex="-1"])'))
-      if (!focusable.length) return
-      const first = focusable[0]
-      const last = focusable[focusable.length - 1]
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault()
-        last.focus()
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault()
-        first.focus()
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = previousOverflow
-      window.requestAnimationFrame(() => previousFocus?.focus())
-    }
-  }, [onClose, open])
+  useDialogKeyboard(open, modalRef, { initialFocusRef, onEscape: onClose })
 
   if (!open) return null
 
@@ -885,25 +495,6 @@ export function RoundtableModal({ choice, error, isRegistering = false, isSubmit
       </div>
     </div>
   )
-}
-
-const submissionCompleteCopy = {
-  home: '\u0054\u0072\u0061\u006e\u0067 \u0063\u0068\u1ee7',
-  eyebrow: 'KH\u1ea2O S\u00c1T \u0110\u00c3 HO\u00c0N T\u1ea4T',
-  message: 'C\u1ea3m \u01a1n anh/ch\u1ecb \u0111\u00e3 ho\u00e0n th\u00e0nh kh\u1ea3o s\u00e1t. B\u00e1o c\u00e1o s\u1ebd \u0111\u01b0\u1ee3c h\u1ec7 th\u1ed1ng x\u1eed l\u00fd v\u00e0 g\u1eedi \u0111\u1ebfn email anh/ch\u1ecb.',
-  title: 'C\u1ea3m \u01a1n anh/ch\u1ecb',
-}
-
-type SubmissionCompleteModalProps = {
-  emailStatus: ReportEmailStatus
-  error: string
-  hasReportJob: boolean
-  html: string
-  onHome: () => void
-  onRetry: () => void
-  open: boolean
-  pollTimedOut: boolean
-  reportStatus: ReportJobStatusValue | ''
 }
 
 const reportProgressSteps = [
@@ -987,20 +578,10 @@ function ReportGenerationCarousel({ onHome }: { onHome: () => void }) {
     return () => window.clearInterval(intervalId)
   }, [carouselCycle, imageCount, lightboxIndex])
 
-  useEffect(() => {
-    if (lightboxIndex === null) return
-
-    const previousFocus = document.activeElement as HTMLElement | null
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    window.requestAnimationFrame(() => lightboxCloseRef.current?.focus())
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        setLightboxIndex(null)
-        return
-      }
+  useDialogKeyboard(lightboxIndex !== null, lightboxDialogRef, {
+    initialFocusRef: lightboxCloseRef,
+    onEscape: () => setLightboxIndex(null),
+    onKeyDown: (event) => {
       if (event.key === 'ArrowLeft') {
         event.preventDefault()
         setActiveIndex((currentIndex) => (currentIndex - 1 + imageCount) % imageCount)
@@ -1011,28 +592,8 @@ function ReportGenerationCarousel({ onHome }: { onHome: () => void }) {
         setActiveIndex((currentIndex) => (currentIndex + 1) % imageCount)
         setCarouselCycle((currentCycle) => currentCycle + 1)
       }
-      if (event.key !== 'Tab' || !lightboxDialogRef.current) return
-
-      const focusable = Array.from(lightboxDialogRef.current.querySelectorAll<HTMLElement>('button, [href], [tabindex]:not([tabindex="-1"])'))
-      if (!focusable.length) return
-      const first = focusable[0]
-      const last = focusable[focusable.length - 1]
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault()
-        last.focus()
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault()
-        first.focus()
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = previousOverflow
-      window.requestAnimationFrame(() => previousFocus?.focus())
-    }
-  }, [imageCount, lightboxIndex])
+    },
+  })
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLElement>) => {
     if (event.pointerType === 'mouse') return
@@ -1302,42 +863,7 @@ export function SurveyAnswersReviewModal({ answers, contact, onClose, open, othe
   const modalRef = useRef<HTMLDivElement>(null)
   const initialFocusRef = useRef<HTMLButtonElement>(null)
 
-  useEffect(() => {
-    if (!open) return
-
-    const previousFocus = document.activeElement as HTMLElement | null
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    window.requestAnimationFrame(() => initialFocusRef.current?.focus())
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        onClose()
-        return
-      }
-      if (event.key !== 'Tab' || !modalRef.current) return
-
-      const focusable = Array.from(modalRef.current.querySelectorAll<HTMLElement>('button, [href], [tabindex]:not([tabindex="-1"])'))
-      if (!focusable.length) return
-      const first = focusable[0]
-      const last = focusable[focusable.length - 1]
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault()
-        last.focus()
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault()
-        first.focus()
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = previousOverflow
-      window.requestAnimationFrame(() => previousFocus?.focus())
-    }
-  }, [onClose, open])
+  useDialogKeyboard(open, modalRef, { initialFocusRef, onEscape: onClose })
 
   if (!open) return null
 
@@ -1377,127 +903,6 @@ export function SurveyAnswersReviewModal({ answers, contact, onClose, open, othe
         <footer className="survey-review-modal-footer">
           <button className="survey-primary-button" onClick={onClose} type="button">{t('Đóng')}</button>
         </footer>
-      </div>
-    </div>
-  )
-}
-
-export function SubmissionCompleteModal({ emailStatus, error, hasReportJob, html, onHome, onRetry, open, pollTimedOut, reportStatus }: SubmissionCompleteModalProps) {
-  const modalRef = useRef<HTMLDivElement>(null)
-  const initialFocusRef = useRef<HTMLButtonElement>(null)
-  const previewHtml = useMemo(() => prepareReportPreviewHtml(html), [html])
-  const activeProgressIndex = reportProgressIndex(reportStatus)
-
-  useEffect(() => {
-    if (!open) return
-
-    const previousFocus = document.activeElement as HTMLElement | null
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    window.requestAnimationFrame(() => initialFocusRef.current?.focus())
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Tab' || !modalRef.current) return
-      const focusable = Array.from(modalRef.current.querySelectorAll<HTMLElement>('button, input, [href], [tabindex]:not([tabindex="-1"])'))
-      if (!focusable.length) return
-      const first = focusable[0]
-      const last = focusable[focusable.length - 1]
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault()
-        last.focus()
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault()
-        first.focus()
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = previousOverflow
-      window.requestAnimationFrame(() => previousFocus?.focus())
-    }
-  }, [open])
-
-  if (!open) return null
-
-  return (
-    <div className="survey-modal-backdrop survey-submission-backdrop" role="presentation">
-      <div aria-busy={hasReportJob && !html} aria-labelledby="survey-submission-title" aria-modal="true" className={cn('survey-submission-modal', html && 'has-report-preview')} ref={modalRef} role="dialog">
-        <div className="survey-submission-modal-content">
-          <AnimatePresence initial={false} mode="wait">
-            {previewHtml ? (
-              <motion.div animate={{ opacity: 1, y: 0 }} className="survey-report-preview-state" initial={{ opacity: 0, y: 10 }} key="report-preview" transition={{ duration: .28 }}>
-                <div className="survey-submission-modal-top">
-                  <div aria-hidden="true" className="survey-submission-modal-icon"><CheckCircle2 size={30} /></div>
-                </div>
-                <SurveyEyebrow>{t('BÁO CÁO ĐÃ SẴN SÀNG')}</SurveyEyebrow>
-                <h2 id="survey-submission-title">{t('Báo cáo của Anh/Chị')}</h2>
-                <p className="survey-submission-modal-lede">{t('Báo cáo đã được tạo. Anh/Chị có thể xem ngay tại đây; bản PDF sẽ tiếp tục được hoàn thiện và gửi qua email.')}</p>
-                <div className="survey-report-preview-frame">
-                  <iframe loading="eager" referrerPolicy="no-referrer" sandbox="allow-same-origin" srcDoc={previewHtml} title={t('Báo cáo CEO Workforce Index')} />
-                </div>
-                <div className="survey-submission-delivery-status" aria-live="polite">
-                  <span className="survey-submission-delivery-dot" aria-hidden="true" />
-                  {reportEmailLabel(emailStatus)}
-                </div>
-                <button className="survey-primary-button survey-submission-modal-button" onClick={onHome} ref={initialFocusRef} type="button">{t(submissionCompleteCopy.home)}</button>
-              </motion.div>
-            ) : hasReportJob ? (
-              <motion.div animate={{ opacity: 1, y: 0 }} className="survey-report-loading-state" initial={{ opacity: 0, y: 10 }} key="report-loading" transition={{ duration: .28 }}>
-                <div className="survey-submission-modal-top">
-                  <div aria-hidden="true" className="survey-report-loading-visual">
-                    <motion.div className="survey-report-loading-spinner" animate={{ rotate: 360 }} transition={{ duration: 1.25, ease: 'linear', repeat: Infinity }}>
-                      <span />
-                    </motion.div>
-                    <motion.span className="survey-report-loading-glow" animate={{ opacity: [.35, .85, .35], scale: [.92, 1.06, .92] }} transition={{ duration: 1.8, ease: 'easeInOut', repeat: Infinity }} />
-                  </div>
-                </div>
-                <SurveyEyebrow>{t('KHẢO SÁT ĐÃ HOÀN TẤT')}</SurveyEyebrow>
-                <h2 id="survey-submission-title">{t('Đang chuẩn bị báo cáo')}</h2>
-                <p className="survey-submission-modal-lede">{t('CWI đang phân tích câu trả lời và dựng báo cáo riêng cho Anh/Chị. Báo cáo sẽ hiển thị ngay khi sẵn sàng.')}</p>
-                <motion.p animate={{ opacity: 1, y: 0 }} className="survey-report-loading-stage" initial={{ opacity: 0, y: 4 }} key={reportStatus || 'pending'}>
-                  {reportProgressSteps[activeProgressIndex] ? t(reportProgressSteps[activeProgressIndex].label) : t('Đang tiếp nhận câu trả lời')}
-                </motion.p>
-                <div aria-label={t('Tiến độ tạo báo cáo')} className="survey-report-loading-progress" role="progressbar" aria-valuemax={100} aria-valuemin={0} aria-valuenow={(activeProgressIndex + 1) * 25}>
-                  <motion.span animate={{ scaleX: (activeProgressIndex + 1) / reportProgressSteps.length }} initial={{ scaleX: .12 }} transition={{ duration: .45, ease: 'easeOut' }} />
-                </div>
-                <div aria-label={t('Tiến độ tạo báo cáo')} className="survey-report-progress" role="list">
-                  {reportProgressSteps.map((step, index) => {
-                    const done = Boolean(previewHtml) || index < activeProgressIndex
-                    const active = index === activeProgressIndex && !done
-                    return (
-                      <div className={cn('survey-report-progress-step', done && 'is-done', active && 'is-active')} key={step.label} role="listitem">
-                        <span aria-hidden="true" className="survey-report-progress-marker">{done ? '✓' : index + 1}</span>
-                        <span>{t(step.label)}</span>
-                      </div>
-                    )
-                  })}
-                </div>
-                <div className="survey-report-loading-note" aria-live="polite">
-                  <motion.span animate={{ opacity: [.45, 1, .45] }} transition={{ duration: 1.4, repeat: Infinity }} />
-                  {pollTimedOut ? t('Báo cáo đang được xử lý lâu hơn dự kiến.') : t('Anh/Chị có thể giữ nguyên cửa sổ này; hệ thống sẽ tự cập nhật.')}
-                </div>
-                {error ? <p className="survey-submission-modal-error" role="alert">{error}</p> : null}
-                {pollTimedOut || error ? <button className="survey-outline-button survey-submission-modal-retry" onClick={onRetry} type="button">{t('Kiểm tra lại')}</button> : null}
-                <button className="survey-primary-button survey-submission-modal-button" onClick={onHome} ref={initialFocusRef} type="button">{t(submissionCompleteCopy.home)}</button>
-              </motion.div>
-            ) : (
-              <motion.div animate={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 10 }} key="submission-complete" transition={{ duration: .28 }}>
-                <div className="survey-submission-modal-top">
-                  <div aria-hidden="true" className="survey-submission-modal-icon"><CheckCircle2 size={30} /></div>
-                </div>
-                <SurveyEyebrow>{t(submissionCompleteCopy.eyebrow)}</SurveyEyebrow>
-                <div aria-hidden="true" className="survey-submission-modal-logo-title">
-                  <SurveyBrandMark decorative variant="intro" />
-                </div>
-                <h2 className="survey-sr-only" id="survey-submission-title">{t(submissionCompleteCopy.title)}</h2>
-                <p>{t(submissionCompleteCopy.message)}</p>
-                <button className="survey-primary-button survey-submission-modal-button" onClick={onHome} ref={initialFocusRef} type="button">{t(submissionCompleteCopy.home)}</button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
       </div>
     </div>
   )

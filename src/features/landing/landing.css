@@ -216,7 +216,7 @@
   outline-offset: 4px;
 }
 
-@media (max-width: 900px), (hover: none) {
+@media (max-width: 1099px), (hover: none) {
   .hero-carousel-navigation {
     display: none;
   }
@@ -723,7 +723,7 @@
   display: none;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1099px) {
   :root {
     --m-page-x: 20px;
     --m-space-1: 4px;
@@ -2177,7 +2177,7 @@
   .mobile-sticky-cta { right: var(--m-space-3); bottom: calc(var(--m-space-3) + env(safe-area-inset-bottom)); left: var(--m-space-3); z-index: 20; padding: var(--m-space-2); border-radius: var(--m-radius-pill); box-shadow: var(--m-shadow-floating); transform: translateY(var(--m-space-4)); transition: opacity 280ms ease, transform 280ms var(--m-ease); }
   .mobile-sticky-button { min-height: 52px; margin: 0; }}
 
-@media (min-width: 430px) and (max-width: 900px) {
+@media (min-width: 430px) and (max-width: 1099px) {
   :root { --m-page-x: 24px; }
 }
 
@@ -2232,7 +2232,7 @@
 }
 
 /* Mobile improvement pass: fit the chart, protect low-height menus, and keep small screens dense. */
-@media (max-width: 900px) {
+@media (max-width: 1099px) {
   .mobile-menu-overlay {
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -2369,7 +2369,7 @@
 
 
 /* Keep the mobile header geometry deterministic across narrow viewports. */
-@media (max-width: 900px) {
+@media (max-width: 1099px) {
   .figma-site-header {
     left: 8px;
     width: calc(100vw - 16px);
@@ -2438,21 +2438,21 @@
 }
 
 
-@media (max-width: 900px) {
+@media (max-width: 1099px) {
   .mobile-menu-close {
     margin-left: auto;
   }
 }
 
 
-@media (max-width: 900px) {
+@media (max-width: 1099px) {
   .mobile-menu-panel {
     background: linear-gradient(145deg, #00132f 0%, #00377f 100%);
   }
 }
 
 
-@media (max-width: 900px) {
+@media (max-width: 1099px) {
   .mobile-hero-content {
     width: 100%;
     min-width: 0;
@@ -2489,7 +2489,7 @@
 }
 
 
-@media (max-width: 900px) {
+@media (max-width: 1099px) {
   .mobile-hero .mobile-hero-button {
     position: relative;
     left: 50%;
@@ -2500,7 +2500,7 @@
 }
 
 
-@media (max-width: 900px) {
+@media (max-width: 1099px) {
   .mobile-hero .mobile-hero-button {
     position: static !important;
     left: auto !important;
@@ -2753,7 +2753,9 @@
   }
 }
 
-@media (max-width: 560px) {
+/* Partners strip and quarterly spotlight in the mobile layout: phones and tablets alike (it was
+   phones only, so 561-1099 px screens showed the 1190 px desktop spotlight cut off). */
+@media (max-width: 1099px) {
   .mobile-logo-rail,
   .mobile-logo-rail.is-organizer {
     display: block;
@@ -2941,7 +2943,7 @@
 }
 
 /* Final mobile footer layout override. */
-@media (max-width: 900px) {
+@media (max-width: 1099px) {
   .mobile-footer {
     display: grid;
     align-content: start;
@@ -3013,7 +3015,7 @@
   }
 }
 /* Final mobile footer centering override. */
-@media (max-width: 900px) {
+@media (max-width: 1099px) {
   .mobile-footer .mobile-copyright {
     margin-right: auto !important;
     margin-left: auto !important;
@@ -3228,7 +3230,7 @@
   display: none;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1099px) {
   .about-cwi-mobile-section {
     padding-top: 64px;
   }
@@ -3318,7 +3320,7 @@
   }
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1100px) {
   .about-cwi-left-panel .about-cwi-title {
     padding-left: 10px;
   }
@@ -3333,7 +3335,7 @@
 }
 
 /* Footer address */
-@media (max-width: 900px) {
+@media (max-width: 1099px) {
   .mobile-footer-address {
     margin: 10px 0 0;
     text-align: center;
@@ -3353,7 +3355,7 @@
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1099px) {
   .mobile-hero-carousel-background {
     position: absolute;
     inset: 0;
@@ -3548,7 +3550,7 @@
 }
 
 /* English only (html[lang='en']). Vietnamese keeps the Figma positions above. */
-@media (min-width: 901px) {
+@media (min-width: 1100px) {
   /* The VI nav items sit in fixed left/width slots (headerNavSpecs); "About CWI" is wider than its
      76px slot and "Home" leaves a wide hole. Lay EN out as a row with the ~32px gaps VI shows. */
   html[lang='en'] .figma-header-nav {
@@ -3630,7 +3632,7 @@ html[lang='en'] .partners-section .figma-section-label-text {
   transform: translate(-50%, calc(-100% + 0.21em));
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1099px) {
   .hero-logo-strip-en-frame {
     aspect-ratio: 1080 / 1920;
   }
@@ -3644,5 +3646,16 @@ html[lang='en'] .partners-section .figma-section-label-text {
 
 /* "CEO Roundtable highlights" at 68px is 867px wide; the 820px box would wrap it to a third line. */
 html[lang='en'] .hero-carousel-copy--roundtable .hero-carousel-heading {
-  max-width: 900px;
+  max-width: 1099px;
+}
+
+/* Tablet widths of the mobile layout (561-1099 px): keep the slide text and button in the same
+   560 px column as the sections below; the slide photo still spans the full width. */
+@media (min-width: 561px) and (max-width: 1099px) {
+  .mobile-hero-content {
+    width: 100%;
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }

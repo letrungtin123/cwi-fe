@@ -7,6 +7,7 @@ import { createWebinarRegistrationIdempotencyKey, submitWebinarRegistration } fr
 import { isValidPhone } from '../survey/phoneValidation'
 import { jobTitleOptions } from '../survey/surveyData'
 import { validEmail } from '../survey/surveyScoring'
+import { useDialogKeyboard } from '@/lib/useDialogKeyboard'
 import './webinarInfoModal.css'
 
 type WebinarInfoModalProps = {
@@ -86,42 +87,7 @@ export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarI
     window.requestAnimationFrame(() => successContinueRef.current?.focus())
   }, [registered])
 
-  useEffect(() => {
-    if (!open) return
-
-    const previousFocus = document.activeElement as HTMLElement | null
-    const previousOverflow = document.body.style.overflow
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        onClose()
-        return
-      }
-      if (event.key !== 'Tab' || !dialogRef.current) return
-
-      const focusable = Array.from(dialogRef.current.querySelectorAll<HTMLElement>('button, input, textarea, select, [href], [tabindex]:not([tabindex="-1"])'))
-      if (!focusable.length) return
-      const first = focusable[0]
-      const last = focusable[focusable.length - 1]
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault()
-        last.focus()
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault()
-        first.focus()
-      }
-    }
-
-    document.body.style.overflow = 'hidden'
-    window.addEventListener('keydown', handleKeyDown)
-    window.requestAnimationFrame(() => nameInputRef.current?.focus())
-
-    return () => {
-      document.body.style.overflow = previousOverflow
-      window.removeEventListener('keydown', handleKeyDown)
-      window.requestAnimationFrame(() => previousFocus?.focus())
-    }
-  }, [onClose, open])
+  useDialogKeyboard(open, dialogRef, { initialFocusRef: nameInputRef, onEscape: onClose })
 
   useEffect(() => {
     if (!positionOpen) return
