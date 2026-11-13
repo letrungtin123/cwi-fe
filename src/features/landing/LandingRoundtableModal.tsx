@@ -10,6 +10,7 @@ import { isValidPhone } from '../survey/phoneValidation'
 import { validEmail } from '../survey/surveyScoring'
 import type { ContactState } from '../survey/surveyPersistence'
 import { useRoundtableEventDetails } from '../survey/useRoundtableEvent'
+import { useDialogKeyboard } from '@/lib/useDialogKeyboard'
 import './roundtableModal.css'
 
 const emptyContact: ContactState = { companyName: '', email: '', name: '', phone: '', jobTitle: '', jobTitleOther: '' }
@@ -77,38 +78,14 @@ export function LandingRoundtableModal({ onClose, open }: LandingRoundtableModal
     setPositionOpen(false)
     setPositionActiveIndex(0)
     attemptRef.current = null
-    const previousOverflow = document.body.style.overflow
-    const previousFocus = document.activeElement as HTMLElement | null
-    document.body.style.overflow = 'hidden'
-    window.requestAnimationFrame(() => nameInputRef.current?.focus())
+  }, [open])
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        if (!submittingRef.current) onClose()
-        return
-      }
-      if (event.key !== 'Tab' || !dialogRef.current) return
-      const focusable = Array.from(dialogRef.current.querySelectorAll<HTMLElement>('button, input, select, [href], [tabindex]:not([tabindex="-1"])'))
-      if (!focusable.length) return
-      const first = focusable[0]
-      const last = focusable[focusable.length - 1]
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault()
-        last.focus()
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault()
-        first.focus()
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = previousOverflow
-      window.requestAnimationFrame(() => previousFocus?.focus())
-    }
-  }, [onClose, open])
+  useDialogKeyboard(open, dialogRef, {
+    initialFocusRef: nameInputRef,
+    onEscape: () => {
+      if (!submittingRef.current) onClose()
+    },
+  })
 
   useEffect(() => {
     if (!positionOpen) return

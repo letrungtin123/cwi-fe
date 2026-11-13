@@ -4,7 +4,7 @@ import type { Answers } from './surveyScoring'
 // previous edition is never restored onto different questions.
 export const SURVEY_SESSION_STORAGE_KEY = 'cwi:survey-session:2026Q4'
 
-export type SurveyScreen = 'intro' | 'part1' | 'part2' | 'contact1' | 'contact2' | 'loading' | 'report' | 'result'
+export type SurveyScreen = 'intro' | 'part1' | 'part2' | 'contact1' | 'contact2' | 'loading' | 'report'
 export type ReportMode = 'part1' | 'private'
 export type ConsentChoice = 'yes' | 'no' | ''
 export type ContactState = { companyName: string; email: string; name: string; phone: string; jobTitle: string; jobTitleOther: string }
@@ -81,6 +81,8 @@ export function readSurveySession(): SurveySession | null {
     if (parsed.version !== 1 || !parsed.screen || !parsed.answers || !parsed.otherAnswers) return null
     return {
       ...parsed,
+      // "result" was a screen of an older version that no longer exists.
+      screen: (parsed.screen as string) === 'result' ? 'intro' : parsed.screen,
       contact: normalizeContactState(parsed.contact),
       roundtableContact: normalizeContactState(parsed.roundtableContact),
     }

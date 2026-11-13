@@ -1,55 +1,30 @@
-import { LazyMotion, domAnimation, m, type Variants } from 'framer-motion'
-import { ChevronLeft, ChevronRight, SquarePen } from 'lucide-react'
-import { useEffect, useRef, useState, type CSSProperties, type ImgHTMLAttributes, type PointerEvent, type ReactNode } from 'react'
+import { LazyMotion, MotionConfig, domAnimation, m, type Variants } from 'framer-motion'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { getLang, languageToggleCode, t, tx } from '@/i18n'
 import { LanguageToggle } from '@/i18n/LanguageToggle'
 import { cn } from '@/lib/cn'
-import { figmaAssets, type FigmaAssetKey } from './figmaAssets'
-import spotlightBackground from '@/assets/figma/bg-tieu-diem.webp'
-import spotlightBackground2 from '@/assets/figma/bg-tieu-diem2.webp'
-import spotlightLineLeft from '@/assets/figma/Line-panel-left.png'
-import spotlightLineRight from '@/assets/figma/Line-panel-right.png'
+import { type FigmaAssetKey } from './figmaAssets'
 import leftPanelBackground from '@/assets/figma/left-panel-bg.webp'
-import advisorCardIcon from '@/assets/figma/ban-co-van-chuyen-mon.png'
-import coordinationCardIcon from '@/assets/figma/kha-nang-phoi-hop.png'
-import decisionCardIcon from '@/assets/figma/khoang-trong-ra-quyet-dinh.png'
-import directionCardIcon from '@/assets/figma/giai-phap-dinh-huong.png'
-import workforceCardIcon from '@/assets/figma/he-cong-luc.png'
-import carouselCwiBackground from '@/assets/figma/carousel-cwi.webp'
-import reportCarouselBackground from '@/assets/figma/carousel-baocaoquy3.webp'
-import roundtableCarouselBackground from '@/assets/figma/carousel-dauanbantron.webp'
-import webinarCarouselBackground from '@/assets/figma/carousel-webinar.jpg'
-import mobileReportCarouselBackground from '@/assets/figma/carousel-baocaoquy3-mobile.webp'
-import mobileRoundtableCarouselBackground from '@/assets/figma/carousel-dauanbantron-mobile.webp'
-import logoSectionCarouselCwi from '@/assets/figma/logo-section-carousel-cwi.png'
-import logoSectionCarouselCwiNoLabels from '@/assets/figma/logo-section-carousel-cwi-nolabels.png'
-import mobileHeroBackground from '@/assets/figma/bg-mobile-banner.webp'
-import mobileLogoStrip from '@/assets/figma/logo-website-mobile.png'
-import mobileLogoStripNoLabels from '@/assets/figma/logo-website-mobile-nolabels.png'
 import { LandingRoundtableModal } from './LandingRoundtableModal'
 import { WebinarInfoModal } from './WebinarInfoModal'
 import { WEBINAR_ENABLED } from '../survey/surveyData'
+import { useCarouselPause } from './useCarouselPause'
+import { useMediaQuery } from '@/lib/useMediaQuery'
 import {
-  associationLogos,
   advisors,
   navItems,
-  knowledgePartnerLogos,
-  mediaPartnerLogos,
-  operationalPartnerLogos,
-  organizerLogos,
   reportStats,
   roundtableStats,
 } from './landingData'
+import { aboutCwiCards, emitLandingAction, HERO_CAROUSEL_INTERVAL_MS, type HeroCarouselSlide, heroCarouselSlides, legalLinks, openQuarterlyReport, SHOW_HERO_LOGO_STRIP } from './landingContent'
+import { AboutCwiCard, AboutCwiTitle, AnimatedReportValue, AssetImage, HeroCarouselCopy, HeroLogoStrip, RedButton, SpotlightEditorial, SpotlightInfo } from './landingShared'
+import { MobileLandingPage } from './MobileLandingPage'
 import './landing.css'
 
-type LandingAction = 'login' | 'survey' | 'roundtable' | 'unlock-report' | 'download-teaser'
 type PublicRegistration = 'roundtable' | 'webinar'
 
 const navTargets = ['#top', '#report', '#report-card', '#roundtable', '#about-cwi'] as const
-const legalLinks = [
-  { href: "/privacy-policy", label: "Chính sách bảo mật" },
-  { href: "/terms-of-operation", label: "Quy chế hoạt động" },
-] as const
 
 const headerNavSpecs = [
   { href: navTargets[0], label: navItems[0], left: 0, width: 97 },
@@ -82,103 +57,9 @@ const desktopHeroReveal: Variants = {
 }
 const FIGMA_CANVAS_WIDTH = 1440
 const FIGMA_CANVAS_HEIGHT = 4758
-const HERO_CAROUSEL_INTERVAL_MS = 3000
-// Partner logo strip at the bottom of the hero slider (desktop and mobile). Hidden for now; set to true to show it again.
-const SHOW_HERO_LOGO_STRIP = false
-
-type HeroCarouselSlide = {
-  image: string
-  ctaLabel: string
-  action?: LandingAction
-  copy?: HeroCarouselCopy
-  hidden?: boolean
-  href?: string
-  mobileImage?: string
-  opensReportPdf?: boolean
-  opensWebinarModal?: boolean
-  showIntro?: boolean
-}
-
-type HeroCarouselCopy = {
-  eyebrow?: string
-  description: readonly string[]
-  heading: readonly HeroCarouselHeadingLine[]
-  variant: 'report' | 'roundtable' | 'webinar'
-}
-
-type HeroCarouselHeadingLine = {
-  compact?: boolean
-  segments: readonly {
-    accent?: boolean
-    text: string
-  }[]
-}
-
-const heroCarouselSlideCatalog: readonly HeroCarouselSlide[] = [
-  {
-    image: carouselCwiBackground,
-    ctaLabel: 'Thực hiện khảo sát',
-    action: 'survey',
-    mobileImage: mobileHeroBackground,
-    showIntro: true,
-  },
-  {
-    image: reportCarouselBackground,
-    ctaLabel: 'Xem báo cáo',
-    mobileImage: mobileReportCarouselBackground,
-    opensReportPdf: true,
-    copy: {
-      eyebrow: 'BÁO CÁO QUÝ 3/2026',
-      heading: [
-        { segments: [{ text: 'Năng lực lãnh đạo' }] },
-        { segments: [{ accent: true, text: 'cho tăng trưởng' }] },
-      ],
-      description: [
-        'Dành cho CEO, đội ngũ điều hành và lãnh đạo nhân sự\nmuốn biến tham vọng tăng trưởng thành năng lực tổ chức.',
-        'Trọng tâm là củng cố quản lý cấp trung, chuẩn bị\nngười kế nhiệm và làm rõ quyền ra quyết định.',
-      ],
-      variant: 'report',
-    },
-  },
-  {
-    image: roundtableCarouselBackground,
-    ctaLabel: 'Khám phá',
-    mobileImage: mobileRoundtableCarouselBackground,
-    copy: {
-      eyebrow: 'CEO WORKFORCE INDEX · BÀN TRÒN CEO',
-      heading: [
-        { segments: [{ text: 'Dấu ấn Bàn tròn CEO' }] },
-        { segments: [{ accent: true, text: 'Quý 3/2026' }] },
-      ],
-      description: [
-        'Sự kiện Bàn tròn CEO Quý 3/2026 đã thu hút sự quan tâm của các báo kinh tế uy tín.',
-      ],
-      variant: 'roundtable',
-    },
-    href: 'https://cafebiz.vn/dieu-gi-dang-can-tro-doanh-nghiep-tang-truong-176260922103948402.chn',
-  },
-  {
-    image: webinarCarouselBackground,
-    ctaLabel: 'Đăng kí ngay',
-    hidden: !WEBINAR_ENABLED,
-    mobileImage: webinarCarouselBackground,
-    opensWebinarModal: true,
-    copy: {
-      heading: [
-        { segments: [{ text: 'CEO & ' }, { accent: true, text: 'HRD' }] },
-        { compact: true, segments: [{ text: 'Từ lệch pha đến cùng hướng, cùng nhịp' }] },
-      ],
-      description: [
-        '14:00 – 15:30 | 22/10/2026',
-        'Trực tuyến qua Zoom',
-      ],
-      variant: 'webinar',
-    },
-  },
-] as const
-
-// Hidden slides stay defined so they can be switched back on later.
-const heroCarouselSlides = heroCarouselSlideCatalog.filter((slide) => !slide.hidden)
+// Windows narrower than this get the mobile layout (keep in step with the breakpoints in
+// landing.css). Below it the 1440 px desktop design would shrink text under ~9 px.
+export const LANDING_MOBILE_QUERY = '(max-width: 1099px)'
 
 function getPublicRegistrationFromLocation(): PublicRegistration | null {
   if (typeof window === 'undefined') return null
@@ -291,54 +172,6 @@ function scrollToMobileTarget(href: (typeof navTargets)[number]) {
   const offset = 88
   const top = target.getBoundingClientRect().top + window.scrollY - offset
   window.scrollTo({ behavior: 'smooth', top: Math.max(0, Math.round(top)) })
-}
-
-function emitLandingAction(action: LandingAction) {
-  window.dispatchEvent(new CustomEvent('cwi:landing-action', { detail: { action } }))
-}
-
-type AssetImageProps = Omit<ImgHTMLAttributes<HTMLImageElement>, 'src'> & {
-  asset: FigmaAssetKey
-  alt: string
-}
-
-function AssetImage({ asset, alt, className, loading = 'lazy', ...props }: AssetImageProps) {
-  return (
-    <img
-      alt={alt}
-      className={cn('select-none max-w-none', className)}
-      draggable={false}
-      loading={loading}
-      src={figmaAssets[asset]}
-      {...props}
-    />
-  )
-}
-
-function RedButton({
-  action,
-  children,
-  className,
-  onClick,
-}: {
-  action: LandingAction
-  children: ReactNode
-  className?: string
-  onClick?: () => void
-}) {
-  return (
-    <button
-      className={cn('figma-button-red figma-inter rounded-[53px]', className)}
-      data-action={action}
-      onClick={() => {
-        if (onClick) onClick()
-        else emitLandingAction(action)
-      }}
-      type="button"
-    >
-      {children}
-    </button>
-  )
 }
 
 type SectionLabelTag = 'div' | 'h2' | 'h3'
@@ -696,82 +529,10 @@ function HeroCarouselNavigation({ onNext, onPrevious }: { onNext: () => void; on
   )
 }
 
-function HeroCarouselCopy({ copy }: { copy: HeroCarouselCopy }) {
-  return (
-    <div className={cn('hero-carousel-copy', `hero-carousel-copy--${copy.variant}`)}>
-      {copy.eyebrow && <p className="hero-carousel-eyebrow">{t(copy.eyebrow)}</p>}
-      <h1 id="hero-title" className="hero-carousel-heading">
-        {copy.heading.map((line, lineIndex) => (
-          <span className={cn('hero-carousel-copy-line', line.compact && 'is-compact')} key={lineIndex}>
-            {line.segments.map((segment, segmentIndex) => (
-              <span className={cn(segment.accent && 'hero-carousel-copy-accent')} key={`${lineIndex}-${segmentIndex}`}>
-                {t(segment.text)}
-              </span>
-            ))}
-          </span>
-        ))}
-      </h1>
-      <div className="hero-carousel-description">
-        {copy.description.map((paragraph) => <p key={paragraph}>{t(paragraph)}</p>)}
-      </div>
-    </div>
-  )
-}
-
-// The Figma strips have the Vietnamese group labels baked in. English shows label-free copies and
-// sets the labels as text: x is the label centre and y its baseline, in pixels of each strip image.
-const heroLogoStripLabels = [
-  { label: 'Đơn vị bảo trợ', desktop: [324.5, 30], mobile: [375.5, 533] },
-  { label: 'Đơn vị tổ chức', desktop: [471, 30], mobile: [707, 533] },
-  { label: 'Đơn vị đồng hành', desktop: [713, 30], mobile: [540, 815] },
-  { label: 'Đối tác truyền thông', desktop: [978.5, 30], mobile: [540, 1090] },
-  { label: 'Đối tác tri thức', desktop: [1252, 30], mobile: [540, 1337] },
-  { label: 'Đối tác vận hành', desktop: [1554, 30], mobile: [540, 1601] },
-] as const
-
-function HeroLogoStrip({ className }: { className: string }) {
-  if (getLang() === 'vi') {
-    return (
-      <picture aria-hidden="true" className={className}>
-        <source media="(max-width: 900px)" srcSet={mobileLogoStrip} />
-        <img alt="" draggable={false} src={logoSectionCarouselCwi} />
-      </picture>
-    )
-  }
-
-  return (
-    <div aria-hidden="true" className={cn(className, 'hero-logo-strip-en')}>
-      <div className="hero-logo-strip-en-frame">
-        <picture>
-          <source media="(max-width: 900px)" srcSet={mobileLogoStripNoLabels} />
-          <img alt="" draggable={false} src={logoSectionCarouselCwiNoLabels} />
-        </picture>
-        {heroLogoStripLabels.map(({ label, desktop, mobile }) => (
-          <span
-            className="hero-logo-strip-label"
-            key={label}
-            style={{
-              '--label-x': `${(desktop[0] / 1656) * 100}%`,
-              '--label-y': `${(desktop[1] / 104) * 100}%`,
-              '--label-x-mobile': `${(mobile[0] / 1080) * 100}%`,
-              '--label-y-mobile': `${(mobile[1] / 1920) * 100}%`,
-            } as CSSProperties}
-          >
-            {tx('logoStrip', label)}
-          </span>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function openQuarterlyReport() {
-  window.location.assign('/bao-cao-quy')
-}
-
 function HeroSection({ isWebinarOpen, onOpenWebinar }: { isWebinarOpen: boolean; onOpenWebinar: () => void }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [carouselCycle, setCarouselCycle] = useState(0)
+  const { paused, pauseHandlers } = useCarouselPause()
   const activeSlide = heroCarouselSlides[activeIndex]
   const restartCarouselCycle = () => setCarouselCycle((currentCycle) => currentCycle + 1)
   const showPreviousSlide = () => {
@@ -784,17 +545,17 @@ function HeroSection({ isWebinarOpen, onOpenWebinar }: { isWebinarOpen: boolean;
   }
 
   useEffect(() => {
-    if (isWebinarOpen) return
+    if (isWebinarOpen || paused) return
 
     const intervalId = window.setInterval(() => {
       setActiveIndex((currentIndex) => (currentIndex + 1) % heroCarouselSlides.length)
     }, HERO_CAROUSEL_INTERVAL_MS)
 
     return () => window.clearInterval(intervalId)
-  }, [carouselCycle, isWebinarOpen])
+  }, [carouselCycle, isWebinarOpen, paused])
 
   return (
-    <m.section animate="show" className="figma-hero-section absolute left-0 top-0 h-[940px] w-full overflow-hidden" initial="hidden" variants={desktopHeroReveal} aria-labelledby="hero-title">
+    <m.section animate="show" className="figma-hero-section absolute left-0 top-0 h-[940px] w-full overflow-hidden" initial="hidden" variants={desktopHeroReveal} aria-labelledby="hero-title" {...pauseHandlers}>
       <HeroCarousel activeIndex={activeIndex} />
       {SHOW_HERO_LOGO_STRIP && <HeroLogoStrip className="hero-logo-strip" />}
       <div className="figma-hero-gradient absolute inset-0 h-full w-full" />
@@ -824,53 +585,6 @@ function HeroSection({ isWebinarOpen, onOpenWebinar }: { isWebinarOpen: boolean;
   )
 }
 
-function SpotlightEditorial({ mobile = false }: { mobile?: boolean }) {
-  return (
-    <article className="spotlight-editorial" style={{ backgroundImage: 'url(' + spotlightBackground + ')' }}>
-      <div className="spotlight-editorial-brand">
-        <AssetImage alt="CEO Workforce Index" asset="cwiLogo" className="spotlight-editorial-logo" loading="eager" />
-        <span aria-hidden="true" className="spotlight-editorial-divider" />
-        <span>{t('Tiêu điểm quý')}</span>
-      </div>
-      <h2 className="spotlight-editorial-title" id={mobile ? 'mobile-report-title' : 'report-title'}>
-        <span>Q3/2026</span> {t('Năng lực lãnh đạo')}
-      </h2>
-      <p className="spotlight-editorial-subtitle">{t('Nâng cao năng lực lãnh đạo để mở rộng quy mô')}</p>
-      <img alt="" aria-hidden="true" className="spotlight-editorial-rule" src={spotlightLineLeft} />
-      <div className="spotlight-editorial-meta">
-        <strong>Teaser Report</strong>
-        <p>{t('Trích lược những phát hiện cốt lõi từ khảo sát CEO toàn cầu & Việt Nam')}</p>
-      </div>
-    </article>
-  )
-}
-
-function SpotlightInfo({ desktop = false }: { desktop?: boolean }) {
-  return (
-    <article
-      className="spotlight-info"
-      id={desktop ? 'report-card' : undefined}
-      style={{ backgroundImage: 'url(' + spotlightBackground2 + ')' }}
-    >
-      <div className="spotlight-info-content">
-        <h3><span>{t('Báo cáo CEO Workforce Index Q3 2026')}</span></h3>
-        <img alt="" aria-hidden="true" className="spotlight-info-rule" src={spotlightLineRight} />
-        <p>{t('Giúp hiểu sâu, phân tích và có hành động ngay trong 90 ngày để tăng cường "hệ cộng lực".')}</p>
-        <ul>
-          <li>{t('Đối chuẩn thị trường để biết doanh nghiệp mình đang ở đâu')}</li>
-          <li>{t('Nhận diện những khoảng trống cần lưu ý')}</li>
-          <li>{t('Khuyến nghị hành động phù hợp cho doanh nghiệp')}</li>
-        </ul>
-        <p>{t('Hoàn thành nhanh chóng trong 7 phút.')}</p>
-      </div>
-      <RedButton action="survey" className="spotlight-cta">
-        <SquarePen aria-hidden="true" size={19} strokeWidth={1.8} />
-        <span>{t('Bắt đầu khảo sát')}</span>
-      </RedButton>
-    </article>
-  )
-}
-
 function ReportSection() {
   return (
     <m.section
@@ -888,56 +602,6 @@ function ReportSection() {
       </div>
     </m.section>
   )
-}function AnimatedReportValue({ value, delay }: { value: string; delay: number }) {
-  const valueRef = useRef<HTMLSpanElement>(null)
-  const [started, setStarted] = useState(false)
-  const [displayed, setDisplayed] = useState(0)
-  const match = value.match(/\d+/)
-  const target = match ? Number(match[0]) : 0
-  const numberStart = match?.index ?? 0
-  const prefix = match ? value.slice(0, numberStart) : value
-  const suffix = match ? value.slice(numberStart + match[0].length) : ""
-
-  useEffect(() => {
-    const node = valueRef.current
-    if (!node) return
-    if (!("IntersectionObserver" in window)) {
-      setStarted(true)
-      return
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0]?.isIntersecting) {
-        setStarted(true)
-        observer.disconnect()
-      }
-    }, { threshold: 0.35 })
-    observer.observe(node)
-    return () => observer.disconnect()
-  }, [])
-
-  useEffect(() => {
-    if (!started) return
-
-    let frame = 0
-    const startedAt = performance.now() + delay
-    const tick = (now: number) => {
-      if (now < startedAt) {
-        frame = window.requestAnimationFrame(tick)
-        return
-      }
-
-      const progress = Math.min(1, (now - startedAt) / 1000)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setDisplayed(Math.round(target * eased))
-      if (progress < 1) frame = window.requestAnimationFrame(tick)
-    }
-
-    frame = window.requestAnimationFrame(tick)
-    return () => window.cancelAnimationFrame(frame)
-  }, [delay, started, target])
-
-  return <span ref={valueRef} aria-label={value}>{prefix}{displayed}{suffix}</span>
 }
 
 function ReportStatsSection() {
@@ -1032,166 +696,6 @@ function RoundtableSection({ onOpenRoundtable }: { onOpenRoundtable: () => void 
     </m.section>
   )
 }
-type AboutCwiIconName = 'advisors' | 'decision' | 'workforce' | 'coordination' | 'direction'
-
-const aboutCwiIcons = {
-  advisors: advisorCardIcon,
-  decision: decisionCardIcon,
-  workforce: workforceCardIcon,
-  coordination: coordinationCardIcon,
-  direction: directionCardIcon,
-} as const
-
-type AboutCwiCardBlock =
-  | { type: 'paragraph'; text: string; muted?: boolean }
-  | { type: 'bullets'; items: string[]; strong?: boolean }
-  | { type: 'labels'; items: string[] }
-  | { type: 'formula'; items: string[] }
-
-type AboutCwiCardData = {
-  icon: AboutCwiIconName
-  title: string
-  blocks: AboutCwiCardBlock[]
-}
-
-const aboutCwiCards: AboutCwiCardData[] = [
-  {
-    icon: 'advisors',
-    title: 'Ban cố vấn chuyên môn',
-    blocks: [
-      {
-        type: 'paragraph',
-        text: 'Suốt hàng chục năm qua, các thành viên Ban Cố vấn chuyên môn của CEO Workforce Index đã đồng hành cùng hàng nghìn doanh nghiệp trong và ngoài nước giải quyết những bài toán then chốt về con người, năng lực lãnh đạo và hiệu quả tổ chức.',
-      },
-      {
-        type: 'paragraph',
-        text: 'Kinh nghiệm của Ban Cố vấn được tích lũy qua nhiều vai trò — từ điều hành doanh nghiệp, quản trị nhân lực, tư vấn tổ chức đến nghiên cứu và phát triển lãnh đạo.',
-      },
-    ],
-  },
-  {
-    icon: 'decision',
-    title: 'Khoảng trống ra quyết định của CEO',
-    blocks: [
-      {
-        type: 'paragraph',
-        text: 'Từ thực tiễn đó, Ban Cố vấn nhận thấy một khoảng trống quan trọng trong quá trình ra quyết định của CEO, lãnh đạo thường có nhiều dữ liệu về:',
-      },
-      { type: 'labels', items: ['Tài chính', 'Thị trường', 'Khách hàng'] },
-      {
-        type: 'paragraph',
-        text: 'Nhưng lại thiếu thông tin có hệ thống để đánh giá liệu tổ chức có đủ năng lực thực thi chiến lược tăng trưởng hay không.',
-      },
-    ],
-  },
-  {
-    icon: 'workforce',
-    title: 'Hệ cộng lực',
-    blocks: [
-      {
-        type: 'paragraph',
-        text: 'Khoảng trống này ngày càng lớn khi năng lực tạo ra giá trị của doanh nghiệp không còn chỉ đến từ con người, một phần đến từ:',
-      },
-      {
-        type: 'bullets',
-        strong: true,
-        items: ['AI, dữ liệu và tự động hóa', 'Đối tác, cộng đồng chuyên gia và các hệ sinh thái bên ngoài'],
-      },
-      {
-        type: 'paragraph',
-        text: 'Điều CEO cần quản trị không còn thuần là quy mô nhân sự, mà là chất lượng của Hệ cộng lực — toàn bộ con người, AI, công nghệ, dữ liệu và các nguồn lực được doanh nghiệp tổ chức, kết nối và vận hành để cùng tạo ra giá trị.',
-      },
-    ],
-  },
-  {
-    icon: 'coordination',
-    title: 'Khả năng phối hợp',
-    blocks: [
-      {
-        type: 'paragraph',
-        text: 'Điều quan trọng không nằm ở từng thành phần riêng lẻ, mà ở khả năng phối hợp giữa các thành phần đó, một doanh nghiệp có thể sở hữu:',
-      },
-      { type: 'formula', items: ['Nhân sự giỏi', 'Công nghệ hiện đại', 'Nguồn dữ liệu lớn'] },
-      {
-        type: 'paragraph',
-        muted: true,
-        text: 'nhưng vẫn không tạo ra kết quả nếu các nguồn lực này vận hành rời rạc hoặc không gắn với ưu tiên chiến lược.',
-      },
-    ],
-  },
-  {
-    icon: 'direction',
-    title: 'Giải pháp / Định hướng',
-    blocks: [
-      {
-        type: 'paragraph',
-        text: 'CEO Workforce Index ra đời từ trăn trở ấy — một la bàn tri thức và đối chuẩn về Hệ cộng lực vận hành doanh nghiệp hiệu quả dành cho CEO và lãnh đạo cấp cao.',
-      },
-      {
-        type: 'paragraph',
-        text: 'Thông qua dữ liệu được phân tích chuyên sâu với sự hỗ trợ của AI, dự án giúp lãnh đạo đo lường mức độ sẵn sàng của tổ chức, nhận diện khoảng cách giữa mục tiêu tăng trưởng và năng lực thực thi, từ đó xác định những ưu tiên cần phát triển để tổ chức tạo ra giá trị bền vững hơn.',
-      },
-    ],
-  },
-]
-
-function AboutCwiCard({ card }: { card: AboutCwiCardData }) {
-  const Icon = aboutCwiIcons[card.icon]
-
-  return (
-    <article className={cn('about-cwi-card', `about-cwi-card--${card.icon}`)}>
-      <div className="about-cwi-card-header">
-        <img alt="" aria-hidden="true" className="about-cwi-card-icon" draggable={false} src={Icon} />
-        <h3>{t(card.title)}</h3>
-      </div>
-      <div className="about-cwi-card-body">
-        {card.blocks.map((block, index) => {
-          if (block.type === 'paragraph') {
-            return (
-              <p className={cn('about-cwi-card-paragraph', block.muted && 'is-muted')} key={`paragraph-${index}`}>
-                {t(block.text)}
-              </p>
-            )
-          }
-
-          if (block.type === 'bullets') {
-            return (
-              <ul className={cn('about-cwi-card-bullets', block.strong && 'is-strong')} key={`bullets-${index}`}>
-                {block.items.map((item) => <li key={item}>{t(item)}</li>)}
-              </ul>
-            )
-          }
-
-          if (block.type === 'labels') {
-            return (
-              <ul className="about-cwi-card-labels" key={`labels-${index}`}>
-                {block.items.map((item) => <li key={item}>{t(item)}</li>)}
-              </ul>
-            )
-          }
-
-          return (
-            <div className="about-cwi-card-formula" key={`formula-${index}`}>
-              {block.items.map((item) => <span key={item}>{t(item)}</span>)}
-            </div>
-          )
-        })}
-      </div>
-    </article>
-  )
-}
-
-function AboutCwiTitle({ id, className }: { id?: string; className?: string }) {
-  return (
-    <h2 className={cn('about-cwi-title', className)} id={id}>
-      <em>CEO Workforce Index</em> {tx('aboutCwiTitle', 'là thước đo')}
-      <br />
-      {tx('aboutCwiTitle', 'Hệ cộng lực vận hành doanh nghiệp')}
-      <br />
-      {tx('aboutCwiTitle', 'hiệu quả')}
-    </h2>
-  )
-}
 
 type AdvisorTextSpec = {
   alignRight?: boolean
@@ -1273,8 +777,6 @@ const advisorCardSpecs: AdvisorCardSpec[] = [
     name: { text: 'TRẦN QUỐC KHÁNH', left: 214.14, top: 291.45, width: 138.44, translateXFull: true, alignRight: true, color: '#3bd6c6', fontSize: 13, fontWeight: 600, uppercase: true, nowrap: true },
   },
 ]
-
-const visibleAdvisors = advisors.slice(0, 5)
 const visibleAdvisorCardSpecs = advisorCardSpecs.slice(0, 5)
 
 function AdvisorImage({ advisor, spec }: { advisor: (typeof advisors)[number]; spec: AdvisorImageSpec }) {
@@ -1527,454 +1029,13 @@ function PartnersSection() {
     </m.footer>
   )
 }
-function MobileStats() {
-  return (
-    <div className="mobile-stats-list" aria-label={t('Thông số nghiên cứu')}>
-      {reportStats.map((stat, index) => (
-        <div className="mobile-stat-row" data-reveal key={stat.value}>
-          <AssetImage alt="" aria-hidden="true" asset={stat.icon} className="mobile-stat-icon" />
-          <div>
-            <strong><AnimatedReportValue delay={index * 90} value={t(stat.value)} /></strong>
-            <span>{t(stat.label)}</span>
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-function MobileSectionTitle({ children }: { children: ReactNode }) {
-  return (
-    <div className="mobile-section-title" data-reveal>
-      <span aria-hidden="true" className="mobile-section-title-line" />
-      <strong>{children}</strong>
-      <span aria-hidden="true" className="mobile-section-title-line is-right" />
-    </div>
-  )
-}
-
-function MobileAdvisorCard({ advisor, isActive }: { advisor: (typeof advisors)[number]; isActive: boolean }) {
-  return (
-    <article className={cn('mobile-advisor-card', isActive && 'is-active', advisor.name === 'PHẠM THỊ MỸ LỆ' && 'is-primary-advisor', (advisor.name === 'TRƯƠNG CHÍ DŨNG' || advisor.name === 'PHẠM TIẾN KHA' || advisor.name === 'ĐINH KIM NHUNG' || advisor.name === 'TRẦN QUỐC KHÁNH') && 'is-featured-advisor', advisor.name === 'TRẦN QUỐC KHÁNH' && 'is-tran-quoc-khanh')}>
-      <AssetImage alt="" aria-hidden="true" asset={advisor.image} className="mobile-advisor-image" />
-      <div className="mobile-advisor-blue" />
-      <div className="mobile-advisor-copy">
-        <em>{t(advisor.title)}</em>
-        <span>{t(advisor.field)}</span>
-        <strong>{t(advisor.name)}</strong>
-      </div>
-    </article>
-  )
-}
-
-function MobileAdvisorCarousel() {
-  const [activeIndex, setActiveIndex] = useState(0)
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const progressStyle = {
-    '--mobile-carousel-progress': ((activeIndex + 1) / visibleAdvisors.length) * 100 + '%',
-  } as CSSProperties
-
-  useEffect(() => {
-    const node = scrollRef.current
-    if (!node) return
-
-    let frame = 0
-    const syncActive = () => {
-      window.cancelAnimationFrame(frame)
-      frame = window.requestAnimationFrame(() => {
-        const card = node.querySelector<HTMLElement>('.mobile-advisor-card')
-        if (!card) return
-
-        const gap = 16
-        const step = card.offsetWidth + gap
-        setActiveIndex(Math.min(visibleAdvisors.length - 1, Math.max(0, Math.round(node.scrollLeft / step))))
-      })
-    }
-
-    syncActive()
-    node.addEventListener('scroll', syncActive, { passive: true })
-
-    return () => {
-      window.cancelAnimationFrame(frame)
-      node.removeEventListener('scroll', syncActive)
-    }
-  }, [])
-
-  return (
-    <div className="mobile-advisor-carousel" data-reveal>
-      <div className="mobile-advisor-scroll" aria-label={t('Ban tổ chức')} ref={scrollRef}>
-        {visibleAdvisors.map((advisor, index) => (
-          <MobileAdvisorCard advisor={advisor} isActive={activeIndex === index} key={advisor.name + '-' + index} />
-        ))}
-      </div>
-      <div className="mobile-carousel-meta" aria-live="polite">
-        <span>{String(activeIndex + 1).padStart(2, '0')} / {String(visibleAdvisors.length).padStart(2, '0')}</span>
-        <i style={progressStyle} />
-      </div>
-    </div>
-  )
-}
-type MobileLogoRailVariant = 'organizer' | 'static' | 'marquee' | 'marqueeReverse'
-
-function MobileLogoRail({
-  logos,
-  variant = "marquee",
-}: {
-  logos: Array<{ asset: FigmaAssetKey; alt: string }>
-  variant?: MobileLogoRailVariant
-}) {
-  const railRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const node = railRef.current
-    const shouldAnimate = variant === "marquee" || variant === "marqueeReverse"
-    if (!node || !shouldAnimate || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
-
-    let frame = 0
-    let last = performance.now()
-    let interactionTimeout = 0
-    let isInteracting = false
-
-    const pause = () => {
-      isInteracting = true
-      window.clearTimeout(interactionTimeout)
-      interactionTimeout = window.setTimeout(() => {
-        isInteracting = false
-        last = performance.now()
-      }, 900)
-    }
-
-    const resume = () => {
-      window.clearTimeout(interactionTimeout)
-      isInteracting = false
-      last = performance.now()
-    }
-
-    const tick = (now: number) => {
-      const elapsed = Math.min(now - last, 64)
-      last = now
-
-      if (!isInteracting) {
-        const loopWidth = node.scrollWidth / 2
-        if (loopWidth > node.clientWidth) {
-          node.scrollLeft += elapsed * 0.06
-          if (node.scrollLeft >= loopWidth) node.scrollLeft -= loopWidth
-        }
-      }
-
-      frame = window.requestAnimationFrame(tick)
-    }
-
-    node.addEventListener("pointerdown", pause, { passive: true })
-    node.addEventListener("pointerup", resume, { passive: true })
-    node.addEventListener("pointercancel", resume, { passive: true })
-    node.addEventListener("wheel", pause, { passive: true })
-    frame = window.requestAnimationFrame(tick)
-
-    return () => {
-      window.cancelAnimationFrame(frame)
-      window.clearTimeout(interactionTimeout)
-      node.removeEventListener("pointerdown", pause)
-      node.removeEventListener("pointerup", resume)
-      node.removeEventListener("pointercancel", resume)
-      node.removeEventListener("wheel", pause)
-    }
-  }, [logos.length, variant])
-
-  const isMarquee = variant === "marquee" || variant === "marqueeReverse"
-
-  return (
-    <div ref={railRef} className={cn("mobile-logo-rail", "is-" + variant)}>
-      <div className="mobile-logo-track">
-        {logos.map((logo) => (
-          <div className="mobile-logo-item" key={logo.asset + "-" + logo.alt}>
-            <AssetImage alt={t(logo.alt)} asset={logo.asset} className="mobile-logo-image" />
-          </div>
-        ))}
-        {isMarquee && logos.map((logo) => (
-          <div aria-hidden="true" className="mobile-logo-item" key={logo.asset + "-" + logo.alt + "-duplicate"}>
-            <AssetImage alt="" asset={logo.asset} className="mobile-logo-image" />
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function MobileHeroCarouselBackground({ activeIndex }: { activeIndex: number }) {
-  return (
-    <div aria-hidden="true" className="mobile-hero-carousel-background">
-      {heroCarouselSlides.map((slide, index) => (
-        <img
-          alt=""
-          className={cn('mobile-hero-carousel-image', index === activeIndex && 'is-active')}
-          draggable={false}
-          key={slide.mobileImage ?? slide.image}
-          loading={index === 0 ? 'eager' : 'lazy'}
-          src={slide.mobileImage ?? slide.image}
-        />
-      ))}
-    </div>
-  )
-}
-
-function MobileHeroCarouselContent({ copy, showIntro }: { copy?: HeroCarouselCopy; showIntro?: boolean }) {
-  if (showIntro) {
-    return (
-      <>
-        <p className="mobile-eyebrow">{t('LA BÀN ĐỊNH HƯỚNG NĂNG LỰC VẬN HÀNH CỦA TỔ CHỨC')}</p>
-        <h1 id="mobile-hero-title">
-          <span><span>{t('Hệ cộng lực mạnh')}</span></span>
-          <span className="mobile-heading-cluster"><span><em>{tx('slogan', 'Doanh nghiệp')}</em> {tx('slogan', 'vươn tầm')}</span></span>
-        </h1>
-        <p className="mobile-hero-copy">{t('Tham gia khảo sát của CEO Workforce Index để đối chuẩn Hệ cộng lực (con người - AI - tự động hoá - hệ sinh thái) của doanh nghiệp bạn với thị trường, hiểu nguyên nhân và nhận khuyến nghị hành động.')}</p>
-      </>
-    )
-  }
-
-  if (!copy) return <h1 className="sr-only" id="mobile-hero-title">CEO Workforce Index</h1>
-
-  return (
-    <>
-      {copy.eyebrow ? <p className="mobile-carousel-eyebrow">{t(copy.eyebrow)}</p> : null}
-      <h1 className={cn('mobile-carousel-heading', `is-${copy.variant}`)} id="mobile-hero-title">
-        {copy.heading.map((line, lineIndex) => (
-          <span className={cn('mobile-carousel-heading-line', line.compact && 'is-compact')} key={lineIndex}>
-            {line.segments.map((segment, segmentIndex) => segment.accent
-              ? <em key={`${lineIndex}-${segmentIndex}`}>{t(segment.text)}</em>
-              : <span key={`${lineIndex}-${segmentIndex}`}>{t(segment.text)}</span>)}
-          </span>
-        ))}
-      </h1>
-      <div className="mobile-carousel-description">
-        {copy.description.map((paragraph) => <p key={paragraph}>{t(paragraph)}</p>)}
-      </div>
-    </>
-  )
-}
-
-function MobileHeroCarouselButton({ onOpenReportPdf, onOpenWebinarModal, slide }: { onOpenReportPdf: () => void; onOpenWebinarModal: () => void; slide: HeroCarouselSlide }) {
-  const className = 'figma-button-red mobile-hero-button mobile-carousel-action'
-  const content = (
-    <>
-      <span>{t(slide.ctaLabel)}</span>
-      <AssetImage alt="" aria-hidden="true" asset="arrow1" className="mobile-button-arrow h-[15px] w-[17px]" loading="eager" />
-    </>
-  )
-
-  if (slide.href) {
-    return <a className={className} href={slide.href} rel="noopener noreferrer" target="_blank">{content}</a>
-  }
-
-  if (slide.opensReportPdf) {
-    return <button className={className} data-action="open-report-pdf" onClick={onOpenReportPdf} type="button">{content}</button>
-  }
-
-  if (slide.opensWebinarModal) {
-    return <button className={className} data-action="open-webinar-info" onClick={onOpenWebinarModal} type="button">{content}</button>
-  }
-
-  if (slide.action) {
-    return <RedButton action={slide.action} className="mobile-hero-button mobile-carousel-action">{content}</RedButton>
-  }
-
-  return <button className={className} type="button">{content}</button>
-}
-
-function MobileHeroCarouselProgress({ activeIndex, onSelect }: { activeIndex: number; onSelect: (index: number) => void }) {
-  return (
-    <div aria-label={t('Điều hướng slide')} className="mobile-hero-carousel-progress" role="group">
-      {heroCarouselSlides.map((slide, index) => (
-        <button
-          aria-current={index === activeIndex ? 'true' : undefined}
-          aria-label={t('Xem slide {n}', { n: index + 1 })}
-          className={cn('mobile-hero-carousel-progress-item', index === activeIndex && 'is-active')}
-          key={slide.image}
-          onClick={() => onSelect(index)}
-          type="button"
-        />
-      ))}
-    </div>
-  )
-}
-
-function MobileHeroCarousel({ isWebinarOpen, onOpenWebinar }: { isWebinarOpen: boolean; onOpenWebinar: () => void }) {
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [carouselCycle, setCarouselCycle] = useState(0)
-  const swipeStartRef = useRef<{ x: number; y: number; pointerId: number } | null>(null)
-  const activeSlide = heroCarouselSlides[activeIndex]
-  const restartCarouselCycle = () => setCarouselCycle((currentCycle) => currentCycle + 1)
-
-  const showPreviousSlide = () => {
-    setActiveIndex((currentIndex) => (currentIndex - 1 + heroCarouselSlides.length) % heroCarouselSlides.length)
-    restartCarouselCycle()
-  }
-
-  const showNextSlide = () => {
-    setActiveIndex((currentIndex) => (currentIndex + 1) % heroCarouselSlides.length)
-    restartCarouselCycle()
-  }
-
-  const selectSlide = (index: number) => {
-    setActiveIndex(index)
-    restartCarouselCycle()
-  }
-
-  const handlePointerDown = (event: PointerEvent<HTMLElement>) => {
-    if (event.pointerType === 'mouse') return
-    swipeStartRef.current = { x: event.clientX, y: event.clientY, pointerId: event.pointerId }
-  }
-
-  const handlePointerUp = (event: PointerEvent<HTMLElement>) => {
-    const swipeStart = swipeStartRef.current
-    swipeStartRef.current = null
-
-    if (!swipeStart || swipeStart.pointerId !== event.pointerId) return
-
-    const horizontalDistance = event.clientX - swipeStart.x
-    const verticalDistance = event.clientY - swipeStart.y
-    const minimumSwipeDistance = 48
-
-    if (Math.abs(horizontalDistance) < minimumSwipeDistance || Math.abs(horizontalDistance) <= Math.abs(verticalDistance)) return
-
-    if (horizontalDistance < 0) showNextSlide()
-    else showPreviousSlide()
-  }
-
-  useEffect(() => {
-    if (isWebinarOpen) return
-
-    const intervalId = window.setInterval(() => {
-      setActiveIndex((currentIndex) => (currentIndex + 1) % heroCarouselSlides.length)
-    }, HERO_CAROUSEL_INTERVAL_MS)
-
-    return () => window.clearInterval(intervalId)
-  }, [carouselCycle, isWebinarOpen])
-
-  return (
-    <section
-      className="mobile-hero"
-      data-mobile-target="#top"
-      aria-labelledby="mobile-hero-title"
-      onPointerCancel={() => { swipeStartRef.current = null }}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
-    >
-      <MobileHeroCarouselBackground activeIndex={activeIndex} />
-      <div className="mobile-hero-gradient" />
-      <AssetImage alt="" aria-hidden="true" asset="group9301" className="mobile-spark mobile-spark-1" loading="eager" />
-      <AssetImage alt="" aria-hidden="true" asset="group9303" className="mobile-spark mobile-spark-2" loading="eager" />
-      <div className={cn('mobile-hero-content', !activeSlide.showIntro && 'is-carousel-slide')} data-reveal key={activeSlide.image}>
-        <MobileHeroCarouselContent copy={activeSlide.copy} showIntro={activeSlide.showIntro} />
-        <MobileHeroCarouselButton onOpenReportPdf={openQuarterlyReport} onOpenWebinarModal={onOpenWebinar} slide={activeSlide} />
-        {SHOW_HERO_LOGO_STRIP && <HeroLogoStrip className="mobile-hero-logo-strip" />}
-      </div>
-      <MobileHeroCarouselProgress activeIndex={activeIndex} onSelect={selectSlide} />
-    </section>
-  )
-}
-
-function MobileLandingPage({
-  isWebinarOpen,
-  onOpenRoundtable,
-  onOpenWebinar,
-}: {
-  isWebinarOpen: boolean
-  onOpenRoundtable: () => void
-  onOpenWebinar: () => void
-}) {
-  // Same reordering as the desktop Roundtable title: "CEO Roundtable" in English.
-  const ceoWordmarkFirst = getLang() === 'en'
-  const mobileCeoWordmark = <AssetImage alt="CEO" asset="textCeo" className="mobile-text-ceo" loading="eager" />
-
-  return (
-    <main className="mobile-landing">
-      <MobileHeroCarousel isWebinarOpen={isWebinarOpen} onOpenWebinar={onOpenWebinar} />
-
-      <section className="mobile-section mobile-report-section" data-mobile-target="#report" aria-labelledby="mobile-report-title">
-        <div className="spotlight-grid spotlight-grid-mobile" data-reveal>
-          <SpotlightEditorial mobile />
-          <SpotlightInfo />
-        </div>
-        <MobileStats />
-      </section>
-      <section className="mobile-roundtable" data-mobile-target="#roundtable" aria-labelledby="mobile-roundtable-title">
-        <AssetImage alt="" aria-hidden="true" asset="bgCircleCeo" className="mobile-roundtable-bg" />
-        <div className="mobile-roundtable-content" data-reveal>
-          <h2 id="mobile-roundtable-title">
-            {ceoWordmarkFirst && mobileCeoWordmark}
-            <span>{t('Bàn tròn')}</span>
-            {!ceoWordmarkFirst && mobileCeoWordmark}
-          </h2>
-          <p className="mobile-roundtable-subtitle">{t('Khai mở góc nhìn - Kiến tạo giá trị')}</p>
-          <p>{t('Không "thuyết trình". Tranh luận để tìm kiếm những sự thật ngầm hiểu đắt giá nhất. Tham gia Bàn tròn CEO định kỳ dành riêng cho thành viên CWI.')}</p>
-          <div className="mobile-roundtable-stats">
-            {roundtableStats.map((stat) => (
-              <div key={stat.value}>
-                <AssetImage alt="" aria-hidden="true" asset={stat.icon} />
-                <strong>{t(stat.value)}</strong>
-                <span>{t(stat.label)}</span>
-              </div>
-            ))}
-          </div>
-          <RedButton action="roundtable" className="mobile-roundtable-button" onClick={onOpenRoundtable}>{t('Đăng kí tham gia')}</RedButton>
-        </div>
-        <div className="mobile-roundtable-photo-frame" data-reveal>
-          <AssetImage alt="Roundtable session" asset="image124" className="mobile-roundtable-photo" />
-        </div>
-      </section>
-
-      <section className="mobile-section mobile-advisors-section about-cwi-mobile-section" data-mobile-target="#about-cwi" aria-labelledby="mobile-advisors-title">
-        <div className="about-cwi-mobile-intro" data-reveal>
-          <AboutCwiTitle className="about-cwi-mobile-title" id="mobile-advisors-title" />
-          <img alt={t('Cuộc họp lãnh đạo doanh nghiệp')} className="about-cwi-mobile-image" draggable={false} loading="lazy" src={leftPanelBackground} />
-        </div>
-        <div className="about-cwi-mobile-cards" data-reveal>
-          {aboutCwiCards.map((card) => <AboutCwiCard card={card} key={card.title} />)}
-        </div>
-        <MobileSectionTitle>{t('Ban tổ chức')}</MobileSectionTitle>
-        <MobileAdvisorCarousel />
-      </section>
-      <section className="mobile-section mobile-partners-section" aria-labelledby="mobile-partners-title">
-        <h2 id="mobile-partners-title" className="sr-only">{t('Đối tác')}</h2>
-        <MobileSectionTitle>{t('Đơn vị bảo trợ')}</MobileSectionTitle>
-        <MobileLogoRail logos={associationLogos} variant="static" />
-        <MobileSectionTitle>{t('Đối tác tri thức')}</MobileSectionTitle>
-        <MobileLogoRail logos={knowledgePartnerLogos} variant="static" />
-        <MobileSectionTitle>{t('Đối tác truyền thông')}</MobileSectionTitle>
-        <MobileLogoRail logos={mediaPartnerLogos} variant="static" />
-        <MobileSectionTitle>{t('Đối tác vận hành')}</MobileSectionTitle>
-        <MobileLogoRail logos={operationalPartnerLogos} variant="static" />
-        <MobileSectionTitle>{t('Đơn vị tổ chức')}</MobileSectionTitle>
-        <MobileLogoRail logos={organizerLogos} variant="static" />
-      </section>
-
-      <section className="mobile-final-cta" data-reveal>
-        <h2>{t('Hệ cộng lực mạnh')}<br /><em>{tx('slogan', 'Doanh nghiệp')}</em> {tx('slogan', 'vươn tầm')}</h2>
-        <RedButton action="survey" className="mobile-hero-button">
-          <span>{t('Thực hiện khảo sát')}</span>
-          <AssetImage alt="" aria-hidden="true" asset="arrow1" className="mobile-button-arrow h-[15px] w-[17px]" loading="eager" />
-        </RedButton>
-      </section>
-
-      <footer className="mobile-footer" data-mobile-target="#footer">
-        <AssetImage alt="" aria-hidden="true" asset="image131" className="mobile-footer-pattern" />
-        <AssetImage alt="CEO Workforce Index" asset="footerLogo" className="mobile-footer-logo" />
-        <nav aria-label={t('Thông tin pháp lý')} className="mobile-footer-legal">
-          {legalLinks.map((link) => (
-            <a href={link.href} key={link.href}>{t(link.label)}</a>
-          ))}
-        </nav>
-        <p className="mobile-footer-contact"><strong>{t('LIÊN HỆ:')}</strong> contact@ceo-workforce-index.com</p>
-        <p className="mobile-footer-address">{t('Địa chỉ: 11 Huỳnh Đình Hai, Phường Bình Thạnh, TP.HCM')}</p>
-        <p className="mobile-copyright">{t('Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về SKALE')}</p>
-      </footer>
-    </main>
-  )
-}
 export function LandingPage() {
   const [roundtableOpen, setRoundtableOpen] = useState(() => getPublicRegistrationFromLocation() === 'roundtable')
   const [webinarInfoOpen, setWebinarInfoOpen] = useState(() => getPublicRegistrationFromLocation() === 'webinar')
   const scale = useFigmaViewportScale()
+  // Only one layout is rendered: the hidden one would otherwise still load its images and run
+  // its own slider timer.
+  const isMobileLayout = useMediaQuery(LANDING_MOBILE_QUERY)
   const responsiveStyle = {
     '--figma-scale': scale,
     '--figma-page-height': `${FIGMA_CANVAS_HEIGHT * scale}px`,
@@ -2011,8 +1072,12 @@ export function LandingPage() {
 
   return (
     <LazyMotion features={domAnimation}>
+      {/* Devices set to reduce motion get the page without the slide-in/fade animations. */}
+      <MotionConfig reducedMotion="user">
       <div className="design-page-shell" style={responsiveStyle}>
+        {/* One header for both layouts; CSS switches its look. */}
         <Header scale={scale} />
+        {isMobileLayout ? null : <>
         <div className="figma-canvas-stage">
           <div className="figma-canvas-scale-box">
             <main id="top" className="figma-canvas" data-figma-file="R23rMZykc70t6C3YFqXyf9" data-figma-node="96:45">
@@ -2028,14 +1093,18 @@ export function LandingPage() {
             </main>
           </div>
         </div>
-        <MobileLandingPage
-          isWebinarOpen={webinarInfoOpen}
-          onOpenRoundtable={() => openRegistration('roundtable')}
-          onOpenWebinar={() => openRegistration('webinar')}
-        />
+        </>}
+        {isMobileLayout ? (
+          <MobileLandingPage
+            isWebinarOpen={webinarInfoOpen}
+            onOpenRoundtable={() => openRegistration('roundtable')}
+            onOpenWebinar={() => openRegistration('webinar')}
+          />
+        ) : null}
         <LandingRoundtableModal onClose={() => closeRegistration('roundtable')} open={roundtableOpen} />
         <WebinarInfoModal onClose={() => closeRegistration('webinar')} onContinueToSurvey={continueFromWebinarToSurvey} open={webinarInfoOpen} />
       </div>
+      </MotionConfig>
     </LazyMotion>
   )
 }

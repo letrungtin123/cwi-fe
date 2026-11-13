@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { t } from '@/i18n'
 import type { Answers } from './surveyScoring'
-import { getSurveyScores, hasQuestionAnswer, isValidWebsite, OTHER_OPTION, validEmail } from './surveyScoring'
+import { hasQuestionAnswer, isValidWebsite, OTHER_OPTION, validEmail } from './surveyScoring'
 import { partOneQuestions, partTwoQuestions, type SurveyQuestion } from './surveyData'
 import { SurveyHeader } from './SurveyChrome'
 import { QuestionDrawer, surveyPersistentQuestionPanelMediaQuery } from './SurveyNavigation'
@@ -12,12 +12,11 @@ import {
   LoadingScreen,
   ReportGenerationScreen,
   ReportScreen,
-  ResultScreen,
   RoundtableModal,
   SurveyAnswersReviewModal,
   type RoundtableChoice,
 } from './SurveyScreens'
-import { createRoundtableRegistrationIdempotencyKey, createSurveySubmissionIdempotencyKey, createWebinarRegistrationIdempotencyKey, deferredResultDays, getReportHtml, getReportJobStatus, submitRoundtableRegistration, submitSurveySubmission, submitWebinarRegistration, SurveyApiError, type ReportEmailStatus, type ReportJobStatusValue } from './surveyApi'
+import { createRoundtableRegistrationIdempotencyKey, createSurveySubmissionIdempotencyKey, createWebinarRegistrationIdempotencyKey, deferredResultDays, getReportHtml, getReportJobStatus, submitRoundtableRegistration, submitSurveySubmission, SurveyApiError, type ReportEmailStatus, type ReportJobStatusValue } from './surveyApi'
 import { buildSurveySubmissionPayload } from './surveySubmissionPayload'
 import { isValidPhone } from './phoneValidation'
 import './survey.css'
@@ -104,10 +103,11 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
   const [roundtableRegistered, setRoundtableRegistered] = useState(() => Boolean(restoredSession?.roundtableRegistrationId))
   const [roundtableRegistrationId, setRoundtableRegistrationId] = useState(() => restoredSession?.roundtableRegistrationId ?? '')
   const [roundtableRegisteredAt, setRoundtableRegisteredAt] = useState(() => restoredSession?.roundtableRegisteredAt ?? '')
-  const [webinarError, setWebinarError] = useState(() => restoredSession?.webinarError ?? '')
-  const [webinarRegistered, setWebinarRegistered] = useState(() => Boolean(restoredSession?.webinarRegistrationId))
-  const [webinarRegistrationId, setWebinarRegistrationId] = useState(() => restoredSession?.webinarRegistrationId ?? '')
-  const [webinarRegisteredAt, setWebinarRegisteredAt] = useState(() => restoredSession?.webinarRegisteredAt ?? '')
+  // Webinar fields are only carried through the saved session (no screen changes them any more).
+  const [webinarError] = useState(() => restoredSession?.webinarError ?? '')
+  const [webinarRegistered] = useState(() => Boolean(restoredSession?.webinarRegistrationId))
+  const [webinarRegistrationId] = useState(() => restoredSession?.webinarRegistrationId ?? '')
+  const [webinarRegisteredAt] = useState(() => restoredSession?.webinarRegisteredAt ?? '')
   const [surveyAnswersReviewOpen, setSurveyAnswersReviewOpen] = useState(false)
   const [partTwoPrivacyRefused, setPartTwoPrivacyRefused] = useState(() => restoredSession?.partTwoPrivacyRefused ?? false)
   const [submissionIdempotencyKey] = useState(() => restoredSession?.submissionIdempotencyKey ?? createSurveySubmissionIdempotencyKey())
@@ -130,7 +130,6 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
   const [submitting, setSubmitting] = useState(false)
   const [roundtableSubmitting, setRoundtableSubmitting] = useState(false)
   const [roundtableChoice, setRoundtableChoice] = useState<RoundtableChoice>('')
-  const [webinarSubmitting, setWebinarSubmitting] = useState(false)
   const roundtableTriggerRef = useRef<HTMLButtonElement | null>(null)
   const reportHtmlLoadedRef = useRef(false)
 
@@ -141,7 +140,6 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
 
   const partOneCompleted = useMemo(() => countAnswers(partOneQuestions, hasAnswer), [hasAnswer])
   const partTwoCompleted = useMemo(() => countAnswers(partTwoQuestions, hasAnswer), [hasAnswer])
-  const scores = useMemo(() => getSurveyScores(answers), [answers])
   const drawerQuestions = screen === 'part2' ? partTwoQuestions : partOneQuestions
   const canOpenDrawer = screen === 'part1' || screen === 'part2'
   const isSubmittedReview = Boolean(submittedSubmissionId)
@@ -565,49 +563,9 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
     if (registrationId) await continueFromRoundtable(registrationId)
   }
 
-  const openRoundtableFromResult = (trigger: HTMLButtonElement) => {
-    roundtableTriggerRef.current = trigger
-    setRoundtableContact(contact)
-    setRoundtableRegistered(Boolean(roundtableRegistrationId))
-    setRoundtableError('')
-    setRoundtableChoice('')
-    setSubmissionError('')
-    setRoundtableOpen(true)
-  }
-
   const closeRoundtable = () => {
     setRoundtableOpen(false)
     window.requestAnimationFrame(() => roundtableTriggerRef.current?.focus())
-  }
-
-  const registerWebinarFromResult = async () => {
-    if (webinarSubmitting || webinarRegistered) return
-    if (!contact.name.trim() || !validEmail(contact.email.trim())) {
-      setWebinarError(t('Không tìm thấy Họ tên và Email hợp lệ từ khảo sát để đăng ký Webinar.'))
-      return
-    }
-
-    setWebinarSubmitting(true)
-    setWebinarError('')
-    try {
-      const result = await submitWebinarRegistration(
-        {
-          clientMeta: buildClientMeta('survey_webinar_registration'),
-          email: contact.email.trim().toLowerCase(),
-          fullName: contact.name.trim().replace(/\s+/g, ' '),
-          position: normalizeContactPosition(contact) || undefined,
-          surveySubmissionIdempotencyKey: submissionIdempotencyKey,
-        },
-        webinarRegistrationIdempotencyKey,
-      )
-      setWebinarRegistrationId(result.registrationId)
-      setWebinarRegisteredAt(result.registeredAt)
-      setWebinarRegistered(true)
-    } catch (error) {
-      setWebinarError(error instanceof Error ? error.message : t('Không thể đăng ký Webinar. Vui lòng thử lại.'))
-    } finally {
-      setWebinarSubmitting(false)
-    }
   }
 
   // newRegistrationId comes from a registration made in the same click, before
@@ -675,7 +633,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
   }
 
   const handleHeaderBack = () => {
-    if (screen === 'intro' || screen === 'result') {
+    if (screen === 'intro') {
       backToLanding()
       return
     }
@@ -838,21 +796,6 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
           <ReportScreen emailStatus={reportEmailStatus} html={reportHtml} mode={reportMode} onHome={backToLanding} onReviewAnswers={() => setSurveyAnswersReviewOpen(true)} />
         ) : null}
 
-        {screen === 'result' ? (
-          <ResultScreen
-            answers={answers}
-            isWebinarRegistering={webinarSubmitting}
-            mode={reportMode}
-            onBackHome={backToLanding}
-            onOpenRoundtable={openRoundtableFromResult}
-            onRegisterWebinar={() => void registerWebinarFromResult()}
-            otherAnswers={otherAnswers}
-            scores={scores}
-            webinarError={webinarError}
-            webinarRegistered={webinarRegistered}
-            webinarRegisteredAt={webinarRegisteredAt}
-          />
-        ) : null}
       </div>
 
       <RoundtableModal

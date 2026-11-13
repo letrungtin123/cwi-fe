@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom'
 import { t } from '@/i18n'
 import { jobTitleOptions } from '../survey/surveyData'
 import { validEmail } from '../survey/surveyScoring'
+import { useDialogKeyboard } from '@/lib/useDialogKeyboard'
 import {
   createQuarterlyReportDownloadIdempotencyKey,
   QuarterlyReportApiError,
@@ -79,27 +80,21 @@ export function QuarterlyReportDownloadModal({ onClose, open, report }: Quarterl
     setIsPositionMenuOpen(false)
     setPositionMenuLayout(null)
     attemptRef.current = null
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    window.requestAnimationFrame(() => fullNameRef.current?.focus())
-    return () => { document.body.style.overflow = previousOverflow }
   }, [open, report.slug])
 
-  useEffect(() => {
-    if (!open) return
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape' || submittingRef.current) return
+  useDialogKeyboard(open, dialogRef, {
+    initialFocusRef: fullNameRef,
+    onEscape: () => {
+      if (submittingRef.current) return
+      // Escape first closes the position list, then the form.
       if (isPositionMenuOpen) {
-        event.preventDefault()
         setIsPositionMenuOpen(false)
         window.requestAnimationFrame(() => positionTriggerRef.current?.focus())
         return
       }
       onClose()
-    }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [isPositionMenuOpen, onClose, open])
+    },
+  })
 
   useEffect(() => {
     if (!open || !isPositionMenuOpen) return
