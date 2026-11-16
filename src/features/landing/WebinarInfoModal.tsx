@@ -163,7 +163,7 @@ export function WebinarInfoModal({ onClose, onContinueToSurvey, open }: WebinarI
         {
           clientMeta: {
             action: 'landing_webinar_registration',
-            app: 'source4',
+            app: 'cwi-fe-landing-page',
             language: navigator.language,
             path: window.location.pathname,
             referrer: document.referrer || null,

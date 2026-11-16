@@ -93,7 +93,7 @@ export async function getQuarterlyReport(slug: string, signal?: AbortSignal) {
 
 export function createQuarterlyReportDownloadIdempotencyKey() {
   const random = crypto.randomUUID?.() ?? Array.from(crypto.getRandomValues(new Uint8Array(16)), (value) => value.toString(16).padStart(2, '0')).join('')
-  return `source4-quarterly-report:${random}`
+  return `cwi-fe-landing-page-quarterly-report:${random}`
 }
 
 export async function requestQuarterlyReportDownload(slug: string, payload: QuarterlyReportDownloadPayload, idempotencyKey: string) {
@@ -102,7 +102,7 @@ export async function requestQuarterlyReportDownload(slug: string, payload: Quar
     headers: {
       'content-type': 'application/json',
       'idempotency-key': idempotencyKey,
-      'x-cwi-source': 'source4',
+      'x-cwi-source': 'cwi-fe-landing-page',
     },
     method: 'POST',
   }))

@@ -44,7 +44,7 @@ function normalizePosition(contact: Contact) {
 function buildClientMeta() {
   return {
     action: 'quarterly_report_download',
-    app: 'source4',
+    app: 'cwi-fe-landing-page',
     path: window.location.pathname,
     referrer: document.referrer || null,
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,

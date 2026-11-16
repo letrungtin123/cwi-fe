@@ -28,7 +28,7 @@ function normalizePosition(contact: ContactState) {
 function clientMeta() {
   return {
     action: 'landing_roundtable_registration',
-    app: 'source4',
+    app: 'cwi-fe-landing-page',
     language: navigator.language,
     path: window.location.pathname,
     referrer: document.referrer || null,

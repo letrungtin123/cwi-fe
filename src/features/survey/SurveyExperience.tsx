@@ -45,7 +45,7 @@ function normalizeContactPosition(contact: ContactState) {
 function buildClientMeta(action: string) {
   return {
     action,
-    app: 'source4',
+    app: 'cwi-fe-landing-page',
     language: navigator.language,
     path: window.location.pathname,
     referrer: document.referrer || null,

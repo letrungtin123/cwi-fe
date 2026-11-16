@@ -131,15 +131,15 @@ function createClientIdempotencyKey(prefix: string) {
 }
 
 export function createSurveySubmissionIdempotencyKey() {
-  return createClientIdempotencyKey('source4')
+  return createClientIdempotencyKey('cwi-fe-landing-page')
 }
 
 export function createRoundtableRegistrationIdempotencyKey() {
-  return createClientIdempotencyKey('source4-roundtable')
+  return createClientIdempotencyKey('cwi-fe-landing-page-roundtable')
 }
 
 export function createWebinarRegistrationIdempotencyKey() {
-  return createClientIdempotencyKey('source4-webinar')
+  return createClientIdempotencyKey('cwi-fe-landing-page-webinar')
 }
 
 function getFriendlyError(status: number, code: string, message: string) {
@@ -186,7 +186,7 @@ export async function submitSurveySubmission(payload: SurveySubmissionPayload, i
       headers: {
         'content-type': 'application/json',
         'idempotency-key': idempotencyKey,
-        'x-cwi-source': 'source4',
+        'x-cwi-source': 'cwi-fe-landing-page',
       },
       method: 'POST',
       signal: controller.signal,
@@ -210,7 +210,7 @@ export async function submitRoundtableRegistration(payload: RoundtableRegistrati
       headers: {
         'content-type': 'application/json',
         'idempotency-key': idempotencyKey,
-        'x-cwi-source': 'source4',
+        'x-cwi-source': 'cwi-fe-landing-page',
       },
       method: 'POST',
       signal: controller.signal,
@@ -237,7 +237,7 @@ export async function checkRoundtableRegistration(email: string, signal?: AbortS
       headers: {
         accept: 'application/json',
         'content-type': 'application/json',
-        'x-cwi-source': 'source4',
+        'x-cwi-source': 'cwi-fe-landing-page',
       },
       method: 'POST',
       signal: controller.signal,
@@ -256,7 +256,7 @@ export async function checkRoundtableRegistration(email: string, signal?: AbortS
 export async function getRoundtableEvent(signal?: AbortSignal): Promise<RoundtableEvent> {
   const response = await fetch(apiUrl('/api/v1/roundtable-registrations/event'), {
     cache: 'no-store',
-    headers: { accept: 'application/json', 'x-cwi-source': 'source4' },
+    headers: { accept: 'application/json', 'x-cwi-source': 'cwi-fe-landing-page' },
     signal,
   })
   return parseApiResponse<RoundtableEvent>(response)
@@ -272,7 +272,7 @@ export async function submitWebinarRegistration(payload: WebinarRegistrationPayl
       headers: {
         'content-type': 'application/json',
         'idempotency-key': idempotencyKey,
-        'x-cwi-source': 'source4',
+        'x-cwi-source': 'cwi-fe-landing-page',
       },
       method: 'POST',
       signal: controller.signal,
@@ -299,7 +299,7 @@ export async function checkWebinarRegistration(email: string, signal?: AbortSign
       headers: {
         accept: 'application/json',
         'content-type': 'application/json',
-        'x-cwi-source': 'source4',
+        'x-cwi-source': 'cwi-fe-landing-page',
       },
       method: 'POST',
       signal: controller.signal,

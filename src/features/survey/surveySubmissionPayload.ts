@@ -140,7 +140,7 @@ export function buildSurveySubmissionPayload(input: BuildSurveySubmissionPayload
   return {
     answers: requiredQuestions.map((question) => buildAnswer(question, input.answers, input.otherAnswers)),
     clientMeta: {
-      app: 'source4',
+      app: 'cwi-fe-landing-page',
       language: navigator.language,
       path: window.location.pathname,
       referrer: document.referrer || null,

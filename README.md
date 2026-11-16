@@ -1,54 +1,24 @@
-# CWI Landing & Survey
+# cwi-fe-landing-page
 
-Public website of CEO Workforce Index (https://ceo-workforce-index.com):
+Trang công khai của CEO Workforce Index: landing page, khảo sát, xem và tải báo cáo quý, đăng ký CEO Roundtable/Webinar, trang chính sách. Có tiếng Việt và tiếng Anh.
 
-- **Landing page**: hero slider, quarterly report highlight, CEO Roundtable, advisory board, partners. Desktop renders the 1440 px Figma design scaled to the window width; screens up to 900 px use a separate mobile layout.
-- **Survey**: multi-step questionnaire that posts answers to the CWI backend and shows the personal report when it is ready.
-- **Quarterly report viewer and download** (PDF.js), CEO Roundtable registration, privacy and terms pages.
-- **Vietnamese / English**: Vietnamese text is the source; English translations live in `src/i18n/en`.
+React 19, TypeScript, Vite, Tailwind CSS.
 
-Stack: React 19, TypeScript, Vite, Tailwind CSS 4, framer-motion, pdfjs-dist.
+## Chạy local
 
-## Run locally
-
-```powershell
+```bash
 npm install
-Copy-Item .env.example .env
-npm run dev          # http://127.0.0.1:5670
+cp .env.example .env    # VITE_CWI_API_BASE_URL trỏ tới cwi-backend
+npm run dev             # http://127.0.0.1:5670
 ```
 
-The site needs the CWI backend (`cwi-backend`) for the survey, registrations and reports.
+## Lệnh
 
-| Variable | Purpose |
+| Lệnh | Việc |
 | --- | --- |
-| `VITE_CWI_API_BASE_URL` | Backend origin, e.g. `http://localhost:8088` locally; production builds use the same origin (`/api`). |
-| `VITE_CWI_SUBMIT_TIMEOUT_MS` | Timeout for submitting the survey. |
-| `VITE_CWI_REPORT_REQUEST_TIMEOUT_MS` | Timeout for one report status request. |
-| `VITE_CWI_REPORT_POLL_TIMEOUT_MS` | How long the result screen keeps waiting for the report. |
+| `npm run build` | Typecheck và build vào `dist/` |
+| `npm run lint` | oxlint |
+| `npm test` | vitest |
+| `npm run check:i18n` | Kiểm tra bản dịch tiếng Anh đủ |
 
-## Scripts
-
-| Command | What it does |
-| --- | --- |
-| `npm run dev` | Development server with hot reload. |
-| `npm run build` | Type-check and build the static site into `dist/`. |
-| `npm run preview` | Serve the built `dist/` locally. |
-| `npm run lint` | Lint with oxlint. |
-| `node scripts/check-i18n.mjs` | Check that every Vietnamese text has an English translation. |
-| `npm run generate:survey-qr` | Generate the survey QR code image. |
-
-## Project layout
-
-```
-src/
-  App.tsx              routes between landing, survey, quarterly report and legal pages
-  features/landing/    landing page (desktop + mobile), modals, legal pages, image map (figmaAssets.ts)
-  features/survey/     survey screens, questions, API client, session storage
-  i18n/                language switch and English translations
-  lib/                 small shared helpers
-  assets/figma/        images exported from the Figma design
-```
-
-## Deployment
-
-Production serves only the built `dist/` folder, packaged together with `cwi-dashboard` and `cwi-backend` into one release. See [DEPLOYMENT_ARTIFACT.md](DEPLOYMENT_ARTIFACT.md).
+Production phục vụ thư mục `dist/`, được đóng gói cùng backend (xem `cwi-backend/deploy/README.md`).

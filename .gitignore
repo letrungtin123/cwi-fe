@@ -32,8 +32,5 @@ src/assets/figma/carousel-result-loading/*
 !src/assets/figma/carousel-result-loading/web/
 !src/assets/figma/carousel-result-loading/web/*.webp
 
-# Local static export retained for reference only; it is not imported by the application.
-src/assets/figma/Nesso _ Admin.html
-src/assets/figma/Nesso _ Admin_files/
 # Local QA screenshots and notes
 qa/
