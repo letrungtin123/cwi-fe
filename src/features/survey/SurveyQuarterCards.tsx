@@ -70,7 +70,15 @@ export function SurveyQuarterCards({ onSelect }: SurveyQuarterCardsProps) {
             const image = quarter.imageUrl ? surveyQuarterImageUrl(quarter.imageUrl) : edition?.defaultImage
             return (
               <article className={'survey-quarter-card' + (quarter.isCurrent ? ' is-current' : '')} key={quarter.surveyVersion}>
-                <div className="survey-quarter-media">{image ? <img alt="" decoding="async" loading="lazy" src={image} /> : null}</div>
+                {/* The whole picture is shown (report covers are portrait); a blurred copy fills the rest of the frame. */}
+                <div className="survey-quarter-media">
+                  {image ? (
+                    <>
+                      <img alt="" aria-hidden="true" className="survey-quarter-media-backdrop" decoding="async" loading="lazy" src={image} />
+                      <img alt="" className="survey-quarter-media-image" decoding="async" loading="lazy" src={image} />
+                    </>
+                  ) : null}
+                </div>
                 <div className="survey-quarter-body">
                   <p className="survey-quarter-kicker">{t('Khảo sát {label}', { label: quarter.label[lang] })}</p>
                   <h3 id={titleId}>{quarter.title[lang]}</h3>
