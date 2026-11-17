@@ -5,3 +5,6 @@
 .quarterly-report-page-state button { display: inline-flex; min-height: 42px; align-items: center; gap: 8px; padding: 0 16px; color: #17436a; font: inherit; font-size: 14px; font-weight: 750; cursor: pointer; background: #fff; border: 1px solid #cbd9e7; border-radius: 999px; }
 .quarterly-report-page-spinner { animation: quarterly-report-page-spin 1s linear infinite; color: #0a7986; }
 @keyframes quarterly-report-page-spin { to { transform: rotate(360deg); } }
+
+/* /bao-cao-quy card list (shares the survey page's header and card styles). */
+.quarterly-report-unavailable { margin: 0 auto 24px; max-width: 640px; padding: 12px 16px; color: #8a4b00; font-size: 14px; font-weight: 650; line-height: 1.5; text-align: center; background: #fff7e8; border: 1px solid #f3d29a; border-radius: 10px; }

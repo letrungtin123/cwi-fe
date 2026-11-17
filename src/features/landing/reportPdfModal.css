@@ -153,3 +153,16 @@
   .report-pdf-viewer::-webkit-scrollbar { width: 5px; height: 5px; }
   .report-pdf-viewer::-webkit-scrollbar-thumb { border-width: 1px; }
 }
+
+/* VI / EN switch when the quarter has both PDFs, and the note when one language is missing. */
+.report-pdf-language { display: inline-flex; padding: 3px; background: rgb(255 255 255 / 72%); border: 1px solid #c8d8e8; border-radius: 999px; }
+.report-pdf-language button { min-width: 44px; min-height: 38px; padding: 0 12px; color: #12365d; font: inherit; font-size: 13px; font-weight: 800; letter-spacing: 0.04em; cursor: pointer; background: transparent; border: 0; border-radius: 999px; transition: background-color 160ms ease, color 160ms ease; }
+.report-pdf-language button[aria-pressed="true"] { color: #fff; background: #09254b; }
+.report-pdf-language button:hover:not([aria-pressed="true"]) { color: #ec2432; }
+.report-pdf-language button:focus-visible { outline: 3px solid #12bfb9; outline-offset: 2px; }
+.report-pdf-modal-copy .report-pdf-modal-notice { margin-top: 8px; color: #8a4b00; font-size: 13px; font-weight: 700; }
+
+@media (max-width: 900px) {
+  .report-pdf-language button { min-width: 38px; min-height: 34px; padding: 0 9px; font-size: 12px; }
+  .report-pdf-modal-copy .report-pdf-modal-notice { font-size: 12px; }
+}

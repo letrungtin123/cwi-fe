@@ -160,6 +160,7 @@ export function QuarterlyReportDownloadModal({ onClose, open, report }: Quarterl
       clientMeta: buildClientMeta(),
       email: contact.email.trim().toLowerCase(),
       fullName: contact.fullName.trim().replace(/\s+/g, ' '),
+      language: report.language,
       phone: contact.phone.trim(),
       position,
       privacyConsent: true as const,

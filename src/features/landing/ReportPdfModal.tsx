@@ -3,14 +3,19 @@ import { useEffect, useRef, useState } from 'react'
 import { useDialogKeyboard } from '@/lib/useDialogKeyboard'
 import { createPortal } from 'react-dom'
 import type { PDFDocumentProxy } from 'pdfjs-dist/types/src/pdf'
-import { t, tx } from '@/i18n'
+import { t, tx, type Lang } from '@/i18n'
 import type { QuarterlyReportPublic } from './quarterlyReportsApi'
 import './reportPdfModal.css'
 
 type ReportPdfModalProps = {
   // True while another dialog (the download form) is open on top: Escape then belongs to it.
   escapeSuspended?: boolean
+  // PDFs the quarter has; with both, the reader shows a VI / EN switch.
+  languages?: Lang[]
+  // Shown under the title, e.g. when the language asked for has no PDF yet.
+  notice?: string
   onClose: () => void
+  onLanguageChange?: (language: Lang) => void
   onRequestDownload: () => void
   open: boolean
   report: QuarterlyReportPublic
@@ -288,7 +293,7 @@ function ReportPdfViewer({ onPageChange, onPageCountChange, onRetry, pdfUrl, zoo
   )
 }
 
-export function ReportPdfModal({ escapeSuspended = false, onClose, onRequestDownload, open, report }: ReportPdfModalProps) {
+export function ReportPdfModal({ escapeSuspended = false, languages = [], notice = '', onClose, onLanguageChange, onRequestDownload, open, report }: ReportPdfModalProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const dialogRef = useRef<HTMLElement>(null)
   const expandButtonRef = useRef<HTMLButtonElement>(null)
@@ -310,6 +315,12 @@ export function ReportPdfModal({ escapeSuspended = false, onClose, onRequestDown
     setIsChromeCollapsed(false)
   }, [open])
 
+  // Another PDF (the other language): start again from its first page.
+  useEffect(() => {
+    setCurrentPage(1)
+    setPageCount(null)
+  }, [report.pdfUrl])
+
   if (!open || typeof document === 'undefined') return null
 
   const pageCountLabel = pageCount ? `${currentPage} / ${pageCount}` : t('Đang tải')
@@ -327,8 +338,18 @@ export function ReportPdfModal({ escapeSuspended = false, onClose, onRequestDown
               <p className="report-pdf-modal-eyebrow">{t('BẢN PDF ĐẦY ĐỦ')} · {pageCount ? t('{n} TRANG', { n: pageCount }) : t('ĐANG TẢI')}</p>
               <h2 id="report-pdf-modal-title">{report.title}</h2>
               <p>{report.subtitle}</p>
+              {notice ? <p className="report-pdf-modal-notice" role="status">{notice}</p> : null}
             </div>
             <div className="report-pdf-modal-actions">
+              {languages.length > 1 && onLanguageChange ? (
+                <div aria-label={t('Ngôn ngữ của báo cáo')} className="report-pdf-language" role="group">
+                  {languages.map((language) => (
+                    <button aria-pressed={report.language === language} key={language} lang={language} onClick={() => onLanguageChange(language)} type="button">
+                      {language.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
               <button aria-label={t('Tải báo cáo PDF')} className="report-pdf-modal-download" onClick={onRequestDownload} type="button">
                 <span>{t('Tải báo cáo')}</span>
                 <Download aria-hidden="true" size={18} strokeWidth={2} />
@@ -362,7 +383,7 @@ export function ReportPdfModal({ escapeSuspended = false, onClose, onRequestDown
           <span>{t('Hiện thông tin báo cáo')}</span>
         </button>
         <ReportPdfViewer
-          key={viewerAttempt}
+          key={`${viewerAttempt}-${report.pdfUrl}`}
           onPageChange={setCurrentPage}
           onPageCountChange={setPageCount}
           onRetry={() => setViewerAttempt((attempt) => attempt + 1)}

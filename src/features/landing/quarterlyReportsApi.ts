@@ -1,4 +1,4 @@
-import { t } from '@/i18n'
+import { t, type Lang } from '@/i18n'
 
 // Without VITE_CWI_API_BASE_URL a production build calls its own origin (/api); only the dev
 // server falls back to the local backend.
@@ -7,8 +7,29 @@ const apiBaseUrl = (import.meta.env.VITE_CWI_API_BASE_URL ?? (import.meta.env.DE
 type ApiSuccess<T> = { data: T }
 type ApiFailure = { error?: { code?: string; message?: string } }
 
+type Bilingual = Record<Lang, string>
+
+// One card of /bao-cao-quy. languages: the PDFs the quarter has (vi, en).
+export type QuarterlyReportCard = {
+  description: Bilingual
+  imageUrl: string | null
+  isCurrent: boolean
+  label: Bilingual
+  languages: Lang[]
+  periodQuarter: number
+  periodYear: number
+  slug: string
+  title: Bilingual
+}
+
+export type QuarterlyReportList = {
+  page: { description: Bilingual; kicker: Bilingual; title: Bilingual }
+  reports: QuarterlyReportCard[]
+}
+
+// The report as the PDF reader and the download form show it, in one language.
 export type QuarterlyReportPublic = {
-  id: string
+  language: Lang
   periodQuarter: number
   periodYear: number
   slug: string
@@ -28,6 +49,8 @@ export type QuarterlyReportDownloadPayload = {
   clientMeta: Record<string, unknown>
   email: string
   fullName: string
+  // The PDF the person is reading; the download link sends that one.
+  language: Lang
   phone: string
   position: string
   privacyConsent: true
@@ -57,8 +80,22 @@ function publicPath(slug: string) {
   return `/api/v1/public/quarterly-reports/${encodeURIComponent(slug)}`
 }
 
-function toReport(data: Omit<QuarterlyReportPublic, 'pdfUrl'>): QuarterlyReportPublic {
-  return { ...data, pdfUrl: quarterlyReportApiUrl(`${publicPath(data.slug)}/pdf`) }
+// The card in one language; the PDF in the language asked for, else the one the quarter has.
+export function toReportView(card: QuarterlyReportCard, wanted: Lang): QuarterlyReportPublic {
+  const language = card.languages.includes(wanted) ? wanted : card.languages[0] ?? wanted
+  return {
+    language,
+    periodQuarter: card.periodQuarter,
+    periodYear: card.periodYear,
+    pdfUrl: quarterlyReportApiUrl(`${publicPath(card.slug)}/pdf?lang=${language}`),
+    slug: card.slug,
+    subtitle: card.description[language],
+    title: card.title[language],
+  }
+}
+
+export function quarterlyReportImageUrl(path: string) {
+  return quarterlyReportApiUrl(path)
 }
 
 async function parse<T>(response: Response): Promise<T> {
@@ -73,22 +110,11 @@ async function parse<T>(response: Response): Promise<T> {
   return payload.data
 }
 
-export async function getActiveQuarterlyReport(signal?: AbortSignal) {
-  const data = await parse<Omit<QuarterlyReportPublic, 'pdfUrl'>>(await fetch(quarterlyReportApiUrl('/api/v1/public/quarterly-reports/active'), {
-    cache: 'no-store',
+export async function getQuarterlyReports(signal?: AbortSignal) {
+  return parse<QuarterlyReportList>(await fetch(quarterlyReportApiUrl('/api/v1/public/quarterly-reports'), {
     headers: { accept: 'application/json' },
     signal,
   }))
-  return toReport(data)
-}
-
-export async function getQuarterlyReport(slug: string, signal?: AbortSignal) {
-  const data = await parse<Omit<QuarterlyReportPublic, 'pdfUrl'>>(await fetch(quarterlyReportApiUrl(publicPath(slug)), {
-    cache: 'no-store',
-    headers: { accept: 'application/json' },
-    signal,
-  }))
-  return toReport(data)
 }
 
 export function createQuarterlyReportDownloadIdempotencyKey() {

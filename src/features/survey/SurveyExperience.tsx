@@ -3,7 +3,7 @@ import { t, useLang } from '@/i18n'
 import type { Answers } from './surveyScoring'
 import { hasQuestionAnswer, isValidWebsite, validEmail } from './surveyScoring'
 import type { SurveyQuestion } from './surveyData'
-import { getSurveyEdition, isOtherOption, otherOptionOf, surveyQuarterLabel, type SurveyEdition } from './surveyEditions'
+import { getSurveyEdition, isOtherOption, otherOptionOf, LATEST_SURVEY_VERSION, surveyQuarterLabel, type SurveyEdition } from './surveyEditions'
 import { SurveyQuarterPicker } from './SurveyQuarterPicker'
 import { SurveyHeader } from './SurveyChrome'
 import { QuestionDrawer, surveyPersistentQuestionPanelMediaQuery } from './SurveyNavigation'
@@ -18,7 +18,8 @@ import {
   SurveyAnswersReviewModal,
   type RoundtableChoice,
 } from './SurveyScreens'
-import { createRoundtableRegistrationIdempotencyKey, createSurveySubmissionIdempotencyKey, createWebinarRegistrationIdempotencyKey, deferredResultDays, getReportHtml, getReportJobStatus, submitRoundtableRegistration, submitSurveySubmission, SurveyApiError, type ReportEmailStatus, type ReportJobStatusValue } from './surveyApi'
+import { createRoundtableRegistrationIdempotencyKey, createSurveySubmissionIdempotencyKey, createWebinarRegistrationIdempotencyKey, deferredResultDays, getReportHtml, getReportJobStatus, getSurveyQuarters, submitRoundtableRegistration, submitSurveySubmission, SurveyApiError, type ReportEmailStatus, type ReportJobStatusValue } from './surveyApi'
+import { readEntryQuarterFromUrl } from './surveySource'
 import { buildSurveySubmissionPayload } from './surveySubmissionPayload'
 import { isValidPhone } from './phoneValidation'
 import './survey.css'
@@ -72,22 +73,60 @@ type SurveyFlowProps = { onBackHome: () => void; startFresh?: boolean }
 
 // /survey opens on the list of quarter cards. Choosing a card opens that quarter's survey
 // (its intro screen, or where its draft stopped); each quarter keeps its own draft. A reload
-// reopens the quarter being worked on, or the list.
+// reopens the quarter being worked on, or the list. An invitation/QR link opens its quarter's
+// intro screen directly, when that quarter is shown on the card list.
 export function SurveyFlow({ onBackHome, startFresh = false }: SurveyFlowProps) {
   const [version, setVersion] = useState<string | null>(() => {
     if (startFresh) clearSurveySession()
     return startFresh ? null : getSurveyEdition(readActiveSurveyVersion())?.version ?? null
   })
-  // An invitation/QR link (?entry=qr) starts a fresh survey once. Drop the flag from the address
-  // bar right away, so a reload or a restored tab keeps the answers given so far instead of
-  // wiping them again. The ?src= invitation code stays (it was saved at page load).
+  // Quarter the invitation link asks for, until the card list says whether it is shown.
+  const [entryVersion, setEntryVersion] = useState<string | null>(() => {
+    const requested = startFresh ? readEntryQuarterFromUrl() : null
+    return getSurveyEdition(requested) ? requested : null
+  })
+  // An invitation/QR link (?entry=qr) starts a fresh survey once. Drop the flag (and the
+  // quarter) from the address bar right away, so a reload or a restored tab keeps the answers
+  // given so far instead of wiping them again. The ?src= invitation code stays (it was saved
+  // at page load).
   useEffect(() => {
     if (!startFresh) return
     const url = new URL(window.location.href)
     if (url.searchParams.get('entry') !== 'qr') return
     url.searchParams.delete('entry')
+    url.searchParams.delete('q')
     window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash)
   }, [startFresh])
+
+  useEffect(() => {
+    if (!entryVersion) return
+    const controller = new AbortController()
+    getSurveyQuarters(controller.signal)
+      .then((list) => list.quarters.some((quarter) => quarter.surveyVersion === entryVersion))
+      // Without the card list, the current quarter still opens (as on the cards' fallback).
+      .catch(() => entryVersion === LATEST_SURVEY_VERSION)
+      .then((open) => {
+        if (controller.signal.aborted) return
+        if (open) {
+          writeActiveSurveyVersion(entryVersion)
+          setVersion(entryVersion)
+          window.requestAnimationFrame(scrollToTop)
+        }
+        setEntryVersion(null)
+      })
+    return () => controller.abort()
+  }, [entryVersion])
+
+  if (entryVersion) {
+    return (
+      <main className="survey-page">
+        <SurveyHeader canOpenDrawer={false} onBackHome={onBackHome} onOpenDrawer={() => undefined} />
+        <div className="survey-shell">
+          <p className="survey-quarters-loading survey-entry-loading" role="status">{t('Đang mở khảo sát…')}</p>
+        </div>
+      </main>
+    )
+  }
 
   const edition = getSurveyEdition(version)
   if (!edition) {

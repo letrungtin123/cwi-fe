@@ -3,6 +3,7 @@ import { t, useLang } from '@/i18n'
 import { getSurveyQuarters, surveyQuarterImageUrl, type SurveyQuarterList } from './surveyApi'
 import { getSurveyEdition, LATEST_SURVEY_VERSION, surveyQuarterLabel } from './surveyEditions'
 import { hasSurveyDraft } from './surveyPersistence'
+import { QuarterCardSection } from './QuarterCardSection'
 
 // Shown when the card list cannot be loaded: only the current quarter, with its default text,
 // so the survey can still be taken.
@@ -57,45 +58,21 @@ export function SurveyQuarterCards({ onSelect }: SurveyQuarterCardsProps) {
   const page = (list ?? fallback).page
 
   return (
-    <section aria-labelledby="survey-quarters-title" className="survey-quarters">
-      <p className="survey-quarters-kicker">{page.kicker[lang]}</p>
-      <h2 id="survey-quarters-title">{page.title[lang]}</h2>
-      {page.description[lang] ? <p className="survey-quarters-description">{page.description[lang]}</p> : null}
-
-      {list ? (
-        <div className={'survey-quarter-grid' + (list.quarters.length === 1 ? ' survey-quarter-grid--single' : '')}>
-          {list.quarters.map((quarter) => {
-            const edition = getSurveyEdition(quarter.surveyVersion)
-            const titleId = `survey-quarter-title-${quarter.surveyVersion}`
-            const image = quarter.imageUrl ? surveyQuarterImageUrl(quarter.imageUrl) : edition?.defaultImage
-            return (
-              <article className={'survey-quarter-card' + (quarter.isCurrent ? ' is-current' : '')} key={quarter.surveyVersion}>
-                {/* The whole picture is shown (report covers are portrait); a blurred copy fills the rest of the frame. */}
-                <div className="survey-quarter-media">
-                  {image ? (
-                    <>
-                      <img alt="" aria-hidden="true" className="survey-quarter-media-backdrop" decoding="async" loading="lazy" src={image} />
-                      <img alt="" className="survey-quarter-media-image" decoding="async" loading="lazy" src={image} />
-                    </>
-                  ) : null}
-                </div>
-                <div className="survey-quarter-body">
-                  <p className="survey-quarter-kicker">{t('Khảo sát {label}', { label: quarter.label[lang] })}</p>
-                  <h3 id={titleId}>{quarter.title[lang]}</h3>
-                  {quarter.description[lang] ? <p className="survey-quarter-description">{quarter.description[lang]}</p> : null}
-                  <span aria-hidden="true" className="survey-quarter-spacer" />
-                  <button aria-describedby={titleId} className="survey-quarter-button" onClick={() => onSelect(quarter.surveyVersion)} type="button">
-                    <span>{hasSurveyDraft(quarter.surveyVersion) ? t('Tiếp tục khảo sát') : t('Làm khảo sát ngay')}</span>
-                    <span aria-hidden="true">→</span>
-                  </button>
-                </div>
-              </article>
-            )
-          })}
-        </div>
-      ) : (
-        <p className="survey-quarters-loading" role="status">{t('Đang tải các kỳ khảo sát…')}</p>
-      )}
-    </section>
+    <QuarterCardSection
+      description={page.description[lang]}
+      items={list ? list.quarters.map((quarter) => ({
+        buttonLabel: hasSurveyDraft(quarter.surveyVersion) ? t('Tiếp tục khảo sát') : t('Làm khảo sát ngay'),
+        description: quarter.description[lang],
+        id: quarter.surveyVersion,
+        image: quarter.imageUrl ? surveyQuarterImageUrl(quarter.imageUrl) : getSurveyEdition(quarter.surveyVersion)?.defaultImage,
+        isCurrent: quarter.isCurrent,
+        kicker: t('Khảo sát {label}', { label: quarter.label[lang] }),
+        onSelect: () => onSelect(quarter.surveyVersion),
+        title: quarter.title[lang],
+      })) : null}
+      kicker={page.kicker[lang]}
+      loadingText={t('Đang tải các kỳ khảo sát…')}
+      title={page.title[lang]}
+    />
   )
 }

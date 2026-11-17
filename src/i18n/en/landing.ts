@@ -246,4 +246,11 @@ export const landingEn: Record<string, string> = {
   "Vietsuccess": "Vietsuccess",
   "KingBee": "KingBee",
   "Nesso": "Nesso",
+  // Quarterly report cards (/bao-cao-quy) and the PDF reader language switch.
+  "Báo cáo {label}": "{label} report",
+  "Báo cáo theo quý": "Quarterly reports",
+  "Đang tải báo cáo quý…": "Loading quarterly reports…",
+  "Báo cáo này hiện chưa mở. Anh/Chị có thể xem các báo cáo bên dưới.": "This report is not available right now. You can read the reports below.",
+  "Chưa có báo cáo quý được công bố.": "No quarterly report has been published yet.",
+  "Ngôn ngữ của báo cáo": "Report language",
 }

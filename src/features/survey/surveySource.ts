@@ -2,6 +2,19 @@
 // code, for example /survey?entry=qr&src=vcci-hcm. The code is remembered in this
 // browser for 30 days and sent with the survey submission; the most recently opened
 // source link wins. Opening the link alone records nothing on the server.
+//
+// A link opens one quarter's survey directly: ?q=2026Q3. Links without q (all those
+// shared before links had a quarter, made for the 2026Q4 campaign) open 2026Q4.
+export const SOURCE_LINK_DEFAULT_VERSION = '2026Q4'
+
+// Quarter an invitation link (?entry=qr) asks for, or null for the list of quarters.
+export function readEntryQuarterFromUrl(): string | null {
+  if (typeof window === 'undefined') return null
+  const value = new URLSearchParams(window.location.search).get('q')
+  if (value === null) return SOURCE_LINK_DEFAULT_VERSION
+  const version = value.trim().toUpperCase()
+  return /^\d{4}Q[1-4]$/.test(version) ? version : null
+}
 
 const STORAGE_KEY = 'cwi:survey-source'
 const MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000

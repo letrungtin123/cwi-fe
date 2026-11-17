@@ -257,4 +257,5 @@ export const surveyEn: Record<string, string> = {
   "Làm khảo sát ngay": "Take the survey",
   "Tiếp tục khảo sát": "Continue the survey",
   "Đang tải các kỳ khảo sát…": "Loading survey editions…",
+  "Đang mở khảo sát…": "Opening the survey…",
 }
