@@ -3025,3 +3025,77 @@
   .survey-page select,
   .survey-page textarea { font-size: 16px; }
 }
+
+/* First screen of /survey: the quarter cards (heading and cards are edited in the dashboard). */
+.survey-quarters { padding-top: 8px; text-align: center; }
+.survey-quarters-kicker {
+  align-items: center;
+  color: var(--survey-blue);
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 700;
+  gap: 14px;
+  letter-spacing: .14em;
+  margin: 0;
+  text-transform: uppercase;
+}
+.survey-quarters-kicker::before { background: var(--survey-red); content: ""; height: 2px; width: 36px; }
+.survey-quarters h2 { color: var(--survey-navy); font-size: clamp(34px, 4.4vw, 56px); font-weight: 800; letter-spacing: -.02em; line-height: 1.08; margin: 12px auto 0; }
+.survey-quarters .survey-quarters-description { color: var(--survey-ink-secondary); font-size: 16px; line-height: 1.6; margin: 16px auto 0; max-width: 660px; }
+.survey-quarters-loading { color: var(--survey-ink-muted); margin: 36px 0 0; }
+.survey-quarter-grid { display: grid; gap: 28px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 40px auto 0; max-width: 1100px; text-align: left; }
+.survey-quarter-grid--single { grid-template-columns: minmax(0, 1fr); max-width: 560px; }
+.survey-quarter-card {
+  background: var(--survey-surface);
+  border: 1px solid var(--survey-border);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 26, 61, .07);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+.survey-quarter-card:hover { box-shadow: 0 18px 40px rgba(0, 26, 61, .12); transform: translateY(-2px); }
+/* The current quarter: a red ring with a soft glow. */
+.survey-quarter-card.is-current { border-color: transparent; box-shadow: 0 0 0 2px var(--survey-red), 0 18px 44px rgba(217, 33, 42, .16); }
+.survey-quarter-media { aspect-ratio: 15 / 8; background: linear-gradient(135deg, #001a3d, #0b3d7a); overflow: hidden; }
+.survey-quarter-media img { display: block; height: 100%; object-fit: cover; width: 100%; }
+.survey-quarter-body { display: flex; flex: 1; flex-direction: column; padding: 28px 30px 30px; }
+.survey-quarter-body .survey-quarter-kicker { color: var(--survey-blue); font-size: 11px; font-weight: 800; letter-spacing: .16em; margin: 0; text-transform: uppercase; }
+.survey-quarter-body h3 { color: var(--survey-navy); font-size: clamp(22px, 2.2vw, 28px); font-weight: 800; letter-spacing: -.01em; line-height: 1.2; margin: 10px 0 0; }
+.survey-quarter-body .survey-quarter-description { color: var(--survey-ink-secondary); font-size: 14.5px; line-height: 1.6; margin: 12px 0 0; }
+.survey-quarter-button {
+  align-items: center;
+  background: linear-gradient(180deg, var(--survey-action-red-top) 0%, var(--survey-action-red-mid) 46%, var(--survey-action-red-bottom) 100%);
+  border: 1px solid var(--survey-action-red-border);
+  border-radius: 999px;
+  box-shadow: var(--survey-action-red-shadow);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  font-size: 15px;
+  font-weight: 700;
+  gap: 8px;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 20px;
+  transition: box-shadow 180ms ease, filter 180ms ease;
+  width: 100%;
+}
+/* Pushes the button to the bottom so the buttons of side-by-side cards line up. */
+.survey-quarter-spacer { flex: 1; min-height: 26px; }
+.survey-quarter-button:hover { box-shadow: var(--survey-action-red-shadow-hover); filter: brightness(1.015); }
+.survey-quarter-button:focus-visible { outline: 3px solid var(--survey-action-outline); outline-offset: 3px; }
+
+@media (max-width: 767px) {
+  .survey-quarters { padding-top: 0; }
+  .survey-quarters-kicker { font-size: 11px; gap: 10px; letter-spacing: .12em; }
+  .survey-quarters-kicker::before { width: 24px; }
+  .survey-quarters-description { font-size: 15px; }
+  .survey-quarter-grid { gap: 20px; grid-template-columns: minmax(0, 1fr); margin-top: 28px; }
+  .survey-quarter-body { padding: 22px 20px 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .survey-quarter-card, .survey-quarter-card:hover { transform: none; transition: none; }
+}

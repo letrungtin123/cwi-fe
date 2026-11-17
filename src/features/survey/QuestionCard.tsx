@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/cn'
 import { t } from '@/i18n'
-import { isValidWebsite, OTHER_OPTION, type Answers } from './surveyScoring'
+import { isValidWebsite, type Answers } from './surveyScoring'
+import { isOtherOption } from './surveyEditions'
 import type { SurveyQuestion } from './surveyData'
 
 type QuestionCardProps = {
@@ -50,7 +51,7 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, on
   const otherInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (readOnly || question.type !== 'mcq' || answer !== OTHER_OPTION) return
+    if (readOnly || question.type !== 'mcq' || !isOtherOption(answer)) return
     window.requestAnimationFrame(() => otherInputRef.current?.focus())
   }, [answer, question.type, readOnly])
 
@@ -89,7 +90,7 @@ function QuestionInput({ answer, describedBy, error, onAnswer, onOtherAnswer, on
         <div className="survey-options">
           {question.options.map((option, index) => {
             const id = `survey-p${part}-q${question.n}-o${index}`
-            const isOther = option === OTHER_OPTION
+            const isOther = isOtherOption(option)
             const checked = answer === option
 
             return (

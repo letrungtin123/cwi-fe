@@ -253,4 +253,8 @@ export const surveyEn: Record<string, string> = {
   // Displayed through t() with the other job titles / market metrics; same text in EN.
   "HRD/HRM": "HRD/HRM",
   "Top quartile": "Top quartile",
+  "Khảo sát {label}": "{label} survey",
+  "Làm khảo sát ngay": "Take the survey",
+  "Tiếp tục khảo sát": "Continue the survey",
+  "Đang tải các kỳ khảo sát…": "Loading survey editions…",
 }

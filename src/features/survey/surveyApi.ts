@@ -252,6 +252,37 @@ export async function checkRoundtableRegistration(email: string, signal?: AbortS
   }
 }
 
+type Bilingual = { en: string; vi: string }
+
+// The quarter cards under the survey intro, as edited in the dashboard ("Quý khảo sát").
+export type SurveyQuarterCard = {
+  description: Bilingual
+  // Relative to the API (null: the page shows its own picture for that quarter).
+  imageUrl: string | null
+  // The newest quarter shown; its card is highlighted.
+  isCurrent: boolean
+  label: Bilingual
+  surveyVersion: string
+  title: Bilingual
+}
+
+export type SurveyQuarterList = {
+  page: { description: Bilingual; kicker: Bilingual; title: Bilingual }
+  quarters: SurveyQuarterCard[]
+}
+
+export async function getSurveyQuarters(signal?: AbortSignal): Promise<SurveyQuarterList> {
+  const response = await fetch(apiUrl('/api/v1/public/survey-quarters'), {
+    headers: { accept: 'application/json', 'x-cwi-source': 'cwi-fe-landing-page' },
+    signal,
+  })
+  return parseApiResponse<SurveyQuarterList>(response)
+}
+
+export function surveyQuarterImageUrl(path: string) {
+  return apiUrl(path)
+}
+
 // Time and location entered by an admin for the Roundtable open for registration.
 export async function getRoundtableEvent(signal?: AbortSignal): Promise<RoundtableEvent> {
   const response = await fetch(apiUrl('/api/v1/roundtable-registrations/event'), {

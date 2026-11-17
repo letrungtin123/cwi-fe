@@ -19,6 +19,8 @@ type SurveyQuestionPageProps = {
   onSecondary?: () => void
   otherAnswers: Answers
   part: 1 | 2
+  // "Quý 3/2026": the quarter being answered, next to the part number.
+  quarterLabel?: string
   primaryLabel: string
   questions: SurveyQuestion[]
   readOnly?: boolean
@@ -48,6 +50,7 @@ export function SurveyQuestionPage({
   questions,
   readOnly = false,
   secondaryLabel = t('Xóa hết câu trả lời'),
+  quarterLabel,
   subtitle,
 }: SurveyQuestionPageProps) {
   const completionProgress = Math.round((completedCount / questions.length) * 100)
@@ -60,7 +63,7 @@ export function SurveyQuestionPage({
         aria-label={t('Đã hoàn tất {completed} trên {total} câu hỏi.', { completed: completedCount, total: questions.length })}
       >
         <div className="survey-question-progress-head">
-          <span>{t('PHẦN {part} / 3', { part })}</span>
+          <span>{t('PHẦN {part} / 3', { part })}{quarterLabel ? ` · ${quarterLabel.toLocaleUpperCase()}` : ''}</span>
           <div className="survey-question-progress-meta">
             <strong>{formatQuestionNumber(completedCount)} / {formatQuestionNumber(questions.length)}</strong>
             <small>{t('{completed} câu hoàn tất', { completed: completedCount })}</small>

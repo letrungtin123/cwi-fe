@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { t } from '@/i18n'
+import { t, useLang } from '@/i18n'
 import type { Answers } from './surveyScoring'
-import { hasQuestionAnswer, isValidWebsite, OTHER_OPTION, validEmail } from './surveyScoring'
-import { partOneQuestions, partTwoQuestions, type SurveyQuestion } from './surveyData'
+import { hasQuestionAnswer, isValidWebsite, validEmail } from './surveyScoring'
+import type { SurveyQuestion } from './surveyData'
+import { getSurveyEdition, isOtherOption, otherOptionOf, surveyQuarterLabel, type SurveyEdition } from './surveyEditions'
+import { SurveyQuarterPicker } from './SurveyQuarterPicker'
 import { SurveyHeader } from './SurveyChrome'
 import { QuestionDrawer, surveyPersistentQuestionPanelMediaQuery } from './SurveyNavigation'
 import { SurveyQuestionPage } from './SurveyQuestionPage'
@@ -21,7 +23,7 @@ import { buildSurveySubmissionPayload } from './surveySubmissionPayload'
 import { isValidPhone } from './phoneValidation'
 import './survey.css'
 
-import { clearSurveySession, readSurveySession, writeSurveySession, type ContactState, type ConsentChoice, type ReportMode, type SurveyScreen, type SurveySession } from './surveyPersistence'
+import { clearSurveySession, leaveActiveSurveyVersion, readActiveSurveyVersion, readSurveySession, writeActiveSurveyVersion, writeSurveySession, type ContactState, type ConsentChoice, type ReportMode, type SurveyScreen, type SurveySession } from './surveyPersistence'
 
 const emptyContact: ContactState = { companyName: '', email: '', name: '', phone: '', jobTitle: '', jobTitleOther: '' }
 
@@ -66,13 +68,15 @@ function nextReportPollingDelay(attempt: number) {
   return reportPollingDelaysMs[Math.min(attempt, reportPollingDelaysMs.length - 1)] ?? 30000
 }
 
-export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHome: () => void; startFresh?: boolean }) {
-  const [restoredSession] = useState<SurveySession | null>(() => {
-    if (startFresh) {
-      clearSurveySession()
-      return null
-    }
-    return readSurveySession()
+type SurveyFlowProps = { onBackHome: () => void; startFresh?: boolean }
+
+// /survey opens on the list of quarter cards. Choosing a card opens that quarter's survey
+// (its intro screen, or where its draft stopped); each quarter keeps its own draft. A reload
+// reopens the quarter being worked on, or the list.
+export function SurveyFlow({ onBackHome, startFresh = false }: SurveyFlowProps) {
+  const [version, setVersion] = useState<string | null>(() => {
+    if (startFresh) clearSurveySession()
+    return startFresh ? null : getSurveyEdition(readActiveSurveyVersion())?.version ?? null
   })
   // An invitation/QR link (?entry=qr) starts a fresh survey once. Drop the flag from the address
   // bar right away, so a reload or a restored tab keeps the answers given so far instead of
@@ -84,6 +88,48 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
     url.searchParams.delete('entry')
     window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash)
   }, [startFresh])
+
+  const edition = getSurveyEdition(version)
+  if (!edition) {
+    return (
+      <SurveyQuarterPicker
+        onBackHome={onBackHome}
+        onSelect={(next) => {
+          writeActiveSurveyVersion(next)
+          setVersion(next)
+          window.requestAnimationFrame(scrollToTop)
+        }}
+      />
+    )
+  }
+
+  return (
+    <SurveyExperience
+      edition={edition}
+      key={edition.version}
+      onBackHome={onBackHome}
+      onBackToQuarters={(hasAnswers) => {
+        // A draft without any answer is dropped; one with answers waits behind its card.
+        if (hasAnswers) leaveActiveSurveyVersion()
+        else clearSurveySession(edition.version)
+        setVersion(null)
+        window.requestAnimationFrame(scrollToTop)
+      }}
+    />
+  )
+}
+
+type SurveyExperienceProps = {
+  edition: SurveyEdition
+  onBackHome: () => void
+  // From the quarter's intro screen back to the list of quarter cards.
+  onBackToQuarters: (hasAnswers: boolean) => void
+}
+
+export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: SurveyExperienceProps) {
+  const { partOneQuestions, partTwoQuestions } = edition
+  const lang = useLang()
+  const [restoredSession] = useState<SurveySession | null>(() => readSurveySession(edition.version))
   const [screen, setScreen] = useState<SurveyScreen>(() => restoredSession?.screen ?? 'intro')
   const [answers, setAnswers] = useState<Answers>(() => restoredSession?.answers ?? {})
   const [otherAnswers, setOtherAnswers] = useState<Answers>(() => restoredSession?.otherAnswers ?? {})
@@ -138,8 +184,8 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
     [answers, otherAnswers],
   )
 
-  const partOneCompleted = useMemo(() => countAnswers(partOneQuestions, hasAnswer), [hasAnswer])
-  const partTwoCompleted = useMemo(() => countAnswers(partTwoQuestions, hasAnswer), [hasAnswer])
+  const partOneCompleted = useMemo(() => countAnswers(partOneQuestions, hasAnswer), [hasAnswer, partOneQuestions])
+  const partTwoCompleted = useMemo(() => countAnswers(partTwoQuestions, hasAnswer), [hasAnswer, partTwoQuestions])
   const drawerQuestions = screen === 'part2' ? partTwoQuestions : partOneQuestions
   const canOpenDrawer = screen === 'part1' || screen === 'part2'
   const isSubmittedReview = Boolean(submittedSubmissionId)
@@ -150,7 +196,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
   }, [restoredSession])
 
   useEffect(() => {
-    writeSurveySession({
+    writeSurveySession(edition.version, {
       activeQuestion,
       answers,
       consent,
@@ -189,7 +235,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
       questionError,
       version: 1,
     })
-  }, [activeQuestion, answers, consent, contact, dataCollectionConsent, formError, loadingStep, missingQuestionNumbers, otherAnswers, partTwoPrivacyRefused, questionError, reportAccessToken, reportAccessTokenExpiresAt, reportDeferredDays, reportEmailStatus, reportJobId, reportMode, reportStatus, roundtableContact, roundtableError, roundtableOpen, roundtableRegistered, roundtableRegisteredAt, roundtableRegistrationId, roundtableRegistrationIdempotencyKey, screen, submittedAt, submittedSubmissionId, submissionError, submissionIdempotencyKey, webinarError, webinarRegistered, webinarRegisteredAt, webinarRegistrationId, webinarRegistrationIdempotencyKey])
+  }, [activeQuestion, answers, consent, contact, dataCollectionConsent, formError, loadingStep, missingQuestionNumbers, otherAnswers, partTwoPrivacyRefused, questionError, reportAccessToken, reportAccessTokenExpiresAt, reportDeferredDays, reportEmailStatus, reportJobId, reportMode, reportStatus, roundtableContact, roundtableError, roundtableOpen, roundtableRegistered, roundtableRegisteredAt, roundtableRegistrationId, roundtableRegistrationIdempotencyKey, screen, submittedAt, submittedSubmissionId, submissionError, submissionIdempotencyKey, webinarError, webinarRegistered, webinarRegisteredAt, webinarRegistrationId, webinarRegistrationIdempotencyKey, edition.version])
 
   useEffect(() => {
     const desktopMedia = window.matchMedia(surveyPersistentQuestionPanelMediaQuery)
@@ -352,12 +398,12 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
   const reviewPartOneAnswers = useCallback(() => {
     setActiveQuestion(partOneQuestions[0]?.n ?? 1)
     goToScreen('part1')
-  }, [goToScreen])
+  }, [goToScreen, partOneQuestions])
 
   const reviewPartTwoAnswers = useCallback(() => {
     setActiveQuestion(partTwoQuestions[0]?.n ?? 19)
     goToScreen('part2')
-  }, [goToScreen])
+  }, [goToScreen, partTwoQuestions])
 
   const handleAnswer = useCallback((question: SurveyQuestion, value: string) => {
     if (submittedSubmissionId) return
@@ -370,7 +416,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
       else delete next[question.n]
       return next
     })
-    if (value !== OTHER_OPTION) {
+    if (!isOtherOption(value)) {
       setOtherAnswers((current) => {
         if (!(question.n in current)) return current
         const next = { ...current }
@@ -385,7 +431,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
 
     setQuestionError('')
     setMissingQuestionNumbers([])
-    setAnswers((current) => ({ ...current, [question.n]: OTHER_OPTION }))
+    setAnswers((current) => ({ ...current, [question.n]: otherOptionOf(question) ?? '' }))
     setOtherAnswers((current) => ({ ...current, [question.n]: value }))
   }, [submittedSubmissionId])
 
@@ -588,6 +634,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
         answers,
         consent,
         contact,
+        edition,
         otherAnswers,
         partTwoPrivacyRefused,
         reportMode,
@@ -619,7 +666,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
   }
 
   const backToLanding = () => {
-    if (submittedSubmissionId) clearSurveySession()
+    if (submittedSubmissionId) clearSurveySession(edition.version)
     setReportHtml('')
     setRoundtableOpen(false)
     setSurveyAnswersReviewOpen(false)
@@ -634,7 +681,8 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
 
   const handleHeaderBack = () => {
     if (screen === 'intro') {
-      backToLanding()
+      if (submittedSubmissionId) backToLanding()
+      else onBackToQuarters(Object.keys(answers).length > 0)
       return
     }
     if (screen === 'part1') {
@@ -683,8 +731,9 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
       <div className={'survey-shell' + (canOpenDrawer ? ' survey-shell--with-question-panel' : '')}>
         {screen === 'intro' ? (
           <IntroScreen
+            copy={edition.introCopy}
             onStart={() => {
-              setActiveQuestion(partOneQuestions[0]?.n ?? 1)
+              if (!Object.keys(answers).length) setActiveQuestion(partOneQuestions[0]?.n ?? 1)
               goToScreen('part1')
             }}
           />
@@ -703,6 +752,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
             onPrevious={isSubmittedReview ? () => goToScreen('report') : () => goToScreen('intro')}
             otherAnswers={otherAnswers}
             part={1}
+            quarterLabel={surveyQuarterLabel(edition.version, lang)}
             primaryLabel={isSubmittedReview ? (partTwoCompleted === partTwoQuestions.length ? t('Xem Phần 2') : t('Về báo cáo')) : t('Tiếp theo')}
             questions={partOneQuestions}
             readOnly={isSubmittedReview}
@@ -725,6 +775,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
             onSecondary={isSubmittedReview ? undefined : clearPartTwoAnswers}
             otherAnswers={otherAnswers}
             part={2}
+            quarterLabel={surveyQuarterLabel(edition.version, lang)}
             primaryLabel={isSubmittedReview ? t('Về báo cáo') : (partTwoCompleted > 0 ? t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3') : t('\u0047\u1eedi \u006b\u1ebft qu\u1ea3 Ph\u1ea7n 1'))}
             questions={partTwoQuestions}
             readOnly={isSubmittedReview}
@@ -816,6 +867,7 @@ export function SurveyExperience({ onBackHome, startFresh = false }: { onBackHom
       <SurveyAnswersReviewModal
         answers={answers}
         contact={contact}
+        edition={edition}
         onClose={() => setSurveyAnswersReviewOpen(false)}
         open={surveyAnswersReviewOpen}
         otherAnswers={otherAnswers}

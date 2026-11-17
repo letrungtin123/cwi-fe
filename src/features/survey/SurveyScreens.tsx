@@ -4,7 +4,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Check, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, LockKeyhole, MailCheck, Maximize2, Minimize2, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { t, tx } from '@/i18n'
-import { contactCopy, introCopy, jobTitleOptions, partOneQuestions, partTwoQuestions, reportParts, roundtableCopy } from './surveyData'
+import { contactCopy, jobTitleOptions, reportParts, roundtableCopy, type IntroCopy, type SurveyQuestion } from './surveyData'
+import type { SurveyEdition } from './surveyEditions'
 import { getAnswerDisplay, type Answers, validEmail } from './surveyScoring'
 import { isValidPhone } from './phoneValidation'
 import { SurveyBrandMark, SurveyEyebrow, SurveyForwardArrow } from './SurveyChrome'
@@ -19,10 +20,12 @@ type ContactState = { companyName: string; email: string; name: string; phone: s
 type ConsentChoice = 'yes' | 'no' | ''
 
 type IntroScreenProps = {
+  // The intro of the quarter chosen on the card list.
+  copy: IntroCopy
   onStart: () => void
 }
 
-export function IntroScreen({ onStart }: IntroScreenProps) {
+export function IntroScreen({ copy: introCopy, onStart }: IntroScreenProps) {
   return (
     <section className="survey-intro-screen">
 
@@ -826,6 +829,7 @@ function prepareReportPreviewHtml(source: string) {
 type SurveyAnswersReviewModalProps = {
   answers: Answers
   contact: ContactState
+  edition: SurveyEdition
   onClose: () => void
   open: boolean
   otherAnswers: Answers
@@ -834,12 +838,12 @@ type SurveyAnswersReviewModalProps = {
   roundtableRegistered: boolean
 }
 
-function reviewAnswerValue(questionNumber: number, answers: Answers, otherAnswers: Answers) {
-  const value = getAnswerDisplay(questionNumber, answers, otherAnswers)
+function reviewAnswerValue(questionNumber: number, answers: Answers, otherAnswers: Answers, questions: readonly SurveyQuestion[]) {
+  const value = getAnswerDisplay(questionNumber, answers, otherAnswers, questions)
   return value === '—' ? t('Chưa trả lời') : value
 }
 
-function ReviewAnswerSection({ answers, otherAnswers, questions, title }: { answers: Answers; otherAnswers: Answers; questions: typeof partOneQuestions; title: string }) {
+function ReviewAnswerSection({ answers, otherAnswers, questions, title }: { answers: Answers; otherAnswers: Answers; questions: SurveyQuestion[]; title: string }) {
   return (
     <section className="survey-review-answer-section" aria-labelledby={`survey-review-${title}`}>
       <div className="survey-review-section-heading">
@@ -851,7 +855,7 @@ function ReviewAnswerSection({ answers, otherAnswers, questions, title }: { answ
           <li key={question.n}>
             <div className="survey-review-question-label">{t('Câu {n}', { n: question.n })}</div>
             <p>{t(question.q)}</p>
-            <strong>{reviewAnswerValue(question.n, answers, otherAnswers)}</strong>
+            <strong>{reviewAnswerValue(question.n, answers, otherAnswers, questions)}</strong>
           </li>
         ))}
       </ol>
@@ -859,7 +863,7 @@ function ReviewAnswerSection({ answers, otherAnswers, questions, title }: { answ
   )
 }
 
-export function SurveyAnswersReviewModal({ answers, contact, onClose, open, otherAnswers, partTwoPrivacyRefused, reportMode, roundtableRegistered }: SurveyAnswersReviewModalProps) {
+export function SurveyAnswersReviewModal({ answers, contact, edition, onClose, open, otherAnswers, partTwoPrivacyRefused, reportMode, roundtableRegistered }: SurveyAnswersReviewModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
   const initialFocusRef = useRef<HTMLButtonElement>(null)
 
@@ -897,8 +901,8 @@ export function SurveyAnswersReviewModal({ answers, contact, onClose, open, othe
               <div><span>Roundtable</span><strong>{roundtableRegistered ? t('Đã đăng ký') : t('Chưa đăng ký')}</strong></div>
             </div>
           </section>
-          <ReviewAnswerSection answers={answers} otherAnswers={otherAnswers} questions={partOneQuestions} title="Phần 1 - Khảo sát khuyết danh" />
-          {showPartTwoAnswers ? <ReviewAnswerSection answers={answers} otherAnswers={otherAnswers} questions={partTwoQuestions} title="Phần 2 - Khảo sát định danh" /> : null}
+          <ReviewAnswerSection answers={answers} otherAnswers={otherAnswers} questions={edition.partOneQuestions} title="Phần 1 - Khảo sát khuyết danh" />
+          {showPartTwoAnswers ? <ReviewAnswerSection answers={answers} otherAnswers={otherAnswers} questions={edition.partTwoQuestions} title="Phần 2 - Khảo sát định danh" /> : null}
         </div>
         <footer className="survey-review-modal-footer">
           <button className="survey-primary-button" onClick={onClose} type="button">{t('Đóng')}</button>

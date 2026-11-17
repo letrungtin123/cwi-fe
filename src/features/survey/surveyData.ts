@@ -31,9 +31,9 @@ export const jobTitleOptions = [
   'Khác',
 ] as const
 
-// Question set of the 2026Q4 edition. Text must match the backend and the CWI AI
-// registry character for character; the backend rejects any other wording.
-export const SURVEY_VERSION = '2026Q4'
+// Question set of the 2026Q4 edition (the 2026Q3 one is in surveyData2026Q3.ts; the list
+// of editions is surveyEditions.ts). Text must match the backend and the CWI AI registry
+// character for character; the backend rejects any other wording.
 
 // Webinar entry points (landing slide, ?register=webinar link, result-screen
 // invitation) are hidden for now. Set to true to show them again.
@@ -104,11 +104,16 @@ export const partTwoQuestions: SurveyQuestion[] = [
   { n: 24, type: 'text', q: 'Website chính thức của công ty' },
 ]
 
-// The 2026Q4 edition has no local domain grouping; CWI AI computes its
-// weighted indexes inside the generated report.
-export const surveyDomains: ReadonlyArray<{ name: string; questionNumbers: readonly number[] }> = []
+export type IntroCopy = {
+  emphasis: string
+  eyebrow: string
+  // 4 paragraphs: 3 above the report parts, the last one below them.
+  paragraphs: string[]
+  title: string
+}
 
-export const introCopy = {
+// Intro screen of the 2026Q4 survey, shown after its card is chosen (2026Q3: surveyData2026Q3.ts).
+export const introCopy: IntroCopy = {
   eyebrow: 'Phần 1 / 3 · Khảo sát CEO Workforce Index 2026Q4',
   title: 'Hệ cộng lực sẵn sàng',
   emphasis: 'cho Tương lai',
@@ -120,6 +125,7 @@ export const introCopy = {
   ],
 }
 
+// The two report parts; the same in every quarter.
 export const reportParts = [
   {
     kicker: '1. Phần 1',

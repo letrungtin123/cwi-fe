@@ -1,7 +1,8 @@
 import { getLang, t, type Lang } from '@/i18n'
 import type { ContactState, ConsentChoice, ReportMode } from './surveyPersistence'
-import { normalizeWebsiteValue, OTHER_OPTION, hasQuestionAnswer, type Answers } from './surveyScoring'
-import { partOneQuestions, partTwoQuestions, SURVEY_VERSION, type SurveyQuestion } from './surveyData'
+import { normalizeWebsiteValue, hasQuestionAnswer, type Answers } from './surveyScoring'
+import type { SurveyQuestion } from './surveyData'
+import { isOtherOption, type SurveyEdition } from './surveyEditions'
 import { readSurveySourceCode } from './surveySource'
 
 export type SubmissionStatus = 'part1_only' | 'part2_refused_privacy' | 'full_private_report'
@@ -44,6 +45,8 @@ type BuildSurveySubmissionPayloadInput = {
   answers: Answers
   consent: ConsentChoice
   contact: ContactState
+  // The quarter the respondent chose: its questions are checked and its version is sent.
+  edition: SurveyEdition
   otherAnswers: Answers
   partTwoPrivacyRefused: boolean
   reportMode: ReportMode
@@ -82,11 +85,11 @@ function buildAnswer(question: SurveyQuestion, answers: Answers, otherAnswers: A
   }
 
   if (question.type === 'mcq') {
-    if (rawAnswer === OTHER_OPTION) {
+    if (rawAnswer && isOtherOption(rawAnswer)) {
       const otherText = otherAnswers[question.n]?.trim()
       if (!otherText) throw new Error(t('Câu {n} cần nhập nội dung khác.', { n: question.n }))
       if (otherText.length < 2) throw new Error(t('Nội dung khác ở câu {n} cần ít nhất 2 ký tự.', { n: question.n }))
-      return { answer: OTHER_OPTION, idx: question.n, otherText }
+      return { answer: rawAnswer, idx: question.n, otherText }
     }
 
     if (!rawAnswer) throw new Error(t('Câu {n} chưa có câu trả lời.', { n: question.n }))
@@ -114,6 +117,7 @@ function getPrivacyConsent(status: SubmissionStatus): PrivacyConsent {
 }
 
 export function buildSurveySubmissionPayload(input: BuildSurveySubmissionPayloadInput): SurveySubmissionPayload {
+  const { partOneQuestions, partTwoQuestions } = input.edition
   assertAnswered(partOneQuestions, input.answers, input.otherAnswers, t('Phần 1'))
 
   const status = getSubmissionStatus(input)
@@ -162,6 +166,6 @@ export function buildSurveySubmissionPayload(input: BuildSurveySubmissionPayload
     sourceCode: readSurveySourceCode() ?? undefined,
     statusNote: statusNotes[status],
     submissionStatus: status,
-    surveyVersion: SURVEY_VERSION,
+    surveyVersion: input.edition.version,
   }
 }
