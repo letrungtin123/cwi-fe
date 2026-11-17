@@ -7,7 +7,15 @@
 // shared before links had a quarter, made for the 2026Q4 campaign) open 2026Q4.
 export const SOURCE_LINK_DEFAULT_VERSION = '2026Q4'
 
-// Quarter an invitation link (?entry=qr) asks for, or null for the list of quarters.
+// An invitation link: it carries a source code or a quarter. Links shared without
+// entry=qr (for example copied from the address bar, which drops it) still count.
+export function isInvitationLink(): boolean {
+  if (typeof window === 'undefined') return false
+  const params = new URLSearchParams(window.location.search)
+  return Boolean(params.get('src')?.trim() || params.get('q')?.trim())
+}
+
+// Quarter an invitation link asks for, or null for the list of quarters.
 export function readEntryQuarterFromUrl(): string | null {
   if (typeof window === 'undefined') return null
   const value = new URLSearchParams(window.location.search).get('q')

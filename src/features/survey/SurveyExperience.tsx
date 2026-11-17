@@ -19,12 +19,12 @@ import {
   type RoundtableChoice,
 } from './SurveyScreens'
 import { createRoundtableRegistrationIdempotencyKey, createSurveySubmissionIdempotencyKey, createWebinarRegistrationIdempotencyKey, deferredResultDays, getReportHtml, getReportJobStatus, getSurveyQuarters, submitRoundtableRegistration, submitSurveySubmission, SurveyApiError, type ReportEmailStatus, type ReportJobStatusValue } from './surveyApi'
-import { readEntryQuarterFromUrl } from './surveySource'
+import { isInvitationLink, readEntryQuarterFromUrl } from './surveySource'
 import { buildSurveySubmissionPayload } from './surveySubmissionPayload'
 import { isValidPhone } from './phoneValidation'
 import './survey.css'
 
-import { clearSurveySession, leaveActiveSurveyVersion, readActiveSurveyVersion, readSurveySession, writeActiveSurveyVersion, writeSurveySession, type ContactState, type ConsentChoice, type ReportMode, type SurveyScreen, type SurveySession } from './surveyPersistence'
+import { clearSurveySession, hasActiveSurveyMarker, leaveActiveSurveyVersion, readActiveSurveyVersion, readSurveySession, writeActiveSurveyVersion, writeSurveySession, type ContactState, type ConsentChoice, type ReportMode, type SurveyScreen, type SurveySession } from './surveyPersistence'
 
 const emptyContact: ContactState = { companyName: '', email: '', name: '', phone: '', jobTitle: '', jobTitleOther: '' }
 
@@ -76,13 +76,17 @@ type SurveyFlowProps = { onBackHome: () => void; startFresh?: boolean }
 // reopens the quarter being worked on, or the list. An invitation/QR link opens its quarter's
 // intro screen directly, when that quarter is shown on the card list.
 export function SurveyFlow({ onBackHome, startFresh = false }: SurveyFlowProps) {
+  // Opened from an invitation link: ?entry=qr, or a link with ?src= / ?q= in a tab that has not
+  // shown the survey yet. A reload, or a tab where the respondent went back to the quarter list,
+  // keeps where they were.
+  const [fromLink] = useState(() => startFresh || (isInvitationLink() && !hasActiveSurveyMarker()))
   const [version, setVersion] = useState<string | null>(() => {
     if (startFresh) clearSurveySession()
     return startFresh ? null : getSurveyEdition(readActiveSurveyVersion())?.version ?? null
   })
   // Quarter the invitation link asks for, until the card list says whether it is shown.
   const [entryVersion, setEntryVersion] = useState<string | null>(() => {
-    const requested = startFresh ? readEntryQuarterFromUrl() : null
+    const requested = fromLink && version === null ? readEntryQuarterFromUrl() : null
     return getSurveyEdition(requested) ? requested : null
   })
   // An invitation/QR link (?entry=qr) starts a fresh survey once. Drop the flag (and the
@@ -90,13 +94,13 @@ export function SurveyFlow({ onBackHome, startFresh = false }: SurveyFlowProps) 
   // given so far instead of wiping them again. The ?src= invitation code stays (it was saved
   // at page load).
   useEffect(() => {
-    if (!startFresh) return
+    if (!fromLink) return
     const url = new URL(window.location.href)
-    if (url.searchParams.get('entry') !== 'qr') return
+    if (!url.searchParams.has('entry') && !url.searchParams.has('q')) return
     url.searchParams.delete('entry')
     url.searchParams.delete('q')
     window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash)
-  }, [startFresh])
+  }, [fromLink])
 
   useEffect(() => {
     if (!entryVersion) return

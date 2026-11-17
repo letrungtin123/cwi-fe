@@ -98,6 +98,17 @@ export function leaveActiveSurveyVersion() {
   writeActiveSurveyVersion('')
 }
 
+// This tab has already shown the survey: a quarter is being worked on, or the respondent went
+// back to the quarter list ('').
+export function hasActiveSurveyMarker() {
+  if (typeof window === 'undefined') return false
+  try {
+    return window.sessionStorage.getItem(ACTIVE_KEY) !== null
+  } catch {
+    return false
+  }
+}
+
 export function hasSurveySession() {
   return readActiveSurveyVersion() !== null
 }
