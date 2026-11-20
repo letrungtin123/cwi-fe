@@ -24,14 +24,26 @@ import './landing.css'
 
 type PublicRegistration = 'roundtable' | 'webinar'
 
-const navTargets = ['#top', '#report', '#report-card', '#roundtable', '#about-cwi'] as const
+// Header items either scroll to a section of the landing page or open another page.
+// "Báo cáo" opens the quarterly report cards (/bao-cao-quy), "Tin tức" the news (/tin-tuc).
+type SectionTarget = '#top' | '#report' | '#roundtable' | '#about-cwi'
+export type PageTarget = '/bao-cao-quy' | '/tin-tuc'
+type NavTarget = SectionTarget | PageTarget
+const navTargets = ['#top', '#report', '/bao-cao-quy', '/tin-tuc', '#roundtable', '#about-cwi'] as const satisfies readonly NavTarget[]
 
+function isPageTarget(href: NavTarget): href is PageTarget {
+  return href.startsWith('/')
+}
+
+// Fixed slots from the Figma header, about 32px between the words. "Tin tức" made the row 83px
+// longer, so the nav starts further left and still ends where it did before the language switch.
 const headerNavSpecs = [
   { href: navTargets[0], label: navItems[0], left: 0, width: 97 },
   { href: navTargets[1], label: navItems[1], left: 107, width: 96 },
   { href: navTargets[2], label: navItems[2], left: 213, width: 82 },
-  { href: navTargets[3], label: navItems[3], left: 305, width: 108 },
-  { href: navTargets[4], label: navItems[4], left: 423, width: 76 },
+  { href: navTargets[3], label: navItems[3], left: 305, width: 74 },
+  { href: navTargets[4], label: navItems[4], left: 389, width: 107 },
+  { href: navTargets[5], label: navItems[5], left: 506, width: 76 },
 ] as const
 
 const desktopMotionViewport = { once: true, amount: 0.16, margin: '-96px 0px -120px 0px' } as const
@@ -77,10 +89,9 @@ function updatePublicRegistrationUrl(registration: PublicRegistration | null, mo
   if (mode === 'push') window.history.pushState(null, '', nextUrl)
   else window.history.replaceState(null, '', nextUrl)
 }
-const figmaScrollTargets: Record<(typeof navTargets)[number], number> = {
+const figmaScrollTargets: Record<SectionTarget, number> = {
   '#top': 0,
   '#report': 874,
-  '#report-card': 874,
   '#roundtable': 1710,
   '#about-cwi': 2420,
 }
@@ -144,7 +155,7 @@ function scrollElementToCenter(target: HTMLElement) {
   window.scrollTo({ behavior: 'smooth', top: Math.round(top) })
 }
 
-function scrollToFigmaTarget(href: (typeof navTargets)[number], scale: number) {
+function scrollToFigmaTarget(href: SectionTarget, scale: number) {
   const target = document.querySelector<HTMLElement>(href)
   window.history.replaceState(null, '', href)
 
@@ -157,7 +168,7 @@ function scrollToFigmaTarget(href: (typeof navTargets)[number], scale: number) {
   window.scrollTo({ behavior: 'smooth', top: Math.round(targetTop) })
 }
 
-function scrollToMobileTarget(href: (typeof navTargets)[number]) {
+function scrollToMobileTarget(href: SectionTarget) {
   const selector = '[data-mobile-target=' + JSON.stringify(href) + ']'
   const target = document.querySelector<HTMLElement>(selector)
   if (!target) return
@@ -226,7 +237,9 @@ function FigmaSectionLabel({
     </Tag>
   )
 }
-function Header({ scale, isPolicyPage = false }: { scale: number; isPolicyPage?: boolean }) {
+// isPolicyPage: shown on a page other than the landing page; section links then go to the landing page.
+// activePage: the page item to mark as the current one.
+function Header({ activePage, scale, isPolicyPage = false }: { activePage?: PageTarget; scale: number; isPolicyPage?: boolean }) {
   const [isHidden, setIsHidden] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
@@ -337,8 +350,12 @@ function Header({ scale, isPolicyPage = false }: { scale: number; isPolicyPage?:
     }
   }, [isMenuOpen])
 
-  const handleMobileNav = (href: (typeof navTargets)[number]) => {
+  const handleMobileNav = (href: NavTarget) => {
     setIsMenuOpen(false)
+    if (isPageTarget(href)) {
+      window.location.assign(href)
+      return
+    }
     if (isPolicyPage) {
       window.location.assign('/' + href)
       return
@@ -351,14 +368,16 @@ function Header({ scale, isPolicyPage = false }: { scale: number; isPolicyPage?:
       <header className={cn('figma-site-header', isHidden && !isMenuOpen && 'header--hidden', isMenuOpen && 'mobile-menu-is-open')}>
         <div className="absolute left-[55px] top-[15px] h-[49px] w-[1110px]">
           <AssetImage alt="CEO Workforce Index" asset="cwiLogo" className="figma-header-logo absolute left-0 top-0 h-[49px] w-[108px]" loading="eager" />
-          <nav aria-label="Main navigation" className="figma-header-nav figma-inter absolute left-[351px] top-[17px] h-[19px] w-[499px] whitespace-nowrap text-[16px] font-normal leading-[19px] text-black">
+          <nav aria-label="Main navigation" className="figma-header-nav figma-inter absolute left-[268px] top-[17px] h-[19px] w-[582px] whitespace-nowrap text-[16px] font-normal leading-[19px] text-black">
             {headerNavSpecs.map((item) => (
               <a
+                aria-current={activePage && item.href === activePage ? 'page' : undefined}
                 className="absolute top-0 h-[19px] cursor-pointer whitespace-nowrap leading-[19px] no-underline"
-                href={isPolicyPage ? '/' + item.href : item.href}
+                href={isPolicyPage && !isPageTarget(item.href) ? '/' + item.href : item.href}
                 key={item.label}
                 onClick={(event) => {
-                  if (isPolicyPage) return
+                  // A page link and every link on the policy pages is an ordinary link.
+                  if (isPolicyPage || isPageTarget(item.href)) return
                   event.preventDefault()
                   scrollToFigmaTarget(item.href, scale)
                 }}
@@ -405,7 +424,7 @@ function Header({ scale, isPolicyPage = false }: { scale: number; isPolicyPage?:
           </div>
           <nav className="mobile-menu-nav" aria-label="Mobile navigation">
             {navItems.map((label, index) => (
-              <button key={label} onClick={() => handleMobileNav(navTargets[index])} style={{ '--item-index': index } as CSSProperties} type="button">
+              <button aria-current={activePage && navTargets[index] === activePage ? 'page' : undefined} key={label} onClick={() => handleMobileNav(navTargets[index])} style={{ '--item-index': index } as CSSProperties} type="button">
                 <span>{String(index + 1).padStart(2, '0')}</span>
                 {t(label)}
               </button>
@@ -426,9 +445,16 @@ function Header({ scale, isPolicyPage = false }: { scale: number; isPolicyPage?:
     </>
   )
 }
-export function SiteHeader({ isPolicyPage = false }: { isPolicyPage?: boolean }) {
+// The header of the pages outside the landing page (policies, news). It is sized with the
+// window like on the landing page: the 1180px Figma header would otherwise be cut off on
+// windows between 1100 and 1180px wide.
+export function SiteHeader({ activePage, isPolicyPage = false }: { activePage?: PageTarget; isPolicyPage?: boolean }) {
   const scale = useFigmaViewportScale()
-  return <Header isPolicyPage={isPolicyPage} scale={scale} />
+  return (
+    <div style={{ '--figma-header-scale': scale } as CSSProperties}>
+      <Header activePage={activePage} isPolicyPage={isPolicyPage} scale={scale} />
+    </div>
+  )
 }
 function Sparkles() {
   const dots: Array<{ asset: FigmaAssetKey; x: number; y: number }> = [
@@ -1019,7 +1045,9 @@ function PartnersSection() {
         <p className="whitespace-nowrap">
           <strong className="font-semibold uppercase">{t('LIÊN HỆ:')}</strong> contact@ceo-workforce-index.com
         </p>
-        <p className="whitespace-nowrap">{t('Địa chỉ: 11 Huỳnh Đình Hai, Phường Bình Thạnh, TP.HCM')}</p>
+        <p className="whitespace-nowrap">
+          <strong className="font-semibold uppercase">{t('ĐỊA CHỈ:')}</strong> {t('11 Huỳnh Đình Hai, Phường Bình Thạnh, TP.HCM')}
+        </p>
       </nav>
 
       <p className="absolute left-[322px] top-[303px] h-[20px] w-[598px] whitespace-nowrap text-center text-[14px] font-normal leading-[20px]" data-node-id="94:278">

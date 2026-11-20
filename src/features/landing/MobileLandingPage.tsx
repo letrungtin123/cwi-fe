@@ -459,7 +459,7 @@ export function MobileLandingPage({
           ))}
         </nav>
         <p className="mobile-footer-contact"><strong>{t('LIÊN HỆ:')}</strong> contact@ceo-workforce-index.com</p>
-        <p className="mobile-footer-address">{t('Địa chỉ: 11 Huỳnh Đình Hai, Phường Bình Thạnh, TP.HCM')}</p>
+        <p className="mobile-footer-address"><strong>{t('ĐỊA CHỈ:')}</strong> {t('11 Huỳnh Đình Hai, Phường Bình Thạnh, TP.HCM')}</p>
         <p className="mobile-copyright">{t('Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về SKALE')}</p>
       </footer>
     </main>

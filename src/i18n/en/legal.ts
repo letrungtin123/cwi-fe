@@ -5,10 +5,6 @@ export const legalEn: Record<string, string> = {
   "Nội dung": "Contents",
   "Mục lục": "Table of contents",
   "Đóng mục lục": "Close table of contents",
-  "CHÍNH SÁCH BẢO MẬT": "PRIVACY POLICY",
-  "Chúng tôi cam kết không chia sẻ dữ liệu cho bên thứ ba dưới bất kỳ hình thức nào.": "We are committed to not sharing data with any third party in any form.",
-  "THÔNG TIN LIÊN HỆ ĐẶC QUYỀN": "EXCLUSIVE CONTACT INFORMATION",
-  "Email Ban điều hành CWI:": "CWI Executive Board email:",
   "Nội dung được trình bày theo tài liệu CWI": "Content presented in accordance with CWI documents",
   "1. Tầm nhìn": "1. Vision",
   "Trở thành la bàn chiến lược giúp lãnh đạo doanh nghiệp định hướng năng lực thực thi của tổ chức trên hành trình tăng trưởng.": "To serve as a strategic compass that helps business leaders steer their organization's execution capability on its growth journey.",
@@ -244,10 +240,4 @@ export const legalEn: Record<string, string> = {
   "Tài liệu quy định mô hình quản trị, vai trò của các đối tác, quản lý tài trợ và nguồn lực, dữ liệu và quyền riêng tư, sở hữu trí tuệ, sử dụng AI có trách nhiệm, chuẩn mực ứng xử và cơ chế minh bạch.": "The document sets out the governance model, the role of partners, sponsorship and resource management, data and privacy, intellectual property, responsible use of AI, the code of conduct and transparency mechanisms.",
   "Các nội dung bên dưới được trình bày theo tài liệu Quy chế hoạt động CWI.": "The content below is presented in accordance with the CWI Terms of Operation.",
 
-  // Pieces of sentences that wrap <strong> markup in LegalDocumentPage's footer.
-  "Mọi dữ liệu doanh nghiệp nhập vào hệ thống AI đều được mã hóa đầu cuối theo tiêu chuẩn bảo mật quốc tế": "All business data entered into the AI system is end-to-end encrypted in line with the international security standard",
-  "Trụ sở:": "Head office:",
-  "36 Mạc Đĩnh Chi, phường Tân Định, TP. HCM": "36 Mac Dinh Chi Street, Tan Dinh Ward, Ho Chi Minh City",
-  "Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về các": "Copyright 2026. All intellectual property rights belong to the",
-  "Đơn vị đồng tổ chức và Đối tác.": "Co-organizers and Partners.",
 }

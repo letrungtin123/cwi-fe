@@ -1,9 +1,8 @@
 import { ChevronRight, ShieldCheck } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
-import footerLogo from '@/assets/figma/footer-logo.svg'
-import image131 from '@/assets/figma/image-131.png'
 import { t } from '@/i18n'
 import { SiteHeader } from './LandingPage'
+import { SiteFooter } from './SiteFooter'
 import type { LegalDocumentBlock, LegalDocumentSection } from './legalDocumentTypes'
 import './privacyPolicy.css'
 
@@ -183,37 +182,6 @@ function LegalDocumentToc({ items }: { items: readonly LegalTocItem[] }) {
   )
 }
 
-function LegalDocumentFooter() {
-  return (
-    <footer className="privacy-footer">
-      <img alt="" aria-hidden="true" className="privacy-footer-pattern" src={image131} />
-      <div className="privacy-footer-grid">
-        <div className="privacy-footer-brand">
-          <img alt="CEO Workforce Index" className="privacy-footer-logo" src={footerLogo} />
-        </div>
-        <div className="privacy-footer-column">
-          <h2>{t('CHÍNH SÁCH BẢO MẬT')}</h2>
-          <p>{t('Mọi dữ liệu doanh nghiệp nhập vào hệ thống AI đều được mã hóa đầu cuối theo tiêu chuẩn bảo mật quốc tế')} <strong>ISO/IEC 27001.</strong></p>
-          <p>{t('Chúng tôi cam kết không chia sẻ dữ liệu cho bên thứ ba dưới bất kỳ hình thức nào.')}</p>
-        </div>
-        <div className="privacy-footer-column">
-          <h2>{t('THÔNG TIN LIÊN HỆ ĐẶC QUYỀN')}</h2>
-          <p><strong>Hotline VIP (24/7):</strong> 0909 123 456</p>
-          <p><strong>{t('Email Ban điều hành CWI:')}</strong> cwi@xyz.com</p>
-          <p><strong>{t('Trụ sở:')}</strong> {t('36 Mạc Đĩnh Chi, phường Tân Định, TP. HCM')}</p>
-        </div>
-      </div>
-      <div className="privacy-footer-bottom">
-        <nav aria-label={t('Thông tin pháp lý')} className="privacy-footer-links">
-          <a href="/privacy-policy">{t('Chính sách bảo mật')}</a>
-          <a href="/terms-of-operation">{t('Quy chế hoạt động')}</a>
-        </nav>
-        <p>{t('Bản quyền 2026 Toàn bộ quyền sở hữu trí tuệ thuộc về các')} <strong>{t('Đơn vị đồng tổ chức và Đối tác.')}</strong></p>
-      </div>
-    </footer>
-  )
-}
-
 export function LegalDocumentPage({ config }: { config: LegalDocumentConfig }) {
   const pageTitle = t(config.pageTitle)
 
@@ -267,7 +235,7 @@ export function LegalDocumentPage({ config }: { config: LegalDocumentConfig }) {
           </article>
         </div>
       </main>
-      <LegalDocumentFooter />
+      <SiteFooter />
     </div>
   )
 }

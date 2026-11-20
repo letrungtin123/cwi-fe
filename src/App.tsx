@@ -2,15 +2,17 @@ import { lazy, startTransition, Suspense, useEffect, useRef, useState } from 're
 import { LandingPage } from '@/features/landing/LandingPage'
 import { clearSurveySession, hasSurveySession } from '@/features/survey/surveyPersistence'
 import { useLang } from '@/i18n'
+import { isNewsPath } from '@/features/news/newsRouting'
 
 // The landing page ships in the first download; the other pages load when first opened.
 const loadSurvey = () => import('@/features/survey/SurveyExperience')
 const SurveyFlow = lazy(() => loadSurvey().then((module) => ({ default: module.SurveyFlow })))
 const QuarterlyReportPage = lazy(() => import('@/features/landing/QuarterlyReportPage').then((module) => ({ default: module.QuarterlyReportPage })))
 const PrivacyPolicyPage = lazy(() => import('@/features/landing/PrivacyPolicyPage').then((module) => ({ default: module.PrivacyPolicyPage })))
+const NewsPage = lazy(() => import('@/features/news/NewsPage').then((module) => ({ default: module.NewsPage })))
 const TermsOfOperationPage = lazy(() => import('@/features/landing/TermsOfOperationPage').then((module) => ({ default: module.TermsOfOperationPage })))
 
-type AppMode = 'landing' | 'quarterlyReport' | 'survey' | 'privacy' | 'terms'
+type AppMode = 'landing' | 'quarterlyReport' | 'news' | 'survey' | 'privacy' | 'terms'
 type LandingActionEvent = CustomEvent<{ action?: string }>
 
 function isFreshSurveyEntry() {
@@ -29,6 +31,7 @@ function getInitialMode(): AppMode {
   if (window.location.pathname === '/privacy-policy') return 'privacy'
   if (window.location.pathname === '/terms-of-operation') return 'terms'
   if (/^\/bao-cao-quy(?:\/q[1-4]-\d{4})?$/.test(window.location.pathname)) return 'quarterlyReport'
+  if (isNewsPath(window.location.pathname)) return 'news'
   if (window.location.pathname === '/survey') return 'survey'
   if (hasPublicRegistrationRequest()) return 'landing'
   if (hasSurveySession()) return 'survey'
@@ -105,6 +108,8 @@ function Page({ mode, onBackHome }: { mode: AppMode; onBackHome: () => void }) {
     const match = /^\/bao-cao-quy\/(q[1-4]-\d{4})$/.exec(window.location.pathname)
     return <QuarterlyReportPage slug={match?.[1] ?? null} />
   }
+
+  if (mode === 'news') return <NewsPage />
 
   if (mode === 'survey') return <SurveyFlow startFresh={isFreshSurveyEntry()} onBackHome={onBackHome} />
 

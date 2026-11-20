@@ -3659,3 +3659,13 @@ html[lang='en'] .hero-carousel-copy--roundtable .hero-carousel-heading {
     margin-right: auto;
   }
 }
+
+/* The page the visitor is on (Báo cáo, Tin tức) in the header and the phone menu. */
+.figma-header-nav > a[aria-current='page'],
+.mobile-menu-nav button[aria-current='page'] {
+  color: #e9252b;
+}
+
+.figma-header-nav > a[aria-current='page'] {
+  font-weight: 600;
+}

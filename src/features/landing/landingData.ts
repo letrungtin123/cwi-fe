@@ -1,6 +1,6 @@
 import type { FigmaAssetKey } from './figmaAssets'
 
-export const navItems = ['Trang chủ', 'Tiêu điểm', 'Báo cáo', 'Roundtable', 'Về CWI'] as const
+export const navItems = ['Trang chủ', 'Tiêu điểm', 'Báo cáo', 'Tin tức', 'Roundtable', 'Về CWI'] as const
 
 export const reportStats: Array<{
   icon: FigmaAssetKey
