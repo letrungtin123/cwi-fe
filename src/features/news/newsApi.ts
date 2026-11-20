@@ -1,8 +1,11 @@
 import type { Lang } from '@/i18n'
 
-// Without VITE_CWI_API_BASE_URL a production build calls its own origin (/api); only the dev
-// server falls back to the local backend.
-const apiBaseUrl = (import.meta.env.VITE_CWI_API_BASE_URL ?? (import.meta.env.DEV ? 'http://localhost:8088' : '')).replace(/\/+$/, '')
+// Without VITE_CWI_API_BASE_URL a production build calls its own origin; only the dev server
+// falls back to the local backend. The production build sets it to "/api" while every path
+// below already starts with /api, so a trailing /api is dropped (as surveyApi does).
+const apiBaseUrl = (import.meta.env.VITE_CWI_API_BASE_URL ?? (import.meta.env.DEV ? 'http://localhost:8088' : ''))
+  .replace(/\/+$/, '')
+  .replace(/\/api$/i, '')
 
 export type Bilingual<T = string> = Record<Lang, T>
 
