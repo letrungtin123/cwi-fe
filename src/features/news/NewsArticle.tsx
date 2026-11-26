@@ -7,6 +7,7 @@ import { NewsCardSkeleton, NewsCardView, NewsCta } from './NewsCards'
 import { formatNewsDate, readingTime } from './newsFormat'
 import { NewsLink } from './NewsLink'
 import { newsPaths, tagSlug, useNewsNavigate } from './newsRouting'
+import { shownShareButtons, type NewsShareSettings } from './newsShare'
 import { NewsError, NewsNotFound } from './NewsStates'
 
 export type ArticleHead = { description: string; image: string | null; title: string }
@@ -25,11 +26,12 @@ function shareUrl(post: NewsPost, lang: Lang) {
   return `${window.location.origin}${newsPaths.post(post.slug)}${lang === 'en' ? '?lang=en' : ''}`
 }
 
-function ShareButtons({ lang, layout, post }: { lang: Lang; layout: 'rail' | 'row'; post: NewsPost }) {
+function ShareButtons({ lang, layout, post, share }: { lang: Lang; layout: 'rail' | 'row'; post: NewsPost; share: NewsShareSettings | undefined }) {
   const [copied, setCopied] = useState(false)
   const url = shareUrl(post, lang)
   const encoded = encodeURIComponent(url)
   const canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function'
+  const shown = shownShareButtons(share, canShare)
 
   async function copy() {
     try {
@@ -46,15 +48,20 @@ function ShareButtons({ lang, layout, post }: { lang: Lang; layout: 'rail' | 'ro
     window.setTimeout(() => setCopied(false), 2000)
   }
 
+  // Every button switched off in the dashboard: no share block at all.
+  if (!shown.length) return null
+
   return (
     <div className={`news-share news-share--${layout}`}>
       {layout === 'row' ? <span className="news-share-label">{t('Chia sẻ bài viết')}</span> : null}
-      <a aria-label={t('Chia sẻ lên Facebook')} className="news-share-button" href={`https://www.facebook.com/sharer/sharer.php?u=${encoded}`} rel="noopener noreferrer" target="_blank"><FacebookIcon /></a>
-      <a aria-label={t('Chia sẻ lên LinkedIn')} className="news-share-button" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encoded}`} rel="noopener noreferrer" target="_blank"><LinkedInIcon /></a>
-      <button aria-label={copied ? t('Đã chép link') : t('Chép link bài viết')} className={`news-share-button${copied ? ' is-done' : ''}`} onClick={() => void copy()} type="button">
-        {copied ? <Check aria-hidden="true" size={17} /> : <Link2 aria-hidden="true" size={17} />}
-      </button>
-      {canShare ? (
+      {shown.includes('facebook') ? <a aria-label={t('Chia sẻ lên Facebook')} className="news-share-button" href={`https://www.facebook.com/sharer/sharer.php?u=${encoded}`} rel="noopener noreferrer" target="_blank"><FacebookIcon /></a> : null}
+      {shown.includes('linkedin') ? <a aria-label={t('Chia sẻ lên LinkedIn')} className="news-share-button" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encoded}`} rel="noopener noreferrer" target="_blank"><LinkedInIcon /></a> : null}
+      {shown.includes('copyLink') ? (
+        <button aria-label={copied ? t('Đã chép link') : t('Chép link bài viết')} className={`news-share-button${copied ? ' is-done' : ''}`} onClick={() => void copy()} type="button">
+          {copied ? <Check aria-hidden="true" size={17} /> : <Link2 aria-hidden="true" size={17} />}
+        </button>
+      ) : null}
+      {shown.includes('native') ? (
         // Phones: the system share sheet (Zalo, Messenger, mail...).
         <button aria-label={t('Chia sẻ qua ứng dụng khác')} className="news-share-button news-share-native" onClick={() => void navigator.share({ title: post.title[lang], url }).catch(() => undefined)} type="button">
           <Share2 aria-hidden="true" size={17} />
@@ -112,6 +119,7 @@ export function NewsArticle({ lang, onHead, slug }: { lang: Lang; onHead: (head:
   const navigate = useNewsNavigate()
   const [post, setPost] = useState<NewsPost | null>(null)
   const [related, setRelated] = useState<NewsCard[]>([])
+  const [share, setShare] = useState<NewsShareSettings | undefined>(undefined)
   const [status, setStatus] = useState<'loading' | 'ready' | 'failed' | 'missing'>('loading')
   const [attempt, setAttempt] = useState(0)
   const articleRef = useRef<HTMLElement>(null)
@@ -130,6 +138,7 @@ export function NewsArticle({ lang, onHead, slug }: { lang: Lang; onHead: (head:
         }
         setPost(result.post)
         setRelated(result.related)
+        setShare(result.share)
         setStatus('ready')
         countNewsView(result.post.slug)
       })
@@ -158,6 +167,7 @@ export function NewsArticle({ lang, onHead, slug }: { lang: Lang; onHead: (head:
 
   const cover = newsImageUrl(post.coverUrl)
   const tags = post.tags[lang]
+  const hasShare = shownShareButtons(share, typeof navigator !== 'undefined' && typeof navigator.share === 'function').length > 0
 
   return (
     <>
@@ -193,9 +203,12 @@ export function NewsArticle({ lang, onHead, slug }: { lang: Lang; onHead: (head:
         ) : null}
 
         <div className="news-article-layout">
-          <aside aria-label={t('Chia sẻ bài viết')} className="news-article-rail">
-            <ShareButtons lang={lang} layout="rail" post={post} />
-          </aside>
+          {/* The rail keeps its column (the text stays centred) even with every button off. */}
+          {hasShare ? (
+            <aside aria-label={t('Chia sẻ bài viết')} className="news-article-rail">
+              <ShareButtons lang={lang} layout="rail" post={post} share={share} />
+            </aside>
+          ) : <div aria-hidden="true" className="news-article-rail" />}
           <div className="news-article-body">
             <NewsContent doc={post.content[lang]} />
 
@@ -217,7 +230,7 @@ export function NewsArticle({ lang, onHead, slug }: { lang: Lang; onHead: (head:
               </ul>
             ) : null}
 
-            <ShareButtons lang={lang} layout="row" post={post} />
+            <ShareButtons lang={lang} layout="row" post={post} share={share} />
           </div>
         </div>
       </article>

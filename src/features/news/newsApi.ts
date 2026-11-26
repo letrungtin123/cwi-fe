@@ -1,4 +1,5 @@
 import type { Lang } from '@/i18n'
+import type { NewsShareSettings } from './newsShare'
 
 // Without VITE_CWI_API_BASE_URL a production build calls its own origin; only the dev server
 // falls back to the local backend. The production build sets it to "/api" while every path
@@ -77,7 +78,8 @@ export type NewsPost = {
   updatedAt: string
 }
 
-export type NewsPostResult = { post: NewsPost; related: NewsCard[] } | { redirectTo: string }
+// share is missing in answers cached before the dashboard setting existed.
+export type NewsPostResult = { post: NewsPost; related: NewsCard[]; share?: NewsShareSettings } | { redirectTo: string }
 
 export class NewsApiError extends Error {
   readonly status: number
