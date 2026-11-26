@@ -1,14 +1,30 @@
-// Share buttons on a post page, as chosen in the dashboard ("Tin tức" -> "Cài đặt").
-export type NewsShareSettings = { copyLink: boolean; facebook: boolean; linkedin: boolean; native: boolean }
-export type NewsShareButton = keyof NewsShareSettings
+// The icons beside a post, as set in the dashboard ("Tin tức" -> "Cài đặt"): CWI's own page
+// on each network, then one icon that copies the post's link.
+export const NEWS_SOCIAL_NETWORKS = ['facebook', 'linkedin', 'youtube', 'zalo'] as const
+export type NewsSocialNetwork = (typeof NEWS_SOCIAL_NETWORKS)[number]
+export type NewsSocialLink = { network: NewsSocialNetwork; url: string }
+export type NewsPageIcons = { copyLink: boolean; social: NewsSocialLink[] }
 
-// Answers cached before the setting existed carry none: every button, as before.
-export const DEFAULT_NEWS_SHARE: NewsShareSettings = { copyLink: true, facebook: true, linkedin: true, native: true }
+const isNetwork = (value: unknown): value is NewsSocialNetwork => NEWS_SOCIAL_NETWORKS.includes(value as NewsSocialNetwork)
 
-const ORDER: NewsShareButton[] = ['facebook', 'linkedin', 'copyLink', 'native']
+function safeUrl(value: unknown) {
+  if (typeof value !== 'string') return null
+  try {
+    return new URL(value).protocol === 'https:' ? value : null
+  } catch {
+    return null
+  }
+}
 
-// The phone's share sheet only exists in some browsers, so it also needs canNativeShare.
-export function shownShareButtons(share: NewsShareSettings | undefined, canNativeShare: boolean): NewsShareButton[] {
-  const settings = share ?? DEFAULT_NEWS_SHARE
-  return ORDER.filter((button) => settings[button] && (button !== 'native' || canNativeShare))
+// From the post answer. One cached from before the setting has neither field: the
+// copy-link icon alone. Only https links to a known network are kept.
+export function newsPageIcons(answer: { copyLink?: unknown; social?: unknown }): NewsPageIcons {
+  const social = Array.isArray(answer.social)
+    ? answer.social.flatMap((item: unknown) => {
+      const { network, url } = (item ?? {}) as { network?: unknown; url?: unknown }
+      const href = safeUrl(url)
+      return isNetwork(network) && href ? [{ network, url: href }] : []
+    })
+    : []
+  return { copyLink: answer.copyLink !== false, social }
 }

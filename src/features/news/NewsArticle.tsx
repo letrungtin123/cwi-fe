@@ -1,5 +1,5 @@
-import { Check, ChevronRight, ExternalLink, Link2, Share2 } from 'lucide-react'
-import { useEffect, useRef, useState, type RefObject } from 'react'
+import { Check, ChevronRight, ExternalLink, Link2 } from 'lucide-react'
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
 import { t, type Lang } from '@/i18n'
 import { countNewsView, getNewsPost, NewsApiError, newsImageUrl, type NewsCard, type NewsPost } from './newsApi'
 import { NewsContent } from './NewsContent'
@@ -7,67 +7,91 @@ import { NewsCardSkeleton, NewsCardView, NewsCta } from './NewsCards'
 import { formatNewsDate, readingTime } from './newsFormat'
 import { NewsLink } from './NewsLink'
 import { newsPaths, tagSlug, useNewsNavigate } from './newsRouting'
-import { shownShareButtons, type NewsShareSettings } from './newsShare'
+import { newsPageIcons, type NewsPageIcons, type NewsSocialNetwork } from './newsShare'
 import { NewsError, NewsNotFound } from './NewsStates'
 
 export type ArticleHead = { description: string; image: string | null; title: string }
 
-function FacebookIcon() {
-  return <svg aria-hidden="true" height="18" viewBox="0 0 24 24" width="18"><path d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.3-1.5 1.5-1.5h1.5V4.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.4H8.1v3h2.5V21h2.9Z" fill="currentColor" /></svg>
+// The same icons as the dashboard settings (cwi-fe-dashboard NewsSettingsTab.tsx).
+const SOCIAL_ICONS: Record<NewsSocialNetwork, ReactNode> = {
+  facebook: <svg aria-hidden="true" height="18" viewBox="0 0 24 24" width="18"><path d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.3-1.5 1.5-1.5h1.5V4.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.4H8.1v3h2.5V21h2.9Z" fill="currentColor" /></svg>,
+  linkedin: <svg aria-hidden="true" height="17" viewBox="0 0 24 24" width="17"><path d="M6.9 8.8H3.6V20h3.3V8.8ZM5.2 3.5a1.9 1.9 0 1 0 0 3.8 1.9 1.9 0 0 0 0-3.8ZM20.4 13.6c0-3-1.6-5-4.4-5-1.4 0-2.4.8-2.8 1.5V8.8H10V20h3.3v-5.6c0-1.5.3-2.9 2.1-2.9 1.8 0 1.8 1.7 1.8 3V20h3.3l-.1-6.4Z" fill="currentColor" /></svg>,
+  youtube: <svg aria-hidden="true" height="18" viewBox="0 0 24 24" width="18"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4a2.5 2.5 0 0 0-1.8 1.8C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8c1.6.4 7.8.4 7.8.4s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8ZM10 15V9l5.2 3L10 15Z" fill="currentColor" fillRule="evenodd" /></svg>,
+  zalo: <svg aria-hidden="true" height="19" viewBox="0 0 24 24" width="19"><path d="M12 3C6.5 3 2 6.8 2 11.5c0 2.6 1.4 4.9 3.6 6.5L5 21l3.6-1.8c1.1.3 2.2.5 3.4.5 5.5 0 10-3.8 10-8.5S17.5 3 12 3ZM8.5 7.8h7v1.3l-4.8 5h4.8v1.3h-7v-1.3l4.8-5H8.5V7.8Z" fill="currentColor" fillRule="evenodd" /></svg>,
 }
 
-function LinkedInIcon() {
-  return <svg aria-hidden="true" height="17" viewBox="0 0 24 24" width="17"><path d="M6.9 8.8H3.6V20h3.3V8.8ZM5.2 3.5a1.9 1.9 0 1 0 0 3.8 1.9 1.9 0 0 0 0-3.8ZM20.4 13.6c0-3-1.6-5-4.4-5-1.4 0-2.4.8-2.8 1.5V8.8H10V20h3.3v-5.6c0-1.5.3-2.9 2.1-2.9 1.8 0 1.8 1.7 1.8 3V20h3.3l-.1-6.4Z" fill="currentColor" /></svg>
+const SOCIAL_LABELS: Record<NewsSocialNetwork, string> = {
+  facebook: 'Facebook của CWI',
+  linkedin: 'LinkedIn của CWI',
+  youtube: 'YouTube của CWI',
+  zalo: 'Zalo OA của CWI',
 }
 
-// The address to share: the post's own link (in English when read in English), without the
-// ad parameters the reader arrived with.
-function shareUrl(post: NewsPost, lang: Lang) {
+// The link the copy icon copies: the post's own address (in English when read in English),
+// without the ad parameters the reader arrived with.
+function postLink(post: NewsPost, lang: Lang) {
   return `${window.location.origin}${newsPaths.post(post.slug)}${lang === 'en' ? '?lang=en' : ''}`
 }
 
-function ShareButtons({ lang, layout, post, share }: { lang: Lang; layout: 'rail' | 'row'; post: NewsPost; share: NewsShareSettings | undefined }) {
-  const [copied, setCopied] = useState(false)
-  const url = shareUrl(post, lang)
-  const encoded = encodeURIComponent(url)
-  const canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function'
-  const shown = shownShareButtons(share, canShare)
-
-  async function copy() {
+async function copyText(text: string) {
+  try {
+    await navigator.clipboard.writeText(text)
+    return true
+  } catch {
+    // Older browsers, or a page without clipboard permission.
+    const field = document.createElement('textarea')
+    field.value = text
+    field.setAttribute('readonly', '')
+    field.style.position = 'fixed'
+    field.style.opacity = '0'
+    document.body.appendChild(field)
+    field.select()
     try {
-      await navigator.clipboard.writeText(url)
+      return document.execCommand('copy')
     } catch {
-      const field = document.createElement('textarea')
-      field.value = url
-      document.body.appendChild(field)
-      field.select()
-      document.execCommand('copy')
+      return false
+    } finally {
       field.remove()
     }
-    setCopied(true)
-    window.setTimeout(() => setCopied(false), 2000)
+  }
+}
+
+// The left column (icons only) and the row at the end of the post ("Theo dõi CWI" + the
+// copy-link button with its words).
+function PostIcons({ copied, icons, layout, onCopy }: { copied: boolean; icons: NewsPageIcons; layout: 'rail' | 'row'; onCopy: () => void }) {
+  const social = icons.social.map(({ network, url }) => (
+    <a aria-label={t(SOCIAL_LABELS[network])} className="news-share-button" data-tip={layout === 'rail' ? t(SOCIAL_LABELS[network]) : undefined} href={url} key={network} rel="noopener noreferrer" target="_blank">
+      {SOCIAL_ICONS[network]}
+    </a>
+  ))
+  const copyIcon = copied ? <Check aria-hidden="true" size={17} /> : <Link2 aria-hidden="true" size={17} />
+
+  if (layout === 'rail') {
+    return (
+      <div className="news-share news-share--rail">
+        {social}
+        {social.length && icons.copyLink ? <span aria-hidden="true" className="news-share-divider" /> : null}
+        {icons.copyLink ? (
+          <button aria-label={t('Chép link bài viết')} className={`news-share-button${copied ? ' is-done' : ''}`} data-tip={t('Chép link bài viết')} onClick={onCopy} type="button">{copyIcon}</button>
+        ) : null}
+      </div>
+    )
   }
 
-  // Every button switched off in the dashboard: no share block at all.
-  if (!shown.length) return null
-
   return (
-    <div className={`news-share news-share--${layout}`}>
-      {layout === 'row' ? <span className="news-share-label">{t('Chia sẻ bài viết')}</span> : null}
-      {shown.includes('facebook') ? <a aria-label={t('Chia sẻ lên Facebook')} className="news-share-button" href={`https://www.facebook.com/sharer/sharer.php?u=${encoded}`} rel="noopener noreferrer" target="_blank"><FacebookIcon /></a> : null}
-      {shown.includes('linkedin') ? <a aria-label={t('Chia sẻ lên LinkedIn')} className="news-share-button" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encoded}`} rel="noopener noreferrer" target="_blank"><LinkedInIcon /></a> : null}
-      {shown.includes('copyLink') ? (
-        <button aria-label={copied ? t('Đã chép link') : t('Chép link bài viết')} className={`news-share-button${copied ? ' is-done' : ''}`} onClick={() => void copy()} type="button">
-          {copied ? <Check aria-hidden="true" size={17} /> : <Link2 aria-hidden="true" size={17} />}
+    <div className="news-share news-share--row">
+      {social.length ? (
+        <div className="news-share-group">
+          <span className="news-share-label">{t('Theo dõi CWI')}</span>
+          {social}
+        </div>
+      ) : null}
+      {icons.copyLink ? (
+        <button className={`news-copy-link${copied ? ' is-done' : ''}`} onClick={onCopy} type="button">
+          {copyIcon}
+          <span>{t('Chép link bài viết')}</span>
         </button>
       ) : null}
-      {shown.includes('native') ? (
-        // Phones: the system share sheet (Zalo, Messenger, mail...).
-        <button aria-label={t('Chia sẻ qua ứng dụng khác')} className="news-share-button news-share-native" onClick={() => void navigator.share({ title: post.title[lang], url }).catch(() => undefined)} type="button">
-          <Share2 aria-hidden="true" size={17} />
-        </button>
-      ) : null}
-      {copied && layout === 'row' ? <span aria-live="polite" className="news-share-copied">{t('Đã chép link')}</span> : null}
     </div>
   )
 }
@@ -119,7 +143,10 @@ export function NewsArticle({ lang, onHead, slug }: { lang: Lang; onHead: (head:
   const navigate = useNewsNavigate()
   const [post, setPost] = useState<NewsPost | null>(null)
   const [related, setRelated] = useState<NewsCard[]>([])
-  const [share, setShare] = useState<NewsShareSettings | undefined>(undefined)
+  const [icons, setIcons] = useState<NewsPageIcons>({ copyLink: true, social: [] })
+  // The "Đã sao chép link" popup; count restarts its animation on every click.
+  const [copyNote, setCopyNote] = useState<{ count: number; ok: boolean } | null>(null)
+  const copyTimer = useRef(0)
   const [status, setStatus] = useState<'loading' | 'ready' | 'failed' | 'missing'>('loading')
   const [attempt, setAttempt] = useState(0)
   const articleRef = useRef<HTMLElement>(null)
@@ -138,7 +165,7 @@ export function NewsArticle({ lang, onHead, slug }: { lang: Lang; onHead: (head:
         }
         setPost(result.post)
         setRelated(result.related)
-        setShare(result.share)
+        setIcons(newsPageIcons(result))
         setStatus('ready')
         countNewsView(result.post.slug)
       })
@@ -148,6 +175,8 @@ export function NewsArticle({ lang, onHead, slug }: { lang: Lang; onHead: (head:
       })
     return () => controller.abort()
   }, [slug, attempt, navigate])
+
+  useEffect(() => () => window.clearTimeout(copyTimer.current), [])
 
   useEffect(() => {
     if (!post) {
@@ -167,7 +196,16 @@ export function NewsArticle({ lang, onHead, slug }: { lang: Lang; onHead: (head:
 
   const cover = newsImageUrl(post.coverUrl)
   const tags = post.tags[lang]
-  const hasShare = shownShareButtons(share, typeof navigator !== 'undefined' && typeof navigator.share === 'function').length > 0
+  const hasIcons = icons.copyLink || icons.social.length > 0
+  const copied = copyNote?.ok === true
+
+  async function copyLink() {
+    if (!post) return
+    const ok = await copyText(postLink(post, lang))
+    setCopyNote((current) => ({ count: (current?.count ?? 0) + 1, ok }))
+    window.clearTimeout(copyTimer.current)
+    copyTimer.current = window.setTimeout(() => setCopyNote(null), ok ? 2200 : 4000)
+  }
 
   return (
     <>
@@ -203,10 +241,10 @@ export function NewsArticle({ lang, onHead, slug }: { lang: Lang; onHead: (head:
         ) : null}
 
         <div className="news-article-layout">
-          {/* The rail keeps its column (the text stays centred) even with every button off. */}
-          {hasShare ? (
-            <aside aria-label={t('Chia sẻ bài viết')} className="news-article-rail">
-              <ShareButtons lang={lang} layout="rail" post={post} share={share} />
+          {/* The rail keeps its column (the text stays centred) even with every icon off. */}
+          {hasIcons ? (
+            <aside aria-label={t('Theo dõi CWI và chia sẻ bài viết')} className="news-article-rail">
+              <PostIcons copied={copied} icons={icons} layout="rail" onCopy={() => void copyLink()} />
             </aside>
           ) : <div aria-hidden="true" className="news-article-rail" />}
           <div className="news-article-body">
@@ -230,10 +268,19 @@ export function NewsArticle({ lang, onHead, slug }: { lang: Lang; onHead: (head:
               </ul>
             ) : null}
 
-            <ShareButtons lang={lang} layout="row" post={post} share={share} />
+            {hasIcons ? <PostIcons copied={copied} icons={icons} layout="row" onCopy={() => void copyLink()} /> : null}
           </div>
         </div>
       </article>
+
+      <div aria-live="polite" className="news-toast-region" role="status">
+        {copyNote ? (
+          <span className={`news-toast${copyNote.ok ? '' : ' is-error'}`} key={copyNote.count}>
+            {copyNote.ok ? <Check aria-hidden="true" size={17} /> : null}
+            {copyNote.ok ? t('Đã sao chép link') : t('Không chép được link. Anh/Chị vui lòng chép trên thanh địa chỉ.')}
+          </span>
+        ) : null}
+      </div>
 
       <NewsCta compact />
 
