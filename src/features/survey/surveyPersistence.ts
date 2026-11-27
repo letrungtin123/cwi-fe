@@ -24,6 +24,9 @@ export type SurveySession = {
   dataCollectionConsent: boolean
   contact: ContactState
   formError: string
+  // Follow-up answers by question number (surveyFollowUp.ts); missing in drafts saved
+  // before follow-ups existed.
+  followUpAnswers?: Answers
   loadingStep: number
   missingQuestionNumbers: number[]
   otherAnswers: Answers

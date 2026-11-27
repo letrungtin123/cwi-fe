@@ -316,6 +316,23 @@
 .survey-options input:checked + label .survey-option-dot::after { background: var(--survey-blue); border-radius: 50%; content: ""; height: 8px; left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%); width: 8px; }
 .survey-other-input { background: var(--survey-surface); border: 1px solid var(--survey-border-strong); border-radius: var(--survey-radius-sm); color: var(--survey-ink); display: block; font-size: 15px; line-height: 1.4; margin: 0 16px; max-height: 0; opacity: 0; overflow: hidden; padding: 0 12px; pointer-events: none; transition: max-height 180ms ease, opacity 180ms ease, margin-top 180ms ease, padding 180ms ease, border-color 160ms ease, box-shadow 160ms ease; width: calc(100% - 32px); }
 .survey-other-input.is-visible { margin-top: 10px; max-height: 64px; min-height: 48px; opacity: 1; padding: 12px; pointer-events: auto; }
+/* Follow-up question under a scale answer of 1 or 5 (QuestionCard FollowUpField). */
+.survey-follow-up { animation: survey-follow-up-in 200ms ease; background: var(--survey-surface-subtle); border: 1px solid var(--survey-border); border-radius: var(--survey-radius-md); margin-top: 18px; max-width: 680px; padding: 16px 18px 14px; }
+.survey-follow-up.is-invalid { border-color: rgba(180, 35, 24, .35); }
+.survey-follow-up-label { display: grid; gap: 4px; margin-bottom: 10px; }
+.survey-follow-up-eyebrow { color: var(--survey-blue); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.survey-follow-up-question { color: var(--survey-ink); font-size: 16px; font-weight: 650; line-height: 1.4; }
+.survey-follow-up-input { background: var(--survey-surface); border: 1px solid var(--survey-border-strong); border-radius: var(--survey-radius-sm); color: var(--survey-ink); display: block; font: inherit; font-size: 15px; line-height: 1.5; min-height: 96px; padding: 12px 14px; resize: vertical; transition: border-color 160ms ease, box-shadow 160ms ease; width: 100%; }
+.survey-follow-up-input::placeholder { color: var(--survey-ink-muted); opacity: 1; }
+.survey-follow-up-input:focus { border-color: var(--survey-blue); box-shadow: 0 0 0 3px rgba(29, 79, 145, .12); outline: 0; }
+.survey-follow-up-input[aria-invalid="true"] { border-color: var(--survey-error); box-shadow: 0 0 0 3px rgba(180, 35, 24, .12); }
+.survey-question-card.is-read-only .survey-follow-up-input { cursor: default; resize: none; }
+.survey-follow-up-foot { align-items: baseline; color: var(--survey-ink-muted); display: flex; font-size: 13px; gap: 12px; justify-content: space-between; line-height: 1.45; margin-top: 8px; }
+.survey-follow-up-foot .survey-field-error { margin: 0; }
+.survey-follow-up-count { font-variant-numeric: tabular-nums; margin-left: auto; white-space: nowrap; }
+@keyframes survey-follow-up-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .survey-follow-up { animation: none; } }
+@media (max-width: 767px) { .survey-follow-up { margin-top: 14px; padding: 14px 14px 12px; } .survey-follow-up-question { font-size: 15px; } .survey-follow-up-input { font-size: 16px; } }
 .survey-text-question { margin-top: 32px; max-width: 560px; }
 .survey-text-question label { color: var(--survey-ink-secondary); display: block; font-size: 14px; font-weight: 650; margin-bottom: 10px; }
 .survey-text-input, .survey-form-grid input, .survey-form-grid select { background: var(--survey-surface); border: 1px solid var(--survey-border-strong); border-radius: var(--survey-radius-sm); color: var(--survey-ink); min-height: 52px; padding: 13px 14px; width: 100%; }
@@ -2833,6 +2850,10 @@
   overflow-wrap: anywhere;
   padding: 8px 10px;
 }
+
+.survey-review-follow-up { border-left: 3px solid #d7e6f7; display: grid; gap: 4px; margin-top: 2px; padding: 2px 0 2px 12px; }
+.survey-review-follow-up span { color: var(--survey-ink-muted); font-size: 12px; font-weight: 600; line-height: 1.4; }
+.survey-review-answer-list .survey-review-follow-up p { color: var(--survey-ink); font-size: 13px; overflow-wrap: anywhere; }
 
 .survey-review-modal-footer {
   border-top: 1px solid var(--survey-border);

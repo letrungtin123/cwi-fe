@@ -2,6 +2,7 @@ import { introCopy2026Q3, OTHER_OPTION_2026Q3, partOneQuestions2026Q3, partTwoQu
 import { introCopy, partOneQuestions, partTwoQuestions, type IntroCopy, type McqQuestion, type SurveyQuestion } from './surveyData'
 import quarter3Image from '@/assets/figma/carousel-cwi.webp'
 import quarter4Image from '@/assets/figma/BG-circle-ceo.webp'
+import { FOLLOW_UP_MAX, type SurveyFollowUp } from './surveyFollowUp'
 
 // Survey editions ("quý khảo sát") this page has a question set for. /survey opens on a list
 // of quarter cards (title, description and image are edited in the dashboard); the chosen
@@ -10,6 +11,9 @@ import quarter4Image from '@/assets/figma/BG-circle-ceo.webp'
 export type SurveyEdition = {
   // Shown on the card until an admin uploads an image.
   defaultImage: string
+  // Follow-up question under a scale answer of 1 or 5 (surveyFollowUp.ts), or null when the
+  // quarter has none (cwi-ai asks nothing for 2026Q3).
+  followUp: SurveyFollowUp | null
   // The quarter's intro screen, shown after its card is chosen.
   introCopy: IntroCopy
   otherOption: string
@@ -23,8 +27,8 @@ export const OTHER_OPTION_2026Q4 = 'Khác.'
 
 // Oldest first; the last one is the current quarter. Same versions as surveyVersions.ts.
 export const surveyEditions: SurveyEdition[] = [
-  { defaultImage: quarter3Image, introCopy: introCopy2026Q3, otherOption: OTHER_OPTION_2026Q3, partOneQuestions: partOneQuestions2026Q3, partTwoQuestions: partTwoQuestions2026Q3, version: '2026Q3' },
-  { defaultImage: quarter4Image, introCopy, otherOption: OTHER_OPTION_2026Q4, partOneQuestions, partTwoQuestions, version: '2026Q4' },
+  { defaultImage: quarter3Image, followUp: null, introCopy: introCopy2026Q3, otherOption: OTHER_OPTION_2026Q3, partOneQuestions: partOneQuestions2026Q3, partTwoQuestions: partTwoQuestions2026Q3, version: '2026Q3' },
+  { defaultImage: quarter4Image, followUp: { max: FOLLOW_UP_MAX }, introCopy, otherOption: OTHER_OPTION_2026Q4, partOneQuestions, partTwoQuestions, version: '2026Q4' },
 ]
 
 export const LATEST_SURVEY_VERSION = surveyEditions[surveyEditions.length - 1]!.version

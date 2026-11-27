@@ -4,15 +4,18 @@ import type { Answers } from './surveyScoring'
 import { QuestionCard } from './QuestionCard'
 import { SurveyEyebrow, SurveyForwardArrow } from './SurveyChrome'
 import type { SurveyQuestion } from './surveyData'
+import type { FollowUpAnswers } from './surveyFollowUp'
 
 type SurveyQuestionPageProps = {
   answers: Answers
   completedCount: number
   endNote?: string
   error?: string
+  followUps: FollowUpAnswers
   intro: string
   missingQuestionNumbers: number[]
   onAnswer: (question: SurveyQuestion, value: string) => void
+  onFollowUpAnswer: (question: SurveyQuestion, value: string) => void
   onNext: () => void
   onOtherAnswer: (question: SurveyQuestion, value: string) => void
   onPrevious: () => void
@@ -37,9 +40,11 @@ export function SurveyQuestionPage({
   completedCount,
   endNote,
   error,
+  followUps,
   intro,
   missingQuestionNumbers,
   onAnswer,
+  onFollowUpAnswer,
   onNext,
   onOtherAnswer,
   onPrevious,
@@ -90,9 +95,11 @@ export function SurveyQuestionPage({
               <QuestionCard
                 answer={answers[question.n]}
                 error={isMissing ? error : undefined}
+                followUpAnswer={followUps[question.n]}
                 isMissing={isMissing}
                 key={question.n}
                 onAnswer={onAnswer}
+                onFollowUpAnswer={onFollowUpAnswer}
                 onOtherAnswer={onOtherAnswer}
                 otherAnswer={otherAnswers[question.n]}
                 part={part}

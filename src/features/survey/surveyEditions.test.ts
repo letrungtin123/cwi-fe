@@ -65,7 +65,7 @@ describe('submission payload', () => {
     answers[17] = 'Mục khác:'
     answers[18] = 'Xây dựng đội ngũ kế nhiệm'
     const payload = buildSurveySubmissionPayload({
-      answers, consent: '', contact, edition: q3, otherAnswers: { 17: 'Thiếu dữ liệu nhân sự' }, partTwoPrivacyRefused: false, reportMode: 'part1',
+      answers, consent: '', contact, edition: q3, followUps: {}, otherAnswers: { 17: 'Thiếu dữ liệu nhân sự' }, partTwoPrivacyRefused: false, reportMode: 'part1',
       roundtableContact: contact, roundtableRegistered: false, roundtableRegistrationId: '',
     })
     expect(payload.surveyVersion).toBe('2026Q3')

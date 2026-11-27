@@ -3,6 +3,7 @@ import type { ContactState, ConsentChoice, ReportMode } from './surveyPersistenc
 import { normalizeWebsiteValue, hasQuestionAnswer, type Answers } from './surveyScoring'
 import type { SurveyQuestion } from './surveyData'
 import { isOtherOption, type SurveyEdition } from './surveyEditions'
+import { FOLLOW_UP_ANSWER_MIN, isFollowUpAnswered, normalizeFollowUpAnswer, type FollowUpAnswers } from './surveyFollowUp'
 import { readSurveySourceCode } from './surveySource'
 
 export type SubmissionStatus = 'part1_only' | 'part2_refused_privacy' | 'full_private_report'
@@ -10,6 +11,8 @@ export type PrivacyConsent = 'yes' | 'no' | 'not_applicable'
 
 type SurveySubmissionAnswer = {
   answer: number | string
+  // Answer to the follow-up question of a scale answer of 1 or 5.
+  followUpAnswer?: string
   idx: number
   otherText?: string
 }
@@ -47,6 +50,7 @@ type BuildSurveySubmissionPayloadInput = {
   contact: ContactState
   // The quarter the respondent chose: its questions are checked and its version is sent.
   edition: SurveyEdition
+  followUps: FollowUpAnswers
   otherAnswers: Answers
   partTwoPrivacyRefused: boolean
   reportMode: ReportMode
@@ -75,13 +79,18 @@ function normalizeWebsite(value: string) {
   return normalized
 }
 
-function buildAnswer(question: SurveyQuestion, answers: Answers, otherAnswers: Answers): SurveySubmissionAnswer {
+function buildAnswer(question: SurveyQuestion, answers: Answers, otherAnswers: Answers, followUps: FollowUpAnswers): SurveySubmissionAnswer {
   const rawAnswer = answers[question.n]
 
   if (question.type === 'likert') {
     const value = Number(rawAnswer)
     if (!Number.isInteger(value) || value < 1 || value > 5) throw new Error(t('Câu {n} cần chọn điểm từ 1 đến 5.', { n: question.n }))
-    return { answer: value, idx: question.n }
+    // A slot only exists while the answer is 1 or 5 (surveyFollowUp.ts); the check is a guard.
+    if (!(question.n in followUps) || (value !== 1 && value !== 5)) return { answer: value, idx: question.n }
+    if (!isFollowUpAnswered(followUps[question.n])) {
+      throw new Error(t('Câu {n} cần trả lời câu hỏi phụ, ít nhất {min} ký tự.', { min: FOLLOW_UP_ANSWER_MIN, n: question.n }))
+    }
+    return { answer: value, followUpAnswer: normalizeFollowUpAnswer(followUps[question.n]), idx: question.n }
   }
 
   if (question.type === 'mcq') {
@@ -99,8 +108,8 @@ function buildAnswer(question: SurveyQuestion, answers: Answers, otherAnswers: A
   return { answer: normalizeWebsite(rawAnswer ?? ''), idx: question.n }
 }
 
-function assertAnswered(questions: SurveyQuestion[], answers: Answers, otherAnswers: Answers, label: string) {
-  const missing = questions.filter((question) => !hasQuestionAnswer(question, answers, otherAnswers)).map((question) => question.n)
+function assertAnswered(questions: SurveyQuestion[], answers: Answers, otherAnswers: Answers, followUps: FollowUpAnswers, label: string) {
+  const missing = questions.filter((question) => !hasQuestionAnswer(question, answers, otherAnswers, followUps)).map((question) => question.n)
   if (missing.length) throw new Error(t('{label} còn thiếu câu: {list}.', { label, list: missing.join(', ') }))
 }
 
@@ -118,12 +127,14 @@ function getPrivacyConsent(status: SubmissionStatus): PrivacyConsent {
 
 export function buildSurveySubmissionPayload(input: BuildSurveySubmissionPayloadInput): SurveySubmissionPayload {
   const { partOneQuestions, partTwoQuestions } = input.edition
-  assertAnswered(partOneQuestions, input.answers, input.otherAnswers, t('Phần 1'))
+  // Follow-ups only exist for a quarter that asks them.
+  const followUps = input.edition.followUp ? input.followUps : {}
+  assertAnswered(partOneQuestions, input.answers, input.otherAnswers, followUps, t('Phần 1'))
 
   const status = getSubmissionStatus(input)
   const requiredQuestions = status === 'part1_only' ? partOneQuestions : [...partOneQuestions, ...partTwoQuestions]
 
-  if (status !== 'part1_only') assertAnswered(partTwoQuestions, input.answers, input.otherAnswers, t('Phần 2'))
+  if (status !== 'part1_only') assertAnswered(partTwoQuestions, input.answers, input.otherAnswers, followUps, t('Phần 2'))
 
   const participant = {
     companyName: input.contact.companyName.trim().replace(/\s+/g, ' '),
@@ -142,7 +153,7 @@ export function buildSurveySubmissionPayload(input: BuildSurveySubmissionPayload
   const roundtablePosition = normalizePosition(input.roundtableContact) || participant.position
 
   return {
-    answers: requiredQuestions.map((question) => buildAnswer(question, input.answers, input.otherAnswers)),
+    answers: requiredQuestions.map((question) => buildAnswer(question, input.answers, input.otherAnswers, followUps)),
     clientMeta: {
       app: 'cwi-fe-landing-page',
       language: navigator.language,

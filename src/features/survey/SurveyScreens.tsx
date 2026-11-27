@@ -7,6 +7,7 @@ import { t, tx } from '@/i18n'
 import { contactCopy, jobTitleOptions, reportParts, roundtableCopy, type IntroCopy, type SurveyQuestion } from './surveyData'
 import type { SurveyEdition } from './surveyEditions'
 import { getAnswerDisplay, type Answers, validEmail } from './surveyScoring'
+import { FOLLOW_UP_QUESTION, normalizeFollowUpAnswer, type FollowUpAnswers } from './surveyFollowUp'
 import { isValidPhone } from './phoneValidation'
 import { SurveyBrandMark, SurveyEyebrow, SurveyForwardArrow } from './SurveyChrome'
 import type { ReportEmailStatus, ReportJobStatusValue } from './surveyApi'
@@ -830,6 +831,7 @@ type SurveyAnswersReviewModalProps = {
   answers: Answers
   contact: ContactState
   edition: SurveyEdition
+  followUps: FollowUpAnswers
   onClose: () => void
   open: boolean
   otherAnswers: Answers
@@ -843,7 +845,7 @@ function reviewAnswerValue(questionNumber: number, answers: Answers, otherAnswer
   return value === '—' ? t('Chưa trả lời') : value
 }
 
-function ReviewAnswerSection({ answers, otherAnswers, questions, title }: { answers: Answers; otherAnswers: Answers; questions: SurveyQuestion[]; title: string }) {
+function ReviewAnswerSection({ answers, followUps, otherAnswers, questions, title }: { answers: Answers; followUps: FollowUpAnswers; otherAnswers: Answers; questions: SurveyQuestion[]; title: string }) {
   return (
     <section className="survey-review-answer-section" aria-labelledby={`survey-review-${title}`}>
       <div className="survey-review-section-heading">
@@ -856,6 +858,12 @@ function ReviewAnswerSection({ answers, otherAnswers, questions, title }: { answ
             <div className="survey-review-question-label">{t('Câu {n}', { n: question.n })}</div>
             <p>{t(question.q)}</p>
             <strong>{reviewAnswerValue(question.n, answers, otherAnswers, questions)}</strong>
+            {question.n in followUps ? (
+              <div className="survey-review-follow-up">
+                <span>{t('Câu hỏi phụ')} · {t(FOLLOW_UP_QUESTION)}</span>
+                <p>{normalizeFollowUpAnswer(followUps[question.n]) || t('Chưa trả lời')}</p>
+              </div>
+            ) : null}
           </li>
         ))}
       </ol>
@@ -863,7 +871,7 @@ function ReviewAnswerSection({ answers, otherAnswers, questions, title }: { answ
   )
 }
 
-export function SurveyAnswersReviewModal({ answers, contact, edition, onClose, open, otherAnswers, partTwoPrivacyRefused, reportMode, roundtableRegistered }: SurveyAnswersReviewModalProps) {
+export function SurveyAnswersReviewModal({ answers, contact, edition, followUps, onClose, open, otherAnswers, partTwoPrivacyRefused, reportMode, roundtableRegistered }: SurveyAnswersReviewModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
   const initialFocusRef = useRef<HTMLButtonElement>(null)
 
@@ -901,8 +909,8 @@ export function SurveyAnswersReviewModal({ answers, contact, edition, onClose, o
               <div><span>Roundtable</span><strong>{roundtableRegistered ? t('Đã đăng ký') : t('Chưa đăng ký')}</strong></div>
             </div>
           </section>
-          <ReviewAnswerSection answers={answers} otherAnswers={otherAnswers} questions={edition.partOneQuestions} title="Phần 1 - Khảo sát khuyết danh" />
-          {showPartTwoAnswers ? <ReviewAnswerSection answers={answers} otherAnswers={otherAnswers} questions={edition.partTwoQuestions} title="Phần 2 - Khảo sát định danh" /> : null}
+          <ReviewAnswerSection answers={answers} followUps={followUps} otherAnswers={otherAnswers} questions={edition.partOneQuestions} title="Phần 1 - Khảo sát khuyết danh" />
+          {showPartTwoAnswers ? <ReviewAnswerSection answers={answers} followUps={followUps} otherAnswers={otherAnswers} questions={edition.partTwoQuestions} title="Phần 2 - Khảo sát định danh" /> : null}
         </div>
         <footer className="survey-review-modal-footer">
           <button className="survey-primary-button" onClick={onClose} type="button">{t('Đóng')}</button>

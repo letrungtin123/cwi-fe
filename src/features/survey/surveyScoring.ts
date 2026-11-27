@@ -1,6 +1,7 @@
 import { t } from '@/i18n'
 import type { SurveyQuestion } from './surveyData'
 import { isOtherOption } from './surveyEditions'
+import { hasPendingFollowUp, type FollowUpAnswers } from './surveyFollowUp'
 
 export type Answers = Record<number, string>
 
@@ -33,11 +34,12 @@ export function normalizeWebsiteValue(value: string) {
 export function isValidWebsite(value: string) {
   return normalizeWebsiteValue(value) !== null
 }
-export function hasQuestionAnswer(question: SurveyQuestion, answers: Answers, otherAnswers: Answers) {
+// A scale question with a follow-up counts as answered only once the follow-up is answered too.
+export function hasQuestionAnswer(question: SurveyQuestion, answers: Answers, otherAnswers: Answers, followUps?: FollowUpAnswers) {
   const answer = answers[question.n]
   if (question.type === 'text') return Boolean(answer?.trim())
   if (isOtherOption(answer)) return Boolean(otherAnswers[question.n]?.trim())
-  return answer !== undefined && answer !== ''
+  return answer !== undefined && answer !== '' && !hasPendingFollowUp(question, followUps)
 }
 
 // Display text only: MCQ options are stored in Vietnamese and translated here;

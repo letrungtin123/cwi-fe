@@ -258,4 +258,12 @@ export const surveyEn: Record<string, string> = {
   "Tiếp tục khảo sát": "Continue the survey",
   "Đang tải các kỳ khảo sát…": "Loading survey editions…",
   "Đang mở khảo sát…": "Opening the survey…",
+  // Follow-up question under a scale answer of 1 or 5 (surveyFollowUp.ts); cwi-ai's English catalog text.
+  "Câu hỏi phụ": "Follow-up question",
+  "Tại sao Anh/Chị chọn câu trả lời này?": "Why did you choose this response?",
+  "Chia sẻ ngắn gọn lý do, ít nhất {min} ký tự": "Briefly share your reason, at least {min} characters",
+  "Vui lòng trả lời câu hỏi phụ, ít nhất {min} ký tự.": "Please answer the follow-up question, at least {min} characters.",
+  "Bắt buộc · ít nhất {min} ký tự": "Required · at least {min} characters",
+  "Anh/Chị cần trả lời câu hỏi phụ ở câu: {list}.": "Please answer the follow-up question of question(s): {list}.",
+  "Câu {n} cần trả lời câu hỏi phụ, ít nhất {min} ký tự.": "Question {n} needs an answer to its follow-up question, at least {min} characters.",
 }

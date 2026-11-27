@@ -21,6 +21,7 @@ import {
 import { createRoundtableRegistrationIdempotencyKey, createSurveySubmissionIdempotencyKey, createWebinarRegistrationIdempotencyKey, deferredResultDays, getReportHtml, getReportJobStatus, getSurveyQuarters, submitRoundtableRegistration, submitSurveySubmission, SurveyApiError, type ReportEmailStatus, type ReportJobStatusValue } from './surveyApi'
 import { isInvitationLink, readEntryQuarterFromUrl } from './surveySource'
 import { buildSurveySubmissionPayload } from './surveySubmissionPayload'
+import { followUpsAfterAnswer, hasPendingFollowUp, type FollowUpAnswers } from './surveyFollowUp'
 import { isValidPhone } from './phoneValidation'
 import './survey.css'
 
@@ -176,6 +177,7 @@ export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: Surv
   const [screen, setScreen] = useState<SurveyScreen>(() => restoredSession?.screen ?? 'intro')
   const [answers, setAnswers] = useState<Answers>(() => restoredSession?.answers ?? {})
   const [otherAnswers, setOtherAnswers] = useState<Answers>(() => restoredSession?.otherAnswers ?? {})
+  const [followUps, setFollowUps] = useState<FollowUpAnswers>(() => (edition.followUp ? restoredSession?.followUpAnswers ?? {} : {}))
   const [activeQuestion, setActiveQuestion] = useState(() => restoredSession?.activeQuestion ?? partOneQuestions[0]?.n ?? 1)
   const [drawerOpen, setDrawerOpen] = useState(() => window.matchMedia(surveyPersistentQuestionPanelMediaQuery).matches)
   const [questionError, setQuestionError] = useState(() => restoredSession?.questionError ?? '')
@@ -223,8 +225,8 @@ export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: Surv
   const reportHtmlLoadedRef = useRef(false)
 
   const hasAnswer = useCallback(
-    (question: SurveyQuestion) => hasQuestionAnswer(question, answers, otherAnswers),
-    [answers, otherAnswers],
+    (question: SurveyQuestion) => hasQuestionAnswer(question, answers, otherAnswers, followUps),
+    [answers, followUps, otherAnswers],
   )
 
   const partOneCompleted = useMemo(() => countAnswers(partOneQuestions, hasAnswer), [hasAnswer, partOneQuestions])
@@ -245,6 +247,7 @@ export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: Surv
       consent,
       dataCollectionConsent,
       contact,
+      followUpAnswers: followUps,
       formError,
       loadingStep,
       missingQuestionNumbers,
@@ -278,7 +281,7 @@ export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: Surv
       questionError,
       version: 1,
     })
-  }, [activeQuestion, answers, consent, contact, dataCollectionConsent, formError, loadingStep, missingQuestionNumbers, otherAnswers, partTwoPrivacyRefused, questionError, reportAccessToken, reportAccessTokenExpiresAt, reportDeferredDays, reportEmailStatus, reportJobId, reportMode, reportStatus, roundtableContact, roundtableError, roundtableOpen, roundtableRegistered, roundtableRegisteredAt, roundtableRegistrationId, roundtableRegistrationIdempotencyKey, screen, submittedAt, submittedSubmissionId, submissionError, submissionIdempotencyKey, webinarError, webinarRegistered, webinarRegisteredAt, webinarRegistrationId, webinarRegistrationIdempotencyKey, edition.version])
+  }, [activeQuestion, answers, consent, contact, dataCollectionConsent, followUps, formError, loadingStep, missingQuestionNumbers, otherAnswers, partTwoPrivacyRefused, questionError, reportAccessToken, reportAccessTokenExpiresAt, reportDeferredDays, reportEmailStatus, reportJobId, reportMode, reportStatus, roundtableContact, roundtableError, roundtableOpen, roundtableRegistered, roundtableRegisteredAt, roundtableRegistrationId, roundtableRegistrationIdempotencyKey, screen, submittedAt, submittedSubmissionId, submissionError, submissionIdempotencyKey, webinarError, webinarRegistered, webinarRegisteredAt, webinarRegistrationId, webinarRegistrationIdempotencyKey, edition.version])
 
   useEffect(() => {
     const desktopMedia = window.matchMedia(surveyPersistentQuestionPanelMediaQuery)
@@ -467,7 +470,8 @@ export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: Surv
         return next
       })
     }
-  }, [submittedSubmissionId])
+    setFollowUps((current) => followUpsAfterAnswer(current, edition.followUp, question, value))
+  }, [edition.followUp, submittedSubmissionId])
 
   const handleOtherAnswer = useCallback((question: SurveyQuestion, value: string) => {
     if (submittedSubmissionId) return
@@ -478,6 +482,14 @@ export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: Surv
     setOtherAnswers((current) => ({ ...current, [question.n]: value }))
   }, [submittedSubmissionId])
 
+  const handleFollowUpAnswer = useCallback((question: SurveyQuestion, value: string) => {
+    if (submittedSubmissionId) return
+
+    setQuestionError('')
+    setMissingQuestionNumbers([])
+    setFollowUps((current) => (question.n in current ? { ...current, [question.n]: value } : current))
+  }, [submittedSubmissionId])
+
   const continuePartOne = () => {
     if (submittedSubmissionId) return
 
@@ -485,7 +497,14 @@ export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: Surv
 
     if (missing.length) {
       setMissingQuestionNumbers(missing)
-      setQuestionError(t('Anh/Chị còn {count} câu chưa hoàn thành: {list}.', { count: missing.length, list: missing.join(', ') }))
+      // Only follow-ups left: say so, since the scale answer itself is already picked.
+      const onlyFollowUps = missing.every((n) => {
+        const question = partOneQuestions.find((item) => item.n === n)
+        return question ? hasPendingFollowUp(question, followUps) : false
+      })
+      setQuestionError(onlyFollowUps
+        ? t('Anh/Chị cần trả lời câu hỏi phụ ở câu: {list}.', { list: missing.join(', ') })
+        : t('Anh/Chị còn {count} câu chưa hoàn thành: {list}.', { count: missing.length, list: missing.join(', ') }))
       return
     }
 
@@ -577,6 +596,11 @@ export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: Surv
       return next
     })
     setOtherAnswers((current) => {
+      const next = { ...current }
+      partTwoQuestions.forEach((question) => delete next[question.n])
+      return next
+    })
+    setFollowUps((current) => {
       const next = { ...current }
       partTwoQuestions.forEach((question) => delete next[question.n])
       return next
@@ -678,6 +702,7 @@ export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: Surv
         consent,
         contact,
         edition,
+        followUps,
         otherAnswers,
         partTwoPrivacyRefused,
         reportMode,
@@ -791,6 +816,8 @@ export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: Surv
             missingQuestionNumbers={missingQuestionNumbers}
             onAnswer={handleAnswer}
             onNext={isSubmittedReview ? (partTwoCompleted === partTwoQuestions.length ? reviewPartTwoAnswers : () => goToScreen('report')) : continuePartOne}
+            followUps={followUps}
+            onFollowUpAnswer={handleFollowUpAnswer}
             onOtherAnswer={handleOtherAnswer}
             onPrevious={isSubmittedReview ? () => goToScreen('report') : () => goToScreen('intro')}
             otherAnswers={otherAnswers}
@@ -813,6 +840,8 @@ export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: Surv
             missingQuestionNumbers={missingQuestionNumbers}
             onAnswer={handleAnswer}
             onNext={isSubmittedReview ? () => goToScreen('report') : (partTwoCompleted > 0 ? continuePartTwo : skipPrivateReport)}
+            followUps={followUps}
+            onFollowUpAnswer={handleFollowUpAnswer}
             onOtherAnswer={handleOtherAnswer}
             onPrevious={reviewPartOneAnswers}
             onSecondary={isSubmittedReview ? undefined : clearPartTwoAnswers}
@@ -911,6 +940,7 @@ export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: Surv
         answers={answers}
         contact={contact}
         edition={edition}
+        followUps={followUps}
         onClose={() => setSurveyAnswersReviewOpen(false)}
         open={surveyAnswersReviewOpen}
         otherAnswers={otherAnswers}

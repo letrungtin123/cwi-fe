@@ -4,21 +4,35 @@ import { t } from '@/i18n'
 import { isValidWebsite, type Answers } from './surveyScoring'
 import { isOtherOption } from './surveyEditions'
 import type { SurveyQuestion } from './surveyData'
+import { FOLLOW_UP_ANSWER_MAX, FOLLOW_UP_ANSWER_MIN, FOLLOW_UP_QUESTION, isFollowUpAnswered, normalizeFollowUpAnswer } from './surveyFollowUp'
 
 type QuestionCardProps = {
   answer?: string
   error?: string
+  // Text of the follow-up question under a scale answer of 1 or 5; undefined when the
+  // question has no follow-up.
+  followUpAnswer?: string
   isMissing?: boolean
   readOnly?: boolean
   onAnswer: (question: SurveyQuestion, value: string) => void
+  onFollowUpAnswer?: (question: SurveyQuestion, value: string) => void
   onOtherAnswer: (question: SurveyQuestion, value: string) => void
   otherAnswer?: string
   part: 1 | 2
   question: SurveyQuestion
 }
 
-export function QuestionCard({ answer, error, isMissing = false, onAnswer, onOtherAnswer, otherAnswer = '', part, question, readOnly = false }: QuestionCardProps) {
+export function QuestionCard({ answer, error, followUpAnswer, isMissing = false, onAnswer, onFollowUpAnswer, onOtherAnswer, otherAnswer = '', part, question, readOnly = false }: QuestionCardProps) {
   const [websiteTouched, setWebsiteTouched] = useState(false)
+  // The follow-up field takes the cursor when a click on 1 or 5 makes it appear, not when
+  // the page opens with it already there (a restored draft or the read-only review).
+  const hasFollowUp = followUpAnswer !== undefined
+  const [followUpWasShown, setFollowUpWasShown] = useState(hasFollowUp)
+  const [focusFollowUp, setFocusFollowUp] = useState(false)
+  if (hasFollowUp !== followUpWasShown) {
+    setFollowUpWasShown(hasFollowUp)
+    setFocusFollowUp(hasFollowUp)
+  }
   const websiteError = question.type === 'text' && websiteTouched && Boolean(answer?.trim()) && !isValidWebsite(answer ?? '')
     ? t('Website công ty chưa đúng định dạng. Ví dụ: example.com hoặc https://example.com')
     : undefined
@@ -41,7 +55,74 @@ export function QuestionCard({ answer, error, isMissing = false, onAnswer, onOth
         question={question}
         readOnly={readOnly}
       />
+      {question.type === 'likert' && followUpAnswer !== undefined ? (
+        <FollowUpField
+          autoFocus={focusFollowUp && !readOnly}
+          invalid={isMissing && !isFollowUpAnswered(followUpAnswer)}
+          onChange={(value) => onFollowUpAnswer?.(question, value)}
+          part={part}
+          question={question}
+          readOnly={readOnly}
+          value={followUpAnswer}
+        />
+      ) : null}
     </article>
+  )
+}
+
+type FollowUpFieldProps = {
+  autoFocus: boolean
+  invalid: boolean
+  onChange: (value: string) => void
+  part: 1 | 2
+  question: SurveyQuestion
+  readOnly: boolean
+  value: string
+}
+
+function FollowUpField({ autoFocus, invalid, onChange, part, question, readOnly, value }: FollowUpFieldProps) {
+  const id = `survey-p${part}-q${question.n}-follow-up`
+  const hintId = `${id}-hint`
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Same as the "other" text box: the cursor moves into the field that just appeared.
+  useEffect(() => {
+    if (autoFocus) window.requestAnimationFrame(() => textareaRef.current?.focus())
+  }, [autoFocus])
+
+  const length = normalizeFollowUpAnswer(value).length
+
+  return (
+    <div className={cn('survey-follow-up', invalid && 'is-invalid')}>
+      <label className="survey-follow-up-label" htmlFor={id}>
+        <span className="survey-follow-up-eyebrow">{t('Câu hỏi phụ')}</span>
+        <span className="survey-follow-up-question">{t(FOLLOW_UP_QUESTION)}</span>
+      </label>
+      <textarea
+        aria-describedby={readOnly ? undefined : hintId}
+        aria-invalid={invalid}
+        aria-required="true"
+        className="survey-follow-up-input"
+        id={id}
+        maxLength={FOLLOW_UP_ANSWER_MAX}
+        onChange={(event) => onChange(event.currentTarget.value)}
+        placeholder={t('Chia sẻ ngắn gọn lý do, ít nhất {min} ký tự', { min: FOLLOW_UP_ANSWER_MIN })}
+        readOnly={readOnly}
+        ref={textareaRef}
+        rows={3}
+        value={value}
+      />
+      {readOnly ? null : (
+        <div className="survey-follow-up-foot" id={hintId}>
+          {invalid ? (
+            <p className="survey-field-error" role="alert">{t('Vui lòng trả lời câu hỏi phụ, ít nhất {min} ký tự.', { min: FOLLOW_UP_ANSWER_MIN })}</p>
+          ) : (
+            <span>{t('Bắt buộc · ít nhất {min} ký tự', { min: FOLLOW_UP_ANSWER_MIN })}</span>
+          )}
+          <span aria-hidden="true" className="survey-follow-up-count">{length}/{FOLLOW_UP_ANSWER_MAX}</span>
+        </div>
+      )}
+    </div>
   )
 }
 
