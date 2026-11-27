@@ -24,14 +24,16 @@ type QuestionCardProps = {
 
 export function QuestionCard({ answer, error, followUpAnswer, isMissing = false, onAnswer, onFollowUpAnswer, onOtherAnswer, otherAnswer = '', part, question, readOnly = false }: QuestionCardProps) {
   const [websiteTouched, setWebsiteTouched] = useState(false)
-  // The follow-up field takes the cursor when a click on 1 or 5 makes it appear, not when
-  // the page opens with it already there (a restored draft or the read-only review).
+  // The follow-up field takes the cursor when a click on 1 or 5 in this question makes it
+  // appear. Not when the page opens with it already there (a restored draft or the read-only
+  // review), nor when it passes to this question because another one changed to 2-4: the
+  // respondent is still working on that other question.
   const hasFollowUp = followUpAnswer !== undefined
-  const [followUpWasShown, setFollowUpWasShown] = useState(hasFollowUp)
+  const [previous, setPrevious] = useState({ answer, hasFollowUp })
   const [focusFollowUp, setFocusFollowUp] = useState(false)
-  if (hasFollowUp !== followUpWasShown) {
-    setFollowUpWasShown(hasFollowUp)
-    setFocusFollowUp(hasFollowUp)
+  if (previous.answer !== answer || previous.hasFollowUp !== hasFollowUp) {
+    setPrevious({ answer, hasFollowUp })
+    setFocusFollowUp(hasFollowUp && !previous.hasFollowUp && previous.answer !== answer)
   }
   const websiteError = question.type === 'text' && websiteTouched && Boolean(answer?.trim()) && !isValidWebsite(answer ?? '')
     ? t('Website công ty chưa đúng định dạng. Ví dụ: example.com hoặc https://example.com')

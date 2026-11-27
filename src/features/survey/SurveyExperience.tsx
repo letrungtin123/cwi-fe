@@ -21,7 +21,7 @@ import {
 import { createRoundtableRegistrationIdempotencyKey, createSurveySubmissionIdempotencyKey, createWebinarRegistrationIdempotencyKey, deferredResultDays, getReportHtml, getReportJobStatus, getSurveyQuarters, submitRoundtableRegistration, submitSurveySubmission, SurveyApiError, type ReportEmailStatus, type ReportJobStatusValue } from './surveyApi'
 import { isInvitationLink, readEntryQuarterFromUrl } from './surveySource'
 import { buildSurveySubmissionPayload } from './surveySubmissionPayload'
-import { followUpsAfterAnswer, hasPendingFollowUp, type FollowUpAnswers } from './surveyFollowUp'
+import { followUpStateAfterAnswer, followUpStateWithout, hasPendingFollowUp, restoreFollowUpState, type FollowUpState } from './surveyFollowUp'
 import { isValidPhone } from './phoneValidation'
 import './survey.css'
 
@@ -177,7 +177,14 @@ export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: Surv
   const [screen, setScreen] = useState<SurveyScreen>(() => restoredSession?.screen ?? 'intro')
   const [answers, setAnswers] = useState<Answers>(() => restoredSession?.answers ?? {})
   const [otherAnswers, setOtherAnswers] = useState<Answers>(() => restoredSession?.otherAnswers ?? {})
-  const [followUps, setFollowUps] = useState<FollowUpAnswers>(() => (edition.followUp ? restoredSession?.followUpAnswers ?? {} : {}))
+  const [followUpState, setFollowUpState] = useState<FollowUpState>(() => restoreFollowUpState(
+    restoredSession,
+    restoredSession?.answers ?? {},
+    edition.followUp,
+    [...partOneQuestions, ...partTwoQuestions].filter((question) => question.type === 'likert').map((question) => question.n),
+  ))
+  // Follow-up text by question number; a key means the question holds a follow-up.
+  const followUps = followUpState.answers
   const [activeQuestion, setActiveQuestion] = useState(() => restoredSession?.activeQuestion ?? partOneQuestions[0]?.n ?? 1)
   const [drawerOpen, setDrawerOpen] = useState(() => window.matchMedia(surveyPersistentQuestionPanelMediaQuery).matches)
   const [questionError, setQuestionError] = useState(() => restoredSession?.questionError ?? '')
@@ -248,6 +255,7 @@ export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: Surv
       dataCollectionConsent,
       contact,
       followUpAnswers: followUps,
+      followUpOrder: followUpState.order,
       formError,
       loadingStep,
       missingQuestionNumbers,
@@ -281,7 +289,7 @@ export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: Surv
       questionError,
       version: 1,
     })
-  }, [activeQuestion, answers, consent, contact, dataCollectionConsent, followUps, formError, loadingStep, missingQuestionNumbers, otherAnswers, partTwoPrivacyRefused, questionError, reportAccessToken, reportAccessTokenExpiresAt, reportDeferredDays, reportEmailStatus, reportJobId, reportMode, reportStatus, roundtableContact, roundtableError, roundtableOpen, roundtableRegistered, roundtableRegisteredAt, roundtableRegistrationId, roundtableRegistrationIdempotencyKey, screen, submittedAt, submittedSubmissionId, submissionError, submissionIdempotencyKey, webinarError, webinarRegistered, webinarRegisteredAt, webinarRegistrationId, webinarRegistrationIdempotencyKey, edition.version])
+  }, [activeQuestion, answers, consent, contact, dataCollectionConsent, followUpState, followUps, formError, loadingStep, missingQuestionNumbers, otherAnswers, partTwoPrivacyRefused, questionError, reportAccessToken, reportAccessTokenExpiresAt, reportDeferredDays, reportEmailStatus, reportJobId, reportMode, reportStatus, roundtableContact, roundtableError, roundtableOpen, roundtableRegistered, roundtableRegisteredAt, roundtableRegistrationId, roundtableRegistrationIdempotencyKey, screen, submittedAt, submittedSubmissionId, submissionError, submissionIdempotencyKey, webinarError, webinarRegistered, webinarRegisteredAt, webinarRegistrationId, webinarRegistrationIdempotencyKey, edition.version])
 
   useEffect(() => {
     const desktopMedia = window.matchMedia(surveyPersistentQuestionPanelMediaQuery)
@@ -470,7 +478,7 @@ export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: Surv
         return next
       })
     }
-    setFollowUps((current) => followUpsAfterAnswer(current, edition.followUp, question, value))
+    setFollowUpState((current) => followUpStateAfterAnswer(current, edition.followUp, question, value))
   }, [edition.followUp, submittedSubmissionId])
 
   const handleOtherAnswer = useCallback((question: SurveyQuestion, value: string) => {
@@ -487,7 +495,7 @@ export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: Surv
 
     setQuestionError('')
     setMissingQuestionNumbers([])
-    setFollowUps((current) => (question.n in current ? { ...current, [question.n]: value } : current))
+    setFollowUpState((current) => (question.n in current.answers ? { ...current, answers: { ...current.answers, [question.n]: value } } : current))
   }, [submittedSubmissionId])
 
   const continuePartOne = () => {
@@ -600,11 +608,7 @@ export function SurveyExperience({ edition, onBackHome, onBackToQuarters }: Surv
       partTwoQuestions.forEach((question) => delete next[question.n])
       return next
     })
-    setFollowUps((current) => {
-      const next = { ...current }
-      partTwoQuestions.forEach((question) => delete next[question.n])
-      return next
-    })
+    setFollowUpState((current) => followUpStateWithout(current, edition.followUp, partTwoQuestions.map((question) => question.n)))
     setQuestionError('')
     setMissingQuestionNumbers([])
     setActiveQuestion(partTwoQuestions[0]?.n ?? 19)

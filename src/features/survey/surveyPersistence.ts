@@ -27,6 +27,8 @@ export type SurveySession = {
   // Follow-up answers by question number (surveyFollowUp.ts); missing in drafts saved
   // before follow-ups existed.
   followUpAnswers?: Answers
+  // Scale questions answered 1 or 5, in the order they were picked (surveyFollowUp.ts).
+  followUpOrder?: number[]
   loadingStep: number
   missingQuestionNumbers: number[]
   otherAnswers: Answers
